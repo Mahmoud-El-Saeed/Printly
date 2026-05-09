@@ -1,0 +1,36 @@
+services:
+  db:
+    image: postgres:18-trixie
+    container_name: printly-db
+    restart: unless-stopped
+    shm_size: 128mb  
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    networks:
+      - printly-infra
+
+  redis:
+    image: redis:8.6.3-trixie
+    container_name: printly-redis
+    restart: unless-stopped
+    command: redis-server --requirepass ${REDIS_PASSWORD} --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - printly-infra
+
+networks:
+  printly-infra:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
