@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime
-from sqlalchemy import String, Boolean, ForeignKey, Index, DateTime
+from sqlalchemy import String, Boolean, ForeignKey, Index, DateTime, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
@@ -19,7 +19,6 @@ class TenantMembers(Base, TenantMixin):
         UUID(as_uuid=True),
         ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False,
-        index=True,
     )
     display_name: Mapped[str | None] = mapped_column(String(200), nullable=True)
     is_approved: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
@@ -28,11 +27,18 @@ class TenantMembers(Base, TenantMixin):
         server_default=func.now(),
         nullable=False,
     )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False,
+    )
 
     __table_args__ = (
         Index("ix_tenant_members_tenant_id", "tenant_id"),
         Index("ix_tenant_members_customer_user_id", "customer_user_id"),
         Index("ix_tenant_members_is_approved", "is_approved"),
+        UniqueConstraint("tenant_id", "customer_user_id", name="uq_tenant_customer_user")
     )
 
     tenant: Mapped["Tenants"] = relationship(

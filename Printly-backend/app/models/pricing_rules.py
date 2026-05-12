@@ -1,5 +1,5 @@
 import uuid
-from sqlalchemy import String, Numeric, Boolean, ForeignKey, Index, Enum
+from sqlalchemy import String, Numeric, Boolean, Index, Enum, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID
 from app.models.base import Base, TenantMixin, TimestampMixin, generate_uuid
@@ -31,8 +31,8 @@ class PricingRules(Base, TenantMixin, TimestampMixin):
     __table_args__ = (
         Index("ix_pricing_rules_tenant_id", "tenant_id"),
         Index("ix_pricing_rules_component_type", "component_type"),
+        UniqueConstraint("component_type", "component_name", name="uq_pricing_rule")
     )
-
     tenant: Mapped["Tenants"] = relationship(
         "Tenants",
     )

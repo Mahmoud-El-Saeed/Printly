@@ -18,9 +18,8 @@ class RefreshTokens(Base, TimestampMixin):
         UUID(as_uuid=True),
         ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False,
-        index=True,
     )
-    token: Mapped[str] = mapped_column(Text, unique=True, nullable=False, index=True)
+    token: Mapped[str] = mapped_column(Text, unique=True, nullable=False)
     expires_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         nullable=False,

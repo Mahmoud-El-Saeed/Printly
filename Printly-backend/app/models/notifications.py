@@ -2,11 +2,11 @@ import uuid
 from sqlalchemy import String, Boolean, ForeignKey, Index, Text, Enum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID
-from app.models.base import Base, TenantMixin, generate_uuid
+from app.models.base import Base, TenantMixin, generate_uuid, TimestampMixin
 from app.enums.notification_type import NotificationType
 
 
-class Notifications(Base, TenantMixin):
+class Notifications(Base, TenantMixin, TimestampMixin):
     __tablename__ = "notifications"
 
     id: Mapped[uuid.UUID] = mapped_column(
@@ -18,7 +18,6 @@ class Notifications(Base, TenantMixin):
         UUID(as_uuid=True),
         ForeignKey("users.id", ondelete="SET NULL"),
         nullable=True,
-        index=True,
     )
     title: Mapped[str] = mapped_column(String(200), nullable=False)
     message: Mapped[str] = mapped_column(Text, nullable=False)

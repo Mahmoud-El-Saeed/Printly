@@ -1,7 +1,7 @@
 from __future__ import annotations
 import uuid
 from datetime import datetime
-from sqlalchemy import String, ForeignKey, Index, Enum, DateTime
+from sqlalchemy import String, ForeignKey, Index, Enum, DateTime, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
@@ -21,7 +21,6 @@ class CustomerTenantLinks(Base, TimestampMixin,TenantMixin):
         UUID(as_uuid=True),
         ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False,
-        index=True,
     )
     status: Mapped[LinkStatus] = mapped_column(
         Enum(LinkStatus, name="link_status_enum", create_constraint=True),
@@ -39,6 +38,7 @@ class CustomerTenantLinks(Base, TimestampMixin,TenantMixin):
         Index("ix_customer_tenant_links_customer_user_id", "customer_user_id"),
         Index("ix_customer_tenant_links_tenant_id", "tenant_id"),
         Index("ix_customer_tenant_links_status", "status"),
+        UniqueConstraint("tenant_id", "customer_user_id", name="uq_customer_tenant_link")
     )
 
     customer_user: Mapped["Users"] = relationship(

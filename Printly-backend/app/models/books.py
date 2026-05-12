@@ -17,7 +17,6 @@ class Books(Base, TenantMixin, TimestampMixin):
         UUID(as_uuid=True),
         ForeignKey("users.id", ondelete="SET NULL"),
         nullable=True,
-        index=True,
     )
     title: Mapped[str] = mapped_column(String(300), nullable=False)
     subject: Mapped[str | None] = mapped_column(String(200), nullable=True)

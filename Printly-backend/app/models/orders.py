@@ -1,7 +1,7 @@
 import uuid
 from decimal import Decimal
 from datetime import date
-from sqlalchemy import String, Numeric, Boolean, ForeignKey, Date, Index, Text, Enum
+from sqlalchemy import String, Numeric, Boolean, ForeignKey, Date, Index, Text, Enum, Constraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID
 from app.models.base import Base, TenantMixin, TimestampMixin, generate_uuid
@@ -20,13 +20,11 @@ class Orders(Base, TenantMixin, TimestampMixin):
         UUID(as_uuid=True),
         ForeignKey("users.id", ondelete="SET NULL"),
         nullable=True,
-        index=True,
     )
     walk_in_customer_id: Mapped[uuid.UUID | None] = mapped_column(
         UUID(as_uuid=True),
         ForeignKey("walk_in_customers.id", ondelete="SET NULL"),
         nullable=True,
-        index=True,
     )
     created_by: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
@@ -37,7 +35,6 @@ class Orders(Base, TenantMixin, TimestampMixin):
         String(20),
         unique=True,
         nullable=False,
-        index=True,
     )
     status: Mapped[OrderStatus] = mapped_column(
         Enum(OrderStatus, name="order_status_enum", create_constraint=True),
@@ -59,6 +56,14 @@ class Orders(Base, TenantMixin, TimestampMixin):
         Index("ix_orders_walk_in_customer_id", "walk_in_customer_id"),
         Index("ix_orders_status", "status"),
         Index("ix_orders_created_by", "created_by"),
+        
+        Constraint(
+            "customer_id",
+            "walk_in_customer_id",
+            name="ck_orders_one_customer_type",
+            check="customer_id IS NOT NULL OR walk_in_customer_id IS NOT NULL", 
+            # ensures that at least one of the two customer fields is provided
+        ),
     )
 
     tenant: Mapped["Tenants"] = relationship(

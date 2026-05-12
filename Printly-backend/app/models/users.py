@@ -25,7 +25,6 @@ class Users(Base, TimestampMixin):
         String(255),
         unique=True,
         nullable=False,
-        index=True,
     )
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     full_name: Mapped[str] = mapped_column(String(200), nullable=False)

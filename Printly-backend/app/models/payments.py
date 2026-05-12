@@ -19,13 +19,11 @@ class Payments(Base, TenantMixin, TimestampMixin):
         UUID(as_uuid=True),
         ForeignKey("orders.id", ondelete="CASCADE"),
         nullable=False,
-        index=True,
     )
     customer_id: Mapped[uuid.UUID | None] = mapped_column(
         UUID(as_uuid=True),
         ForeignKey("users.id", ondelete="SET NULL"),
         nullable=True,
-        index=True,
     )
     amount: Mapped[Decimal] = mapped_column(Numeric(12, 2), nullable=False)
     method: Mapped[PaymentMethod] = mapped_column(
@@ -55,6 +53,7 @@ class Payments(Base, TenantMixin, TimestampMixin):
     )
     customer: Mapped["Users"] = relationship(
         "Users",
+        foreign_keys=[customer_id],
     )
     receiver: Mapped["Users"] = relationship(
         "Users",

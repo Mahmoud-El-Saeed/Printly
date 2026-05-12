@@ -18,7 +18,6 @@ class MaterialTransactions(Base, TenantMixin, TimestampMixin):
         UUID(as_uuid=True),
         ForeignKey("materials.id", ondelete="CASCADE"),
         nullable=False,
-        index=True,
     )
     quantity: Mapped[Decimal] = mapped_column(Numeric(12, 2), nullable=False)
     type: Mapped[MaterialTransactionType] = mapped_column(
@@ -29,7 +28,6 @@ class MaterialTransactions(Base, TenantMixin, TimestampMixin):
         UUID(as_uuid=True),
         ForeignKey("orders.id", ondelete="SET NULL"),
         nullable=True,
-        index=True,
     )
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_by: Mapped[uuid.UUID | None] = mapped_column(

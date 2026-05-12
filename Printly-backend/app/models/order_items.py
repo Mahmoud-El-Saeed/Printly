@@ -17,13 +17,11 @@ class OrderItems(Base, TimestampMixin):
         UUID(as_uuid=True),
         ForeignKey("orders.id", ondelete="CASCADE"),
         nullable=False,
-        index=True,
     )
     book_id: Mapped[uuid.UUID | None] = mapped_column(
         UUID(as_uuid=True),
         ForeignKey("books.id", ondelete="SET NULL"),
         nullable=True,
-        index=True,
     )
     book_title: Mapped[str] = mapped_column(String(300), nullable=False)
     copies: Mapped[int] = mapped_column(nullable=False)
