@@ -7,9 +7,9 @@ class Settings(BaseSettings):
                         env_file_encoding="utf-8",
                         extra='ignore')
 
-    # PostgreSQL Database settings
-    POSTGRES_URI: str
-    
+    # Database settings
+    DATABASE_URI: str
+
     # Redis settings
     REDIS_URI: str
 
