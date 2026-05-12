@@ -1,7 +1,7 @@
 import uuid
 from decimal import Decimal
 from datetime import date
-from sqlalchemy import String, Numeric, Boolean, ForeignKey, Date, Index, Text, Enum, Constraint
+from sqlalchemy import String, Numeric, ForeignKey, Date, Index, Text, Enum, CheckConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID
 from app.models.base import Base, TenantMixin, TimestampMixin, generate_uuid
@@ -56,13 +56,9 @@ class Orders(Base, TenantMixin, TimestampMixin):
         Index("ix_orders_walk_in_customer_id", "walk_in_customer_id"),
         Index("ix_orders_status", "status"),
         Index("ix_orders_created_by", "created_by"),
-        
-        Constraint(
-            "customer_id",
-            "walk_in_customer_id",
-            name="ck_orders_one_customer_type",
-            check="customer_id IS NOT NULL OR walk_in_customer_id IS NOT NULL", 
-            # ensures that at least one of the two customer fields is provided
+        CheckConstraint(
+            "customer_id IS NOT NULL OR walk_in_customer_id IS NOT NULL",
+            name="ck_orders_one_customer_type"
         ),
     )
 
