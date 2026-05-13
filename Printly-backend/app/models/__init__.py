@@ -17,6 +17,7 @@ from app.models.customer_pricing import CustomerPricing
 from app.models.expenses import Expenses
 from app.models.notifications import Notifications
 from app.models.refresh_tokens import RefreshTokens
+from app.models.activation_codes import ActivationCodes
 
 __all__ = [
     "Base",
@@ -41,4 +42,5 @@ __all__ = [
     "Expenses",
     "Notifications",
     "RefreshTokens",
+    "ActivationCodes"
 ]
