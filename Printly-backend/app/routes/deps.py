@@ -7,6 +7,7 @@ from app.routes.db import AsyncSessionLocal
 from app.routes.redis_client import get_redis_client
 from app.services import verify_current_user
 from app.schemas import TokenData
+from app.enums import UserRole
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
     """Dependency to get a database session"""
@@ -31,6 +32,12 @@ async def get_current_user(
             headers={"WWW-Authenticate": "Bearer"},
         ) from e
 
+async def require_tenant_staff(
+    current_user: TokenData = Depends(get_current_user),
+) -> TokenData:
+    if current_user.role not in [UserRole.SHOP_OWNER.value, UserRole.STAFF.value] or not current_user.tenant_id:
+        raise HTTPException(status_code=403, detail="Access denied")
+    return current_user
 
 
 async def get_redis() -> AsyncGenerator:

@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from app.routes.db import engine
 from app.routes.redis_client import get_redis_client
-from app.routes import auth_router
+from app.routes import auth_router, customer_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -23,6 +23,7 @@ async def lifespan(app: FastAPI):
     
 app = FastAPI(lifespan=lifespan)
 app.include_router(auth_router)
+app.include_router(customer_router)
 
 @app.get("/")
 async def read_root():

@@ -5,8 +5,15 @@ from .auth import (
     TokenResponse,
     CustomerRegister,
     CustomerResponse,
-    LoginRequest,   
-    TokenData
+    LoginRequest,
+    TokenData,
+)
+from .customer import (
+    WalkInCustomerCreate,
+    WalkInCustomerResponse,
+    WalkInCustomerUpdate,
+    WalkInCustomerListResponse,
+    WalkInCustomerListRequest,
 )
 
 __all__ = [
@@ -18,4 +25,9 @@ __all__ = [
     "CustomerResponse",
     "LoginRequest",
     "TokenData",
+    "WalkInCustomerCreate",
+    "WalkInCustomerResponse",
+    "WalkInCustomerUpdate",
+    "WalkInCustomerListResponse",
+    "WalkInCustomerListRequest",
 ]

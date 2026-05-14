@@ -4,6 +4,7 @@ from .tenant_crud import TenantCRUD
 from .subscription_crud import SubscriptionCRUD
 from .plan_crud import PlanCRUD
 from .refresh_crud import RefreshCRUD
+from .walk_in_customer_crud import WalkInCustomerCRUD
 
 __all__ = [
     "BaseCRUD",
@@ -12,4 +13,5 @@ __all__ = [
     "SubscriptionCRUD",
     "PlanCRUD",
     "RefreshCRUD",
+    "WalkInCustomerCRUD",
 ]
