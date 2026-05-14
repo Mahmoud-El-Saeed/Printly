@@ -250,7 +250,7 @@ async def verify_current_user(db: AsyncSession, token: str) -> TokenData:
             raise ValueError("User account is inactive")
         return TokenData(
             user_id=str(user.id),
-            tenant_id=str(user.tenant_id) if user.tenant_id else None,
+            tenant_id=user.tenant_id if user.tenant_id else None,
             role=user.role.value,
         )
     except Exception as e:

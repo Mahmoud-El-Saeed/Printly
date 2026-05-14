@@ -11,7 +11,7 @@ class TokenResponse(BaseModel):
 
 class TokenData(BaseModel):
     user_id: str
-    tenant_id: str | None
+    tenant_id: UUID | None
     role: str
 
 
