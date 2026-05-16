@@ -12,7 +12,10 @@ from app.models import Base
 config = context.config
 
 settings: Settings = get_settings()
-config.set_main_option("sqlalchemy.url", settings.DATABASE_URI)
+config.set_main_option(
+        "sqlalchemy.url",
+        settings.DATABASE_URI.replace("asyncpg", "psycopg"),
+    )  # Replace asyncpg with psycopg for Alembic compatibility
 # That makes Alembic use the DATABASE_URI from the .env file instead of the one in alembic.ini
 
 

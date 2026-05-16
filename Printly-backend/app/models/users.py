@@ -52,6 +52,7 @@ class Users(Base, TimestampMixin):
     books: Mapped[list["Books"]] = relationship(
         "Books",
         back_populates="customer",
+        foreign_keys="Books.customer_id",
     )
     tenant_members: Mapped[list["TenantMembers"]] = relationship(
         "TenantMembers",

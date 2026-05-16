@@ -18,11 +18,19 @@ class Books(Base, TenantMixin, TimestampMixin):
         ForeignKey("users.id", ondelete="SET NULL"),
         nullable=True,
     )
+    created_by: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True,
+    )
     title: Mapped[str] = mapped_column(String(300), nullable=False)
     subject: Mapped[str | None] = mapped_column(String(200), nullable=True)
     total_pages: Mapped[int] = mapped_column(Integer, nullable=False)
-    is_saved: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    
     file_url: Mapped[str | None] = mapped_column(Text, nullable=True)
+    file_size: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    
+    local_file_path: Mapped[str | None] = mapped_column(String(500), nullable=True)
 
     __table_args__ = (
         Index("ix_books_tenant_id", "tenant_id"),
@@ -36,4 +44,10 @@ class Books(Base, TenantMixin, TimestampMixin):
     customer: Mapped["Users"] = relationship(
         "Users",
         back_populates="books",
+        foreign_keys=[customer_id],
+    )
+
+    creator: Mapped["Users"] = relationship(
+        "Users",
+        foreign_keys=[created_by],
     )
