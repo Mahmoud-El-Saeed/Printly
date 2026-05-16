@@ -15,6 +15,13 @@ from .customer import (
     WalkInCustomerListResponse,
     WalkInCustomerListRequest,
 )
+from .book import (
+    BookCreate,
+    BookResponse,
+    BookUpdate,
+    BooksRequest,
+    BookListResponse,
+)
 
 __all__ = [
     "RefreshRequest",
@@ -30,4 +37,9 @@ __all__ = [
     "WalkInCustomerUpdate",
     "WalkInCustomerListResponse",
     "WalkInCustomerListRequest",
+    "BookCreate",
+    "BookResponse",
+    "BookUpdate",
+    "BooksRequest",
+    "BookListResponse",
 ]

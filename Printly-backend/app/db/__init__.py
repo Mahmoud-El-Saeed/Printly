@@ -5,6 +5,7 @@ from .subscription_crud import SubscriptionCRUD
 from .plan_crud import PlanCRUD
 from .refresh_crud import RefreshCRUD
 from .walk_in_customer_crud import WalkInCustomerCRUD
+from .book_crud import BookCRUD
 
 __all__ = [
     "BaseCRUD",
@@ -14,4 +15,5 @@ __all__ = [
     "PlanCRUD",
     "RefreshCRUD",
     "WalkInCustomerCRUD",
+    "BookCRUD",
 ]

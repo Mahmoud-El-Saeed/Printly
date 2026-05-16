@@ -20,6 +20,12 @@ class Settings(BaseSettings):
     
     # Refresh token settings
     REFRESH_TOKEN_EXPIRE_DAYS: int
+    # File upload settings
+    UPLOAD_FOLDER_NAME: str
+    # Allowed files types (pdf, docx)
+    ALLOWED_FILE_TYPES: list[str]
+    ALLOWED_FILE_EXTENSIONS: list[str]
+    MAX_FILE_SIZE: int
 
 
 def get_settings() -> Settings:
