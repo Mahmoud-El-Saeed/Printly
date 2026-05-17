@@ -11,7 +11,7 @@ from .customer import (
     list_walk_in_customers,
     update_walk_in_customer,
     delete_walk_in_customer,
-    get_walk_in_customer_by_id
+    get_walk_in_customer_by_id,
 )
 
 from .book import (
@@ -23,6 +23,17 @@ from .book import (
     list_books,
     upload_book_file,
     download_book_file,
+)
+
+from .material import (
+    create_material,
+    get_material,
+    update_material,
+    delete_material,
+    create_transaction,
+    get_transaction,
+    list_materials,
+    list_transactions,
 )
 
 __all__ = [
@@ -44,4 +55,12 @@ __all__ = [
     "list_books",
     "upload_book_file",
     "download_book_file",
+    "create_material",
+    "get_material",
+    "update_material",
+    "delete_material",
+    "create_transaction",
+    "get_transaction",
+    "list_materials",
+    "list_transactions",
 ]

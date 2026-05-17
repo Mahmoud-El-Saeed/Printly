@@ -212,7 +212,7 @@ async def update_book(
     if not book or book.tenant_id != tenant_id:
         raise ValueError("Book not found")
 
-    update_data = book_data.model_dump(exclude_unset=True)
+    update_data = book_data.model_dump(exclude_unset=True, exclude_none=True)
     updated_book = await book_crud.update(db, book, **update_data)
     await db.commit()
     return BookResponse.model_validate(updated_book)

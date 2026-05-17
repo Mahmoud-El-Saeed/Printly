@@ -2,7 +2,13 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from app.routes.db import engine
 from app.routes.redis_client import get_redis_client
-from app.routes import auth_router, customer_router, book_router
+from app.routes import (
+    auth_router,
+    customer_router,
+    book_router,
+    material_router,
+)
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -17,14 +23,15 @@ async def lifespan(app: FastAPI):
 
     # Clean up resources here (e.g., close database connection, Redis client)
     await redis_client.close()  # Close Redis connection
-    engine.dispose()  # Dispose of the database engine 
-    
-    
-    
+    engine.dispose()  # Dispose of the database engine
+
+
 app = FastAPI(lifespan=lifespan)
 app.include_router(auth_router)
 app.include_router(customer_router)
 app.include_router(book_router)
+app.include_router(material_router)
+
 
 @app.get("/")
 async def read_root():

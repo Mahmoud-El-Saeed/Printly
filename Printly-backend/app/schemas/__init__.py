@@ -23,6 +23,18 @@ from .book import (
     BookListResponse,
 )
 
+from .material import (
+    MaterialCreate,
+    MaterialUpdate,
+    MaterialResponse,
+    MaterialsRequest,
+    MaterialListResponse,
+    TransactionCreate,
+    TransactionResponse,
+    TransactionsRequest,
+    TransactionListResponse,
+)
+
 __all__ = [
     "RefreshRequest",
     "ShopOwnerRegister",
@@ -42,4 +54,13 @@ __all__ = [
     "BookUpdate",
     "BooksRequest",
     "BookListResponse",
+    "MaterialResponse",
+    "MaterialCreate",
+    "MaterialUpdate",
+    "MaterialsRequest",
+    "MaterialListResponse",
+    "TransactionCreate",
+    "TransactionResponse",
+    "TransactionsRequest",
+    "TransactionListResponse",
 ]

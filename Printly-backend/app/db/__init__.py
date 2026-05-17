@@ -6,6 +6,7 @@ from .plan_crud import PlanCRUD
 from .refresh_crud import RefreshCRUD
 from .walk_in_customer_crud import WalkInCustomerCRUD
 from .book_crud import BookCRUD
+from .material_crud import MaterialCRUD, MaterialTransactionCRUD
 
 __all__ = [
     "BaseCRUD",
@@ -16,4 +17,6 @@ __all__ = [
     "RefreshCRUD",
     "WalkInCustomerCRUD",
     "BookCRUD",
+    "MaterialCRUD",
+    "MaterialTransactionCRUD",
 ]
