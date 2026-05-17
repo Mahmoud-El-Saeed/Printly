@@ -10,7 +10,7 @@ class TokenResponse(BaseModel):
     token_type: str = "bearer"
 
 class TokenData(BaseModel):
-    user_id: str
+    user_id: UUID
     tenant_id: UUID | None
     role: str
 

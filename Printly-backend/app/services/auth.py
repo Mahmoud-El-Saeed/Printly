@@ -244,12 +244,12 @@ async def verify_current_user(db: AsyncSession, token: str) -> TokenData:
             raise ValueError("Invalid token payload")
         user_crud = UserCRUD()
         user: Users | None = await user_crud.get_active_by_id(
-            db=db, user_id=UUID(user_id)
+            db=db, user_id= UUID(user_id)
         )
         if not user or not user.is_active:
             raise ValueError("User account is inactive")
         return TokenData(
-            user_id=str(user.id),
+            user_id=UUID(user_id),
             tenant_id=user.tenant_id if user.tenant_id else None,
             role=user.role.value,
         )
