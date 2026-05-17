@@ -43,5 +43,4 @@ class Materials(Base, TenantMixin, TimestampMixin):
     transactions: Mapped[list["MaterialTransactions"]] = relationship(
         "MaterialTransactions",
         back_populates="material",
-        cascade="all, delete-orphan",
     )

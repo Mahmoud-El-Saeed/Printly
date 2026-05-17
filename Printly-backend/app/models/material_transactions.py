@@ -16,11 +16,11 @@ class MaterialTransactions(Base, TenantMixin, TimestampMixin):
     )
     material_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
-        ForeignKey("materials.id", ondelete="CASCADE"),
+        ForeignKey("materials.id", ondelete="RESTRICT"),
         nullable=False,
     )
     quantity: Mapped[Decimal] = mapped_column(Numeric(12, 2), nullable=False)
-    type: Mapped[MaterialTransactionType] = mapped_column(
+    transaction_type: Mapped[MaterialTransactionType] = mapped_column(
         Enum(MaterialTransactionType, name="material_transaction_type_enum", create_constraint=True),
         nullable=False,
     )
@@ -39,7 +39,7 @@ class MaterialTransactions(Base, TenantMixin, TimestampMixin):
     __table_args__ = (
         Index("ix_material_transactions_tenant_id", "tenant_id"),
         Index("ix_material_transactions_material_id", "material_id"),
-        Index("ix_material_transactions_type", "type"),
+        Index("ix_material_transactions_transaction_type", "transaction_type"),
     )
 
     tenant: Mapped["Tenants"] = relationship(
