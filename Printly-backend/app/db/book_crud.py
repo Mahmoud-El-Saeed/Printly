@@ -69,3 +69,13 @@ class BookCRUD(BaseCRUD[Books]):
         )
         result = await db.execute(query)
         return result.scalar_one()
+    
+    async def get_books_by_ids(
+        self,
+        db: AsyncSession,
+        book_ids: list[UUID],
+    ) -> list[Books]:
+        """Get multiple books by their IDs."""
+        query = select(Books).where(Books.id.in_(book_ids))
+        result = await db.execute(query)
+        return result.scalars().all()
