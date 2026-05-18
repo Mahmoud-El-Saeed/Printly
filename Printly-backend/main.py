@@ -8,6 +8,7 @@ from app.routes import (
     book_router,
     material_router,
     pricing_router,
+    order_router,
 )
 
 
@@ -24,7 +25,7 @@ async def lifespan(app: FastAPI):
 
     # Clean up resources here (e.g., close database connection, Redis client)
     await redis_client.close()  # Close Redis connection
-    engine.dispose()  # Dispose of the database engine
+    await engine.dispose()  # Dispose of the database engine
 
 
 app = FastAPI(lifespan=lifespan)
@@ -33,6 +34,7 @@ app.include_router(customer_router)
 app.include_router(book_router)
 app.include_router(material_router)
 app.include_router(pricing_router)
+app.include_router(order_router)
 
 
 @app.get("/")

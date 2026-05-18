@@ -8,6 +8,7 @@ from .walk_in_customer_crud import WalkInCustomerCRUD
 from .book_crud import BookCRUD
 from .material_crud import MaterialCRUD, MaterialTransactionCRUD
 from .pricing_crud import PricingRuleCRUD, CustomerPricingCRUD
+from .order_crud import OrderCRUD, OrderItemsCRUD
 
 __all__ = [
     "BaseCRUD",
@@ -22,4 +23,6 @@ __all__ = [
     "MaterialTransactionCRUD",
     "PricingRuleCRUD",
     "CustomerPricingCRUD",
+    "OrderCRUD",
+    "OrderItemsCRUD",
 ]

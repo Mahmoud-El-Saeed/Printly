@@ -49,6 +49,15 @@ from .pricing import (
     list_customer_pricings,
 )
 
+from .order import (
+    create_order,
+    get_order,
+    update_order,
+    update_order_status,
+    delete_order,
+    list_orders,
+)
+
 __all__ = [
     "register_shop_owner",
     "verify_current_user",
@@ -86,4 +95,10 @@ __all__ = [
     "update_customer_pricing",
     "delete_customer_pricing",
     "list_customer_pricings",
+    "create_order",
+    "get_order",
+    "update_order",
+    "update_order_status",
+    "delete_order",
+    "list_orders",
 ]
