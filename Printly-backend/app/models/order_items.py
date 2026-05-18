@@ -1,5 +1,5 @@
 import uuid
-from sqlalchemy import String, Numeric, Boolean, ForeignKey, Index
+from sqlalchemy import String, Numeric, Boolean, ForeignKey, Index, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 from app.models.base import Base, TimestampMixin, generate_uuid
@@ -26,7 +26,8 @@ class OrderItems(Base, TimestampMixin):
     book_title: Mapped[str] = mapped_column(String(300), nullable=False)
     copies: Mapped[int] = mapped_column(nullable=False)
     pages_per_copy: Mapped[int] = mapped_column(nullable=False)
-    price_per_page: Mapped[Decimal] = mapped_column(Numeric(8, 4), nullable=False)
+    printing_price: Mapped[Decimal] = mapped_column(Numeric(8, 4), nullable=False)
+    sides_per_page: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
     cover_type: Mapped[str | None] = mapped_column(String(50), nullable=True)
     cover_price: Mapped[Decimal] = mapped_column(
         Numeric(8, 2),
@@ -52,6 +53,7 @@ class OrderItems(Base, TimestampMixin):
     extra_services: Mapped[list] = mapped_column(
         JSONB,
         default=list,
+        server_default="[]",
         nullable=False,
     )
     subtotal: Mapped[Decimal] = mapped_column(Numeric(12, 2), nullable=False)

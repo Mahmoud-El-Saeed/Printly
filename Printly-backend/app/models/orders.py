@@ -28,7 +28,7 @@ class Orders(Base, TenantMixin, TimestampMixin):
     )
     created_by: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
-        ForeignKey("users.id", ondelete="RESTRICT"),
+        ForeignKey("users.id", ondelete="SET NULL"),
         nullable=False,
     )
     order_number: Mapped[str] = mapped_column(
