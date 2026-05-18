@@ -7,6 +7,7 @@ from app.routes import (
     customer_router,
     book_router,
     material_router,
+    pricing_router,
 )
 
 
@@ -31,6 +32,7 @@ app.include_router(auth_router)
 app.include_router(customer_router)
 app.include_router(book_router)
 app.include_router(material_router)
+app.include_router(pricing_router)
 
 
 @app.get("/")
