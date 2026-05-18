@@ -26,12 +26,15 @@ class PricingRules(Base, TenantMixin, TimestampMixin):
         default=PricingUnitType.PER_PAGE,
         nullable=False,
     )
+    
+    description: Mapped[str] = mapped_column(String(255), nullable=True)
+    
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
 
     __table_args__ = (
         Index("ix_pricing_rules_tenant_id", "tenant_id"),
         Index("ix_pricing_rules_component_type", "component_type"),
-        UniqueConstraint("component_type", "component_name", name="uq_pricing_rule")
+        UniqueConstraint("tenant_id", "component_type", "component_name", name="uq_pricing_rule")
     )
     tenant: Mapped["Tenants"] = relationship(
         "Tenants",
