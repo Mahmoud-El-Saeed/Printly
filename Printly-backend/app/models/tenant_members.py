@@ -1,6 +1,7 @@
 import uuid
 from datetime import datetime
-from sqlalchemy import String, Boolean, ForeignKey, Index, DateTime, UniqueConstraint
+from sqlalchemy import String, Boolean, ForeignKey, Index, DateTime, UniqueConstraint, Numeric
+from decimal import Decimal
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
@@ -21,6 +22,11 @@ class TenantMembers(Base, TenantMixin):
         nullable=False,
     )
     display_name: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    balance: Mapped[Decimal] = mapped_column(
+        Numeric(12, 2),
+        default="0",
+        nullable=False,
+    )
     is_approved: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     linked_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),

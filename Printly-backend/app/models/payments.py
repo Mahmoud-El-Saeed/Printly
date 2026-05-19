@@ -1,6 +1,6 @@
 import uuid
 from decimal import Decimal
-from sqlalchemy import String, Numeric, ForeignKey, Index, Text, Enum
+from sqlalchemy import String, Numeric, ForeignKey, Index, Text, Enum, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID
 from app.models.base import Base, TenantMixin, TimestampMixin, generate_uuid
@@ -21,12 +21,15 @@ class Payments(Base, TenantMixin, TimestampMixin):
         nullable=False,
     )
     amount: Mapped[Decimal] = mapped_column(Numeric(12, 2), nullable=False)
-    method: Mapped[PaymentMethod] = mapped_column(
+    payment_method: Mapped[PaymentMethod] = mapped_column(
         Enum(PaymentMethod, name="payment_method_enum", create_constraint=True),
         nullable=False,
     )
     reference: Mapped[str | None] = mapped_column(String(100), nullable=True)
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+    add_to_balance: Mapped[bool] = mapped_column(default=False, server_default=text("false"))
+    split_cash_amount: Mapped[Decimal | None] = mapped_column(Numeric(12, 2), nullable=True)
+    excess_amount: Mapped[Decimal] = mapped_column(Numeric(12, 2), nullable=False, server_default=text("0"))
     received_by: Mapped[uuid.UUID | None] = mapped_column(
         UUID(as_uuid=True),
         ForeignKey("users.id", ondelete="SET NULL"),
