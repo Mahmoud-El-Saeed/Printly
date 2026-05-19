@@ -57,6 +57,16 @@ from .order import (
     delete_order,
     list_orders,
 )
+from .payment import (
+    create_payment,
+    get_payment,
+    list_payments,
+    update_payment,
+    delete_payment,
+    settle_payments_for_customer,
+    get_customer_balance,
+)
+
 
 __all__ = [
     "register_shop_owner",
@@ -101,4 +111,11 @@ __all__ = [
     "update_order_status",
     "delete_order",
     "list_orders",
+    "create_payment",
+    "get_payment",
+    "list_payments",
+    "update_payment",
+    "delete_payment",
+    "settle_payments_for_customer",
+    "get_customer_balance",
 ]

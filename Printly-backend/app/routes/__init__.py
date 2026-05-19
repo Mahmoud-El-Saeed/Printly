@@ -4,6 +4,7 @@ from .book import router as book_router
 from .material import router as material_router
 from .pricing import router as pricing_router
 from .order import router as order_router
+from .payment import router as payment_router
 
 __all__ = [
     "auth_router",
@@ -12,4 +13,5 @@ __all__ = [
     "material_router",
     "pricing_router",
     "order_router",
+    "payment_router",
     ]

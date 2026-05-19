@@ -9,6 +9,8 @@ from .book_crud import BookCRUD
 from .material_crud import MaterialCRUD, MaterialTransactionCRUD
 from .pricing_crud import PricingRuleCRUD, CustomerPricingCRUD
 from .order_crud import OrderCRUD, OrderItemsCRUD
+from .payment_crud import PaymentCRUD
+from .tenant_member_crud import TenantMemberCRUD
 
 __all__ = [
     "BaseCRUD",
@@ -25,4 +27,6 @@ __all__ = [
     "CustomerPricingCRUD",
     "OrderCRUD",
     "OrderItemsCRUD",
+    "PaymentCRUD",
+    "TenantMemberCRUD",
 ]

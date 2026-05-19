@@ -1,13 +1,16 @@
 from .base_crud import BaseCRUD
-from app.models import Orders, OrderItems
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 from uuid import UUID
+from datetime import date
+
+from app.models import Orders, OrderItems
+from app.enums import OrderStatus
 
 class OrderCRUD(BaseCRUD[Orders]):
     def __init__(self):
         super().__init__(Orders)
-    
+
     async def get_orders(
         self,
         db: AsyncSession,
@@ -16,8 +19,8 @@ class OrderCRUD(BaseCRUD[Orders]):
         walk_in_customer_id: UUID | None = None,
         created_by: UUID | None = None,
         status: str | None = None,
-        date_from: str | None = None,
-        date_to: str | None = None,
+        date_from: date | None = None,
+        date_to: date | None = None,
         order_number: str | None = None,
         offset: int = 0,
         limit: int = 10,
@@ -60,14 +63,32 @@ class OrderCRUD(BaseCRUD[Orders]):
         orders = result.scalars().all()
 
         return orders, total_count
+    
+    async def get_unpaid_orders(
+        self,
+        db: AsyncSession,
+        tenant_id: UUID,
+        customer_id: UUID
+    ) -> list[Orders]:
+        """Get all unpaid orders for a tenant."""
+        query = (
+            select(Orders)
+            .where(Orders.tenant_id == tenant_id)
+            .where(Orders.customer_id == customer_id)
+            .where(Orders.total_amount > Orders.paid_amount)
+            .where(Orders.status.notin_([OrderStatus.CANCELLED]))
+            .order_by(Orders.created_at.asc())
+        )
+        result = await db.execute(query)
+        return result.scalars().all()
 
 
 class OrderItemsCRUD(BaseCRUD[OrderItems]):
     def __init__(self):
         super().__init__(OrderItems)
-        
+
     async def batch_create(self, db: AsyncSession, items_data: list[OrderItems]):
         """Batch create order items."""
         db.add_all(items_data)
-        await db.flush() 
+        await db.flush()
         return items_data

@@ -4,13 +4,14 @@ import logging
 from typing import Annotated
 from uuid import UUID
 
-from app.routes.deps import get_db, get_current_user, require_tenant_staff
+from app.routes.deps import get_db, require_tenant_staff
 from app.services import (
     create_walk_in_customer,
     list_walk_in_customers,
     update_walk_in_customer,
     delete_walk_in_customer,
     get_walk_in_customer_by_id,
+    get_customer_balance,
 )
 from app.schemas import (
     WalkInCustomerCreate,
@@ -18,6 +19,7 @@ from app.schemas import (
     WalkInCustomerUpdate,
     WalkInCustomerListResponse,
     WalkInCustomerListRequest,
+    CustomerBalanceResponse,
     TokenData,
 )
 
@@ -26,7 +28,8 @@ logger = logging.getLogger(__name__)
 
 
 @router.post(
-    "/walk-in", response_model=WalkInCustomerResponse,
+    "/walk-in",
+    response_model=WalkInCustomerResponse,
     status_code=status.HTTP_201_CREATED,
 )
 async def create_walk_in_customer_endpoint(
@@ -51,6 +54,7 @@ async def create_walk_in_customer_endpoint(
             detail="An error occurred while creating the walk-in customer",
         ) from e
 
+
 @router.get("/walk-in", response_model=WalkInCustomerListResponse)
 async def list_walk_in_customers_endpoint(
     data: Annotated[WalkInCustomerListRequest, Depends()],
@@ -67,7 +71,7 @@ async def list_walk_in_customers_endpoint(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="An error occurred while listing walk-in customers",
         ) from e
-        
+
 
 @router.get("/walk-in/{customer_id}", response_model=WalkInCustomerResponse)
 async def get_walk_in_customer_by_id_endpoint(
@@ -77,7 +81,7 @@ async def get_walk_in_customer_by_id_endpoint(
 ) -> WalkInCustomerResponse:
     """Endpoint to get a walk-in customer by ID"""
     try:
-        return await get_walk_in_customer_by_id(db,current_user.tenant_id, customer_id)
+        return await get_walk_in_customer_by_id(db, current_user.tenant_id, customer_id)
 
     except ValueError as e:
         raise HTTPException(
@@ -92,6 +96,7 @@ async def get_walk_in_customer_by_id_endpoint(
             detail="An error occurred while getting the walk-in customer",
         ) from e
 
+
 @router.put("/walk-in/{customer_id}", response_model=WalkInCustomerResponse)
 async def update_walk_in_customer_endpoint(
     customer_id: UUID,
@@ -101,7 +106,9 @@ async def update_walk_in_customer_endpoint(
 ) -> WalkInCustomerResponse:
     """Endpoint to update a walk-in customer's details"""
     try:
-        return await update_walk_in_customer(db,current_user.tenant_id, customer_id, data)
+        return await update_walk_in_customer(
+            db, current_user.tenant_id, customer_id, data
+        )
 
     except ValueError as e:
         raise HTTPException(
@@ -115,7 +122,7 @@ async def update_walk_in_customer_endpoint(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="An error occurred while updating the walk-in customer",
         ) from e
-    
+
 
 @router.delete("/walk-in/{customer_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_walk_in_customer_endpoint(
@@ -125,8 +132,7 @@ async def delete_walk_in_customer_endpoint(
 ) -> None:
     """Endpoint to delete a walk-in customer"""
     try:
-
-        await delete_walk_in_customer(db,current_user.tenant_id, customer_id)
+        await delete_walk_in_customer(db, current_user.tenant_id, customer_id)
 
     except ValueError as e:
         raise HTTPException(
@@ -139,4 +145,28 @@ async def delete_walk_in_customer_endpoint(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="An error occurred while deleting the walk-in customer",
+        ) from e
+
+
+@router.get("/{customer_id}/balance", response_model=CustomerBalanceResponse)
+async def get_customer_balance_endpoint(
+    customer_id: UUID,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    current_user: Annotated[TokenData, Depends(require_tenant_staff)],
+) -> CustomerBalanceResponse:
+    """Endpoint to get the balance information of a customer"""
+    try:
+        return await get_customer_balance(db, current_user.tenant_id, customer_id)
+
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e),
+        ) from e
+
+    except Exception as e:
+        logger.error(f"Error getting customer balance: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while getting the customer balance",
         ) from e
