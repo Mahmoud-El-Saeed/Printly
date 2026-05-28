@@ -6,18 +6,19 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class UserCRUD(BaseCRUD[Users]):
-    def __init__(self):
-        super().__init__(Users)
+    model = Users
 
-    async def get_by_email(self, db: AsyncSession, email: str) -> Users | None:
+    @classmethod
+    async def get_by_email(cls, db: AsyncSession, email: str) -> Users | None:
         """Get one user by email"""
-        return await self.get_by_field(db, "email", email)
+        return await cls.get_by_field(db, "email", email)
 
-    async def get_active_by_id(self, db: AsyncSession, user_id: UUID) -> Users | None:
+    @classmethod
+    async def get_active_by_id(cls, db: AsyncSession, user_id: UUID) -> Users | None:
         """Get one active user by ID"""
-        stmt = select(self.model).where(
-            self.model.id == user_id,
-            self.model.is_active,
+        stmt = select(cls.model).where(
+            cls.model.id == user_id,
+            cls.model.is_active,
         )
         result = await db.execute(stmt)
         return result.scalar_one_or_none()

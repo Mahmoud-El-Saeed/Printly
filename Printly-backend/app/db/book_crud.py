@@ -6,11 +6,11 @@ from sqlalchemy import select, func, or_
 
 
 class BookCRUD(BaseCRUD[Books]):
-    def __init__(self):
-        super().__init__(Books)
+    model = Books
 
+    @classmethod
     async def search_books(
-        self,
+        cls,
         db: AsyncSession,
         tenant_id: UUID,
         title: str | None = None,
@@ -56,8 +56,9 @@ class BookCRUD(BaseCRUD[Books]):
 
         return books, total_count
 
+    @classmethod
     async def count_stored_books(
-        self,
+        cls,
         db: AsyncSession,
         tenant_id: UUID,
     ) -> int:
@@ -70,8 +71,9 @@ class BookCRUD(BaseCRUD[Books]):
         result = await db.execute(query)
         return result.scalar_one()
     
+    @classmethod
     async def get_books_by_ids(
-        self,
+        cls,
         db: AsyncSession,
         book_ids: list[UUID],
     ) -> list[Books]:

@@ -19,10 +19,9 @@ async def create_walk_in_customer(
 ) -> WalkInCustomerResponse:
     """Create a new walk-in customer for the tenant"""
 
-    walk_in_crud = WalkInCustomerCRUD()
 
     try:
-        walk_in_customer: WalkInCustomers = await walk_in_crud.create(
+        walk_in_customer: WalkInCustomers = await WalkInCustomerCRUD.create(
             db=db,
             tenant_id=tenant_id,
             name=data.name,
@@ -44,9 +43,8 @@ async def list_walk_in_customers(
 ) -> WalkInCustomerListResponse:
     """List walk-in customers for the tenant with pagination"""
 
-    walk_in_crud = WalkInCustomerCRUD()
 
-    walk_in_customers, total = await walk_in_crud.get_list(
+    walk_in_customers, total = await WalkInCustomerCRUD.get_list(
         db=db,
         filters={"tenant_id": tenant_id},
         offset=data.skip,
@@ -68,16 +66,15 @@ async def update_walk_in_customer(
 ) -> WalkInCustomerResponse:
     """Update a walk-in customer's details"""
 
-    walk_in_crud = WalkInCustomerCRUD()
 
-    walk_in_customer: WalkInCustomers = await walk_in_crud.get_by_id(
+    walk_in_customer: WalkInCustomers = await WalkInCustomerCRUD.get_by_id(
         db=db, id=customer_id
     )
     if not walk_in_customer or walk_in_customer.tenant_id != tenant_id:
         raise ValueError("Walk-in customer not found")
 
     try:
-        updated_customer = await walk_in_crud.update(
+        updated_customer = await WalkInCustomerCRUD.update(
             db=db,
             db_obj=walk_in_customer,
             name=data.name,
@@ -98,9 +95,8 @@ async def _get_walk_in_customer_or_raise(
     customer_id: UUID,
 ) -> WalkInCustomers:
     """Helper function to get walk-in customer and validate ownership"""
-    walk_in_crud = WalkInCustomerCRUD()
 
-    walk_in_customer: WalkInCustomers = await walk_in_crud.get_by_id(
+    walk_in_customer: WalkInCustomers = await WalkInCustomerCRUD.get_by_id(
         db=db, id=customer_id
     )
 
@@ -116,7 +112,6 @@ async def delete_walk_in_customer(
 ) -> None:
     """Delete a walk-in customer"""
 
-    walk_in_crud = WalkInCustomerCRUD()
 
     _: WalkInCustomers = await _get_walk_in_customer_or_raise(
         db=db,
@@ -125,7 +120,7 @@ async def delete_walk_in_customer(
     )
 
     try:
-        await walk_in_crud.delete(db=db, id=customer_id)
+        await WalkInCustomerCRUD.delete(db=db, id=customer_id)
         await db.commit()
     except Exception as e:
         await db.rollback()

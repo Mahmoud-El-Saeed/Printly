@@ -3,10 +3,8 @@ from app.models import Materials, MaterialTransactions
 
 
 class MaterialCRUD(BaseCRUD[Materials]):
-    def __init__(self):
-        super().__init__(Materials)
+    model = Materials
 
 
 class MaterialTransactionCRUD(BaseCRUD[MaterialTransactions]):
-    def __init__(self):
-        super().__init__(MaterialTransactions)
+    model = MaterialTransactions

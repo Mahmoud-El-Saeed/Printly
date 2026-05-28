@@ -23,11 +23,10 @@ async def create_material(
     material: MaterialCreate,
 ) -> MaterialResponse:
     """Create a new material for the tenant."""
-    material_crud = MaterialCRUD()
     material_model = material.model_dump()
 
     try:
-        new_material = await material_crud.create(
+        new_material = await MaterialCRUD.create(
             db, tenant_id=tenant_id, **material_model
         )
         await db.commit()
@@ -44,8 +43,7 @@ async def get_material(
     material_id: UUID,
 ) -> MaterialResponse:
     """Get details of a specific material."""
-    material_crud = MaterialCRUD()
-    material = await material_crud.get_by_id(db, material_id)
+    material = await MaterialCRUD.get_by_id(db, material_id)
     if not material or material.tenant_id != tenant_id or not material.is_active:
         raise ValueError("Material not found")
     return MaterialResponse.model_validate(material)
@@ -57,7 +55,6 @@ async def list_materials(
     request: MaterialsRequest,
 ) -> MaterialListResponse:
     """Get a paginated list of materials with optional filters."""
-    material_crud = MaterialCRUD()
     filters = {"tenant_id": tenant_id}
     if request.name is not None:
         filters["name"] = request.name
@@ -65,7 +62,7 @@ async def list_materials(
         filters["unit"] = request.unit
     filters["is_active"] = request.is_active
 
-    materials, total = await material_crud.get_list(
+    materials, total = await MaterialCRUD.get_list(
         db,
         filters=filters,
         offset=request.offset,
@@ -86,13 +83,12 @@ async def update_material(
     material_data: MaterialUpdate,
 ) -> MaterialResponse:
     """Update details of a specific material."""
-    material_crud = MaterialCRUD()
-    material = await material_crud.get_by_id(db, material_id)
+    material = await MaterialCRUD.get_by_id(db, material_id)
     if not material or material.tenant_id != tenant_id or not material.is_active:
         raise ValueError("Material not found")
     update_data = material_data.model_dump(exclude_unset=True, exclude_none=True)
     try:
-        updated_material = await material_crud.update(db, material, **update_data)
+        updated_material = await MaterialCRUD.update(db, material, **update_data)
         await db.commit()
         return MaterialResponse.model_validate(updated_material)
     except Exception as e:
@@ -106,17 +102,15 @@ async def delete_material(
     material_id: UUID,
 ) -> None:
     """Delete a specific material."""
-    material_crud = MaterialCRUD()
-    transaction_crud = MaterialTransactionCRUD()
 
-    material = await material_crud.get_by_id(db, material_id)
+    material = await MaterialCRUD.get_by_id(db, material_id)
     if not material or material.tenant_id != tenant_id or not material.is_active:
         raise ValueError("Material not found")
-    has_transactions = await transaction_crud.exists(db, material_id=material_id)
+    has_transactions = await MaterialTransactionCRUD.exists(db, material_id=material_id)
 
     if has_transactions:
         try:
-            await material_crud.update(db=db, db_obj=material, is_active=False)
+            await MaterialCRUD.update(db=db, db_obj=material, is_active=False)
             await db.commit()
             return
         except Exception as e:
@@ -124,7 +118,7 @@ async def delete_material(
             raise Exception(f"Error deactivating material: {str(e)}")
     else:
         try:
-            _ = await material_crud.delete(db, material_id)
+            _ = await MaterialCRUD.delete(db, material_id)
             await db.commit()
             return
         except Exception as e:
@@ -140,14 +134,12 @@ async def create_transaction(
     transaction: TransactionCreate,
 ) -> TransactionResponse:
     """Create a new material transaction."""
-    material_transaction_crud = MaterialTransactionCRUD()
-    material_crud = MaterialCRUD()
     transaction_model = transaction.model_dump()
-    material = await material_crud.get_by_id(db, material_id)
+    material = await MaterialCRUD.get_by_id(db, material_id)
     if not material or material.tenant_id != tenant_id or not material.is_active:
         raise ValueError("Material not found")
     try:
-        new_transaction = await material_transaction_crud.create(
+        new_transaction = await MaterialTransactionCRUD.create(
             db,
             tenant_id=tenant_id,
             material_id=material_id,
@@ -170,7 +162,7 @@ async def create_transaction(
 
         if new_count < 0:
             raise ValueError("Resulting stock cannot be negative")
-        await material_crud.update(db=db, db_obj=material, current_stock=new_count)
+        await MaterialCRUD.update(db=db, db_obj=material, current_stock=new_count)
 
         await db.commit()
         return TransactionResponse.model_validate(new_transaction)
@@ -189,9 +181,12 @@ async def get_transaction(
     transaction_id: UUID,
 ) -> TransactionResponse:
     """Get details of a specific material transaction."""
-    material_transaction_crud = MaterialTransactionCRUD()
-    transaction = await material_transaction_crud.get_by_id(db, transaction_id)
-    if not transaction or transaction.tenant_id != tenant_id or transaction.material_id != material_id:
+    transaction = await MaterialTransactionCRUD.get_by_id(db, transaction_id)
+    if (
+        not transaction
+        or transaction.tenant_id != tenant_id
+        or transaction.material_id != material_id
+    ):
         raise ValueError("Transaction not found")
     return TransactionResponse.model_validate(transaction)
 
@@ -203,14 +198,13 @@ async def list_transactions(
     request: TransactionsRequest,
 ) -> TransactionListResponse:
     """Get a paginated list of material transactions with optional filters."""
-    material_transaction_crud = MaterialTransactionCRUD()
     filters = {"tenant_id": tenant_id, "material_id": material_id}
     if request.transaction_type is not None:
         filters["transaction_type"] = request.transaction_type
     if request.order_id is not None:
         filters["order_id"] = request.order_id
 
-    transactions, total = await material_transaction_crud.get_list(
+    transactions, total = await MaterialTransactionCRUD.get_list(
         db,
         filters=filters,
         offset=request.offset,

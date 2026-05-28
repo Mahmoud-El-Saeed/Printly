@@ -7,23 +7,24 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class SubscriptionCRUD(BaseCRUD[TenantSubscriptions]):
-    def __init__(self):
-        super().__init__(TenantSubscriptions)
+    model = TenantSubscriptions
 
+    @classmethod
     async def get_active_by_tenant_id(
-        self, db: AsyncSession, tenant_id: UUID
+        cls, db: AsyncSession, tenant_id: UUID
     ) -> TenantSubscriptions | None:
         """Get active subscription for a tenant"""
-        stmt = select(self.model).where(
-            self.model.tenant_id == tenant_id,
-            self.model.is_active,
+        stmt = select(cls.model).where(
+            cls.model.tenant_id == tenant_id,
+            cls.model.is_active,
         )
         result = await db.execute(stmt)
         return result.scalar_one_or_none()
 
-    async def is_expired(self, db: AsyncSession, tenant_id: UUID) -> bool:
+    @classmethod
+    async def is_expired(cls, db: AsyncSession, tenant_id: UUID) -> bool:
         """Check if a subscription is expired"""
-        subscription = await self.get_active_by_tenant_id(db, tenant_id)
+        subscription = await cls.get_active_by_tenant_id(db, tenant_id)
         if subscription is None:
             return False
         return subscription.expires_at < datetime.now(timezone.utc)

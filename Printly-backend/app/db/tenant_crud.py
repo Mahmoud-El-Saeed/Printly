@@ -4,9 +4,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class TenantCRUD(BaseCRUD[Tenants]):
-    def __init__(self):
-        super().__init__(Tenants)
+    model = Tenants
 
-    async def get_by_slug(self, db: AsyncSession, slug: str) -> Tenants | None:
+    @classmethod
+    async def get_by_slug(cls, db: AsyncSession, slug: str) -> Tenants | None:
         """Get one tenant by slug"""
-        return await self.get_by_field(db, "slug", slug)
+        return await cls.get_by_field(db, "slug", slug)

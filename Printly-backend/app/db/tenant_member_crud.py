@@ -7,18 +7,18 @@ from app.models import TenantMembers
 
 
 class TenantMemberCRUD(BaseCRUD[TenantMembers]):
-    def __init__(self):
-        super().__init__(TenantMembers)
+    model = TenantMembers
     
+    @classmethod
     async def get_tenant_member(
-        self,
+        cls,
         db: AsyncSession,
         tenant_id: UUID,
         customer_user_id: UUID
     ) -> TenantMembers | None:
-        query = select(self.model).where(
-            self.model.customer_user_id == customer_user_id,
-            self.model.tenant_id == tenant_id
+        query = select(cls.model).where(
+            cls.model.customer_user_id == customer_user_id,
+            cls.model.tenant_id == tenant_id
         )
         result = await db.execute(query)
         return result.scalar_one_or_none()

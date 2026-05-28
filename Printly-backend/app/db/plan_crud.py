@@ -5,15 +5,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class PlanCRUD(BaseCRUD[SubscriptionPlans]):
-    def __init__(self):
-        super().__init__(SubscriptionPlans)
+    model = SubscriptionPlans
 
+    @classmethod
     async def get_by_name(
-        self, db: AsyncSession, name: str
+        cls, db: AsyncSession, name: str
     ) -> SubscriptionPlans | None:
-        stmt = select(self.model).where(
-            self.model.name == name,
-            self.model.is_active,
+        stmt = select(cls.model).where(
+            cls.model.name == name,
+            cls.model.is_active,
         )
         result = await db.execute(stmt)
         return result.scalar_one_or_none()

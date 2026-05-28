@@ -5,7 +5,6 @@ from uuid import UUID
 from app.models import (
     Users,
     Tenants,
-    TenantSubscriptions,  # noqa: F401
     RefreshTokens,
 )
 from app.core.security import (
@@ -39,12 +38,7 @@ async def register_shop_owner(
 ) -> ShopOwnerResponse:
     """Register a new shop owner and create a tenant"""
 
-    user_crud = UserCRUD()
-    tenant_crud = TenantCRUD()
-    subscription_crud = SubscriptionCRUD()
-    plan_crud = PlanCRUD()
-
-    user: Users | None = await user_crud.get_by_email(db, email=data.email)
+    user: Users | None = await UserCRUD.get_by_email(db, email=data.email)
     if user:
         raise ValueError("Email already registered")
 
@@ -52,7 +46,7 @@ async def register_shop_owner(
     slug = re.sub(r"[\s]+", "-", slug).strip("-")
 
     try:
-        tenant: Tenants = await tenant_crud.create(
+        tenant: Tenants = await TenantCRUD.create(
             db=db,
             name=data.shop_name,
             slug=slug,
@@ -61,7 +55,7 @@ async def register_shop_owner(
             address=data.shop_address,
         )
 
-        user: Users = await user_crud.create(
+        user: Users = await UserCRUD.create(
             db=db,
             tenant_id=tenant.id,
             email=data.email,
@@ -70,8 +64,8 @@ async def register_shop_owner(
             role=UserRole.SHOP_OWNER,
         )
 
-        free_plan = await plan_crud.get_by_name(db=db, name="Free")
-        await subscription_crud.create(
+        free_plan = await PlanCRUD.get_by_name(db=db, name="Free")
+        await SubscriptionCRUD.create(
             db=db,
             tenant_id=tenant.id,
             plan_id=free_plan.id,
@@ -97,13 +91,11 @@ async def register_customer(
 ) -> CustomerResponse:
     """Register a new customer"""
 
-    user_crud = UserCRUD()
-
-    user: Users | None = await user_crud.get_by_email(db, email=data.email)
+    user: Users | None = await UserCRUD.get_by_email(db, email=data.email)
     if user:
         raise ValueError("Email already registered")
     try:
-        user: Users = await user_crud.create(
+        user: Users = await UserCRUD.create(
             db=db,
             email=data.email,
             full_name=data.full_name,
@@ -124,10 +116,7 @@ async def register_customer(
 async def login(db: AsyncSession, data: LoginRequest) -> TokenResponse:
     """Authenticate user and return access and refresh tokens"""
 
-    user_crud = UserCRUD()
-    refresh_crud = RefreshCRUD()
-
-    user: Users | None = await user_crud.get_by_email(db, email=data.email)
+    user: Users | None = await UserCRUD.get_by_email(db, email=data.email)
     if not user or not verify_password(data.password, user.password_hash):
         raise ValueError("Invalid email or password")
     if not user.is_active:
@@ -143,7 +132,7 @@ async def login(db: AsyncSession, data: LoginRequest) -> TokenResponse:
     )
     refresh_token = create_refresh_token()
     try:
-        await refresh_crud.create(
+        await RefreshCRUD.create(
             db=db,
             user_id=user.id,
             token=refresh_token,
@@ -163,9 +152,8 @@ async def login(db: AsyncSession, data: LoginRequest) -> TokenResponse:
 
 async def _get_valid_refresh_token(
     db: AsyncSession, token_str: str
-) -> tuple[RefreshTokens | None, RefreshCRUD | None]:
-    refresh_crud = RefreshCRUD()
-    refresh_token: RefreshTokens | None = await refresh_crud.get_by_field(
+) -> RefreshTokens | None:
+    refresh_token: RefreshTokens | None = await RefreshCRUD.get_by_field(
         db=db, field="token", value=token_str
     )
 
@@ -174,19 +162,18 @@ async def _get_valid_refresh_token(
         or refresh_token.is_revoked
         or refresh_token.expires_at < datetime.now(timezone.utc)
     ):
-        return None, None
+        return None
 
-    return refresh_token, refresh_crud
+    return refresh_token
 
 
 async def refresh_tokens(db: AsyncSession, data: RefreshRequest) -> TokenResponse:
     """Refresh access token using a valid refresh token"""
 
-    refresh_token, refresh_crud = await _get_valid_refresh_token(db, data.refresh_token)
-    if not refresh_token or not refresh_crud:
+    refresh_token = await _get_valid_refresh_token(db, data.refresh_token)
+    if not refresh_token:
         raise ValueError("Invalid or expired refresh token")
-    user_crud = UserCRUD()
-    user: Users | None = await user_crud.get_by_id(db=db, id=refresh_token.user_id)
+    user: Users | None = await UserCRUD.get_by_id(db=db, id=refresh_token.user_id)
     if not user or not user.is_active:
         raise ValueError("User account is inactive")
 
@@ -201,12 +188,12 @@ async def refresh_tokens(db: AsyncSession, data: RefreshRequest) -> TokenRespons
     new_refresh_token = create_refresh_token()
 
     try:
-        await refresh_crud.update(
+        await RefreshCRUD.update(
             db=db,
             db_obj=refresh_token,
             is_revoked=True,
         )
-        await refresh_crud.create(
+        await RefreshCRUD.create(
             db=db,
             user_id=user.id,
             token=new_refresh_token,
@@ -242,8 +229,7 @@ async def verify_current_user(db: AsyncSession, token: str) -> TokenData:
         user_id = payload.get("user_id")
         if not user_id:
             raise ValueError("Invalid token payload")
-        user_crud = UserCRUD()
-        user: Users | None = await user_crud.get_active_by_id(
+        user: Users | None = await UserCRUD.get_active_by_id(
             db=db, user_id= UUID(user_id)
         )
         if not user or not user.is_active:

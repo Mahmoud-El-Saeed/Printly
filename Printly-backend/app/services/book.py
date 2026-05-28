@@ -25,27 +25,23 @@ async def create_book(
 ) -> BookResponse:
     """Create a new book for the given tenant."""
 
-    book_crud = BookCRUD()
-    plan_crud = PlanCRUD()
-    subscription_crud = SubscriptionCRUD()
-    user_crud = UserCRUD()
     file_controller = FileController()
     file_path = None
     
     if book_data.customer_id:
-        customer = await user_crud.get_by_id(db, book_data.customer_id)
+        customer = await UserCRUD.get_by_id(db, book_data.customer_id)
         if not customer or customer.tenant_id != tenant_id:
             raise ValueError("Customer not found in your tenant")
 
     if book_data.file:
-        active_sub = await subscription_crud.get_active_by_tenant_id(db, tenant_id)
+        active_sub = await SubscriptionCRUD.get_active_by_tenant_id(db, tenant_id)
         if not active_sub:
             raise ValueError("No active subscription found")
-        plan = await plan_crud.get_by_id(db, active_sub.plan_id)
+        plan = await PlanCRUD.get_by_id(db, active_sub.plan_id)
         if not plan:
             raise ValueError("Subscription plan not found")
         max_books = plan.features.get("max_books", 20)
-        current_book_count = await book_crud.count_stored_books(db, tenant_id=tenant_id)
+        current_book_count = await BookCRUD.count_stored_books(db, tenant_id=tenant_id)
         if current_book_count >= max_books:
             raise ValueError("Maximum number of books reached for the current plan remove some books or upgrade your plan to add more")
         if not file_controller.verify_file_type(book_data.file.filename, book_data.file.content_type):
@@ -59,7 +55,7 @@ async def create_book(
         except Exception as e:
             raise ValueError("Failed to save file") from e
     try:
-        new_book = await book_crud.create(
+        new_book = await BookCRUD.create(
             db=db,
             tenant_id=tenant_id,
             customer_id=book_data.customer_id,
@@ -87,12 +83,10 @@ async def upload_book_file(
     file: UploadFile,
 ) -> BookResponse:
     """Upload or replace the file associated with a book."""
-    book_crud = BookCRUD()
-    plan_crud = PlanCRUD()
-    subscription_crud = SubscriptionCRUD()
+
     file_controller = FileController()
 
-    book = await book_crud.get_by_id(db, book_id)
+    book = await BookCRUD.get_by_id(db, book_id)
     if not book or book.tenant_id != tenant_id:
         raise ValueError("Book not found")
 
@@ -108,14 +102,14 @@ async def upload_book_file(
             await file_controller.delete_file(book.file_url)
             remove_file = True
         
-        active_sub = await subscription_crud.get_active_by_tenant_id(db, tenant_id)
+        active_sub = await SubscriptionCRUD.get_active_by_tenant_id(db, tenant_id)
         if not active_sub:
             raise ValueError("No active subscription found")
-        plan = await plan_crud.get_by_id(db, active_sub.plan_id)
+        plan = await PlanCRUD.get_by_id(db, active_sub.plan_id)
         if not plan:
             raise ValueError("Subscription plan not found")
         max_books = plan.features.get("max_books", 20)
-        current_book_count = await book_crud.count_stored_books(db, tenant_id=tenant_id) - (1 if remove_file else 0) 
+        current_book_count = await BookCRUD.count_stored_books(db, tenant_id=tenant_id) - (1 if remove_file else 0) 
         if current_book_count >= max_books:
             raise ValueError("Maximum number of books reached for the current plan remove some books or upgrade your plan to add more")
 
@@ -124,7 +118,7 @@ async def upload_book_file(
         file_extension = file_controller.get_file_extension(file.filename)
         file_path = file_controller.return_file_path(str(tenant_id),  str(uuid4()) + file_extension)
         file_size = await file_controller.save_file(file_path, file)
-        updated_book = await book_crud.update(
+        updated_book = await BookCRUD.update(
             db,
             book,
             file_url=file_path,
@@ -144,10 +138,9 @@ async def download_book_file(
     book_id: UUID,
 ) -> FileResponse:
     """Download the file associated with a book."""
-    book_crud = BookCRUD()
     file_controller = FileController()
 
-    book: Books | None = await book_crud.get_by_id(db, book_id)
+    book: Books | None = await BookCRUD.get_by_id(db, book_id)
 
     if not book or book.tenant_id != tenant_id:
         raise ValueError("Book not found")
@@ -169,8 +162,7 @@ async def get_book(
     book_id: UUID,
 ) -> BookResponse:
     """Get details of a specific book."""
-    book_crud = BookCRUD()
-    book = await book_crud.get_by_id(db, book_id)
+    book = await BookCRUD.get_by_id(db, book_id)
     if not book or book.tenant_id != tenant_id:
         raise ValueError("Book not found")
     return BookResponse.model_validate(book)
@@ -182,8 +174,7 @@ async def list_books(
     request: BooksRequest,
 ) -> BookListResponse:
     """List books for a tenant with optional search and pagination."""
-    book_crud = BookCRUD()
-    books, total = await book_crud.search_books(
+    books, total = await BookCRUD.search_books(
         db=db,
         tenant_id=tenant_id,
         title=request.title,
@@ -207,13 +198,12 @@ async def update_book(
     book_data: BookUpdate,
 ) -> BookResponse:
     """Update details of a specific book."""
-    book_crud = BookCRUD()
-    book = await book_crud.get_by_id(db, book_id)
+    book = await BookCRUD.get_by_id(db, book_id)
     if not book or book.tenant_id != tenant_id:
         raise ValueError("Book not found")
 
     update_data = book_data.model_dump(exclude_unset=True, exclude_none=True)
-    updated_book = await book_crud.update(db, book, **update_data)
+    updated_book = await BookCRUD.update(db, book, **update_data)
     await db.commit()
     return BookResponse.model_validate(updated_book)
 
@@ -224,10 +214,9 @@ async def delete_book_file(
     book_id: UUID,
 ) -> None:
     """Delete the file associated with a book."""
-    book_crud = BookCRUD()
     file_controller = FileController()
 
-    book = await book_crud.get_by_id(db, book_id)
+    book = await BookCRUD.get_by_id(db, book_id)
     if not book or book.tenant_id != tenant_id:
         raise ValueError("Book not found")
     if not book.file_url:
@@ -236,7 +225,7 @@ async def delete_book_file(
     try:
         if book.file_url and os.path.exists(book.file_url):
             await file_controller.delete_file(book.file_url)
-        await book_crud.update(db, book, file_url=None, file_size=None)
+        await BookCRUD.update(db, book, file_url=None, file_size=None)
         await db.commit()
     except Exception as e:
         await db.rollback()
@@ -249,17 +238,16 @@ async def delete_book(
     book_id: UUID,
 ) -> None:
     """Delete a book and its associated file."""
-    book_crud = BookCRUD()
     file_controller = FileController()
 
-    book = await book_crud.get_by_id(db, book_id)
+    book = await BookCRUD.get_by_id(db, book_id)
     if not book or book.tenant_id != tenant_id:
         raise ValueError("Book not found")
 
     try:
         if book.file_url and os.path.exists(book.file_url):
             await file_controller.delete_file(book.file_url)
-        await book_crud.delete(db, book_id)
+        await BookCRUD.delete(db, book_id)
         await db.commit()
     except Exception as e:
         await db.rollback()

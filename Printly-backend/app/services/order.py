@@ -36,11 +36,7 @@ async def create_order(
     order_create: OrderCreate,
 ) -> OrderResponse:
     """Createing a new Order."""
-    user_crud = UserCRUD()
-    walk_in_customer_crud = WalkInCustomerCRUD()
-    order_crud = OrderCRUD()
-    order_item_crud = OrderItemsCRUD()
-    book_crud = BookCRUD()
+
 
     # Validate customer information
     if order_create.customer_id is None and order_create.walk_in_customer_id is None:
@@ -58,13 +54,13 @@ async def create_order(
     
     # Validate and fetch customer or walk-in customer
     if order_create.customer_id:
-        customer: Users = await user_crud.get_by_id(db=db, id=order_create.customer_id)
+        customer: Users = await UserCRUD.get_by_id(db=db, id=order_create.customer_id)
         if not customer or customer.tenant_id != tenant_id:
             raise ValueError("Customer not found.")
         customer_id = customer.id
     
     if order_create.walk_in_customer_id:
-        walk_in_customer: WalkInCustomers = await walk_in_customer_crud.get_by_id(
+        walk_in_customer: WalkInCustomers = await WalkInCustomerCRUD.get_by_id(
             db=db, id=order_create.walk_in_customer_id
         )
         if not walk_in_customer or walk_in_customer.tenant_id != tenant_id:
@@ -75,7 +71,7 @@ async def create_order(
 
     books_ids = [item.book_id for item in order_create.items if item.book_id]
     if books_ids:
-        books = await book_crud.get_books_by_ids(db, books_ids)
+        books = await BookCRUD.get_books_by_ids(db, books_ids)
         books_dict = {book.id: book for book in books if book.tenant_id == tenant_id}
         for item in order_create.items:
             if item.book_id and item.book_id not in books_dict:
@@ -106,7 +102,7 @@ async def create_order(
         total_amount += item_subtotal
 
     try:
-        new_order = await order_crud.create(
+        new_order = await OrderCRUD.create(
             db,
             tenant_id=tenant_id,
             customer_id=customer_id if order_create.customer_id else None,
@@ -125,7 +121,7 @@ async def create_order(
             OrderItems(order_id=new_order.id, **item)
             for item in order_item_data
         ]
-        await order_item_crud.batch_create(db, items_to_create)
+        await OrderItemsCRUD.batch_create(db, items_to_create)
             
         
         await db.commit()
@@ -142,8 +138,7 @@ async def get_order(
     order_id: UUID,
 ) -> OrderResponse:
     """Retrieve an order by its ID."""
-    order_crud = OrderCRUD()
-    order = await order_crud.get_by_id(db, order_id)
+    order = await OrderCRUD.get_by_id(db, order_id)
     if not order or order.tenant_id != tenant_id:
         raise ValueError("Order not found")
     return OrderResponse.model_validate(order)
@@ -156,8 +151,7 @@ async def update_order(
     order_update: OrderUpdate,
 ) -> OrderResponse:
     """Update an existing order."""
-    order_crud = OrderCRUD()
-    existing_order = await order_crud.get_by_id(db, order_id)
+    existing_order = await OrderCRUD.get_by_id(db, order_id)
     if (
         not existing_order
         or existing_order.tenant_id != tenant_id
@@ -171,7 +165,7 @@ async def update_order(
         raise ValueError("No valid fields to update")
 
     try:
-        updated_order = await order_crud.update(
+        updated_order = await OrderCRUD.update(
             db=db, db_obj=existing_order, **update_data
         )
         await db.commit()
@@ -196,8 +190,7 @@ async def update_order_status(
     status_update: OrderStatusUpdate,
 ) -> OrderResponse:
     """Update the status of an existing order."""
-    order_crud = OrderCRUD()
-    existing_order = await order_crud.get_by_id(db, order_id)
+    existing_order = await OrderCRUD.get_by_id(db, order_id)
     if not existing_order or existing_order.tenant_id != tenant_id:
         raise ValueError("Cannot update a cancelled or delivered order")
 
@@ -213,7 +206,7 @@ async def update_order_status(
             f"Invalid status transition from '{current_status}' to '{new_status}'"
         )
     try:
-        updated_order = await order_crud.update(
+        updated_order = await OrderCRUD.update(
             db=db, db_obj=existing_order, status=new_status
         )
         await db.commit()
@@ -230,8 +223,7 @@ async def delete_order(
     order_id: UUID,
 ) -> None:
     """Delete an existing order."""
-    order_crud = OrderCRUD()
-    existing_order = await order_crud.get_by_id(db, order_id)
+    existing_order = await OrderCRUD.get_by_id(db, order_id)
     
     if not existing_order or existing_order.tenant_id != tenant_id:
         raise ValueError("Order not found")
@@ -240,7 +232,7 @@ async def delete_order(
         raise ValueError("Can only delete NEW or CANCELLED orders")
     
     try:
-        await order_crud.delete(db, id=order_id)
+        await OrderCRUD.delete(db, id=order_id)
         await db.commit()
     except Exception as e:
         await db.rollback()
@@ -254,9 +246,8 @@ async def list_orders(
     orders_request: OrdersRequest,
 ) -> OrdersListResponse:
     """List orders with optional filtering and pagination."""
-    order_crud = OrderCRUD()
     
-    orders, total_count = await order_crud.get_orders(
+    orders, total_count = await OrderCRUD.get_orders(
         db=db,
         tenant_id=tenant_id,
         customer_id=orders_request.customer_id,

@@ -8,11 +8,11 @@ from app.models import Orders, OrderItems
 from app.enums import OrderStatus
 
 class OrderCRUD(BaseCRUD[Orders]):
-    def __init__(self):
-        super().__init__(Orders)
+    model = Orders
 
+    @classmethod
     async def get_orders(
-        self,
+        cls,
         db: AsyncSession,
         tenant_id: UUID,
         customer_id: UUID | None = None,
@@ -64,8 +64,9 @@ class OrderCRUD(BaseCRUD[Orders]):
 
         return orders, total_count
     
+    @classmethod
     async def get_unpaid_orders(
-        self,
+        cls,
         db: AsyncSession,
         tenant_id: UUID,
         customer_id: UUID
@@ -84,9 +85,9 @@ class OrderCRUD(BaseCRUD[Orders]):
 
 
 class OrderItemsCRUD(BaseCRUD[OrderItems]):
-    def __init__(self):
-        super().__init__(OrderItems)
+    model = OrderItems
 
+    @classmethod
     async def batch_create(self, db: AsyncSession, items_data: list[OrderItems]):
         """Batch create order items."""
         db.add_all(items_data)

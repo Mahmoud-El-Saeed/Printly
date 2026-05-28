@@ -24,11 +24,8 @@ async def create_payment(
     received_by: UUID,
     payment_create: PaymentCreate,
 ) -> PaymentResponse:
-    payment_crud = PaymentCRUD()
-    order_crud = OrderCRUD()
-    tenant_member_crud = TenantMemberCRUD()
 
-    order = await order_crud.get_by_id(db, payment_create.order_id)
+    order = await OrderCRUD.get_by_id(db, payment_create.order_id)
     if not order or order.tenant_id != tenant_id:
         raise ValueError("Order not found or does not belong to the tenant.")
     if order.status == OrderStatus.CANCELLED:
@@ -44,7 +41,7 @@ async def create_payment(
     if payment_create.payment_method == PaymentMethod.BALANCE:
         if order.walk_in_customer_id:
             raise ValueError("Cannot use balance payment method for walk-in customers.")
-        customer = await tenant_member_crud.get_tenant_member(
+        customer = await TenantMemberCRUD.get_tenant_member(
             db, tenant_id, order.customer_id
         )
         if not customer:
@@ -79,7 +76,7 @@ async def create_payment(
         if payment_create.amount > remaining_amount:
             excess_amount = payment_create.amount - remaining_amount
             if order.customer_id and payment_create.add_to_balance:
-                customer = await tenant_member_crud.get_tenant_member(
+                customer = await TenantMemberCRUD.get_tenant_member(
                     db, tenant_id, order.customer_id
                 )
                 if not customer:
@@ -95,10 +92,10 @@ async def create_payment(
         payment_data = payment_create.model_dump()
         payment_data["excess_amount"] = excess_amount
         payment_data["split_cash_amount"] = split_cash_to_store
-        payment = await payment_crud.create(
+        payment = await PaymentCRUD.create(
             db, tenant_id=tenant_id, **payment_data, received_by=received_by
         )
-        await order_crud.update(db=db, db_obj=order, paid_amount=new_paid)
+        await OrderCRUD.update(db=db, db_obj=order, paid_amount=new_paid)
         await db.commit()
         return PaymentResponse.model_validate(payment)
     except Exception as e:
@@ -110,8 +107,8 @@ async def get_payment(
     db: AsyncSession, tenant_id: UUID, payment_id: UUID
 ) -> PaymentResponse:
     """Get a specific payment."""
-    payment_crud = PaymentCRUD()
-    payment = await payment_crud.get_by_id(db, payment_id)
+
+    payment = await PaymentCRUD.get_by_id(db, payment_id)
     if not payment or payment.tenant_id != tenant_id:
         raise ValueError("Payment not found or does not belong to the tenant.")
     return PaymentResponse.model_validate(payment)
@@ -123,7 +120,6 @@ async def list_payments(
     payment_request: PaymentRequest,
 ) -> PaymentListResponse:
     """List all payments for a tenant, optionally filtered by order."""
-    payment_crud = PaymentCRUD()
 
     filters = {"tenant_id": tenant_id}
     if payment_request.order_id:
@@ -131,7 +127,7 @@ async def list_payments(
     if payment_request.payment_method:
         filters["payment_method"] = payment_request.payment_method
 
-    payments, total = await payment_crud.get_list(
+    payments, total = await PaymentCRUD.get_list(
         db=db,
         filters=filters,
         offset=payment_request.offset,
@@ -150,9 +146,6 @@ async def update_payment(
     payment_id: UUID,
     payment_update: PaymentUpdate,
 ) -> PaymentResponse:
-    payment_crud = PaymentCRUD()
-    order_crud = OrderCRUD()
-    tenant_member_crud = TenantMemberCRUD()
 
     payment_update_data = payment_update.model_dump(
         exclude_unset=True, exclude_none=True
@@ -160,11 +153,11 @@ async def update_payment(
     if not payment_update_data:
         raise ValueError("No valid fields provided for update.")
 
-    payment = await payment_crud.get_by_id(db, payment_id)
+    payment = await PaymentCRUD.get_by_id(db, payment_id)
     if not payment or payment.tenant_id != tenant_id:
         raise ValueError("Payment not found or does not belong to the tenant.")
 
-    order = await order_crud.get_by_id(db, payment.order_id)
+    order = await OrderCRUD.get_by_id(db, payment.order_id)
     if not order:
         raise ValueError("Associated order not found.")
     if order.status == OrderStatus.CANCELLED:
@@ -179,9 +172,9 @@ async def update_payment(
             "add_to_balance" in payment_update_data
             and payment.add_to_balance != payment_update_data["add_to_balance"]
         )
-    
+
         if not amount_changed and not method_changed and not balance_flag_changed:
-            updated_payment = await payment_crud.update(
+            updated_payment = await PaymentCRUD.update(
                 db=db, db_obj=payment, **payment_update_data
             )
             await db.commit()
@@ -199,7 +192,7 @@ async def update_payment(
             )
 
         if payment.payment_method == PaymentMethod.BALANCE and order.customer_id:
-            customer = await tenant_member_crud.get_tenant_member(
+            customer = await TenantMemberCRUD.get_tenant_member(
                 db, tenant_id, order.customer_id
             )
             if customer:
@@ -208,7 +201,7 @@ async def update_payment(
                 else:
                     customer.balance += payment.amount
         elif payment.excess_amount > 0 and payment.add_to_balance and order.customer_id:
-            customer = await tenant_member_crud.get_tenant_member(
+            customer = await TenantMemberCRUD.get_tenant_member(
                 db, tenant_id, order.customer_id
             )
             if customer:
@@ -228,7 +221,7 @@ async def update_payment(
         if new_method == PaymentMethod.BALANCE:
             if order.walk_in_customer_id:
                 raise ValueError("Cannot use balance for walk-in customers.")
-            customer = await tenant_member_crud.get_tenant_member(
+            customer = await TenantMemberCRUD.get_tenant_member(
                 db, tenant_id, order.customer_id
             )
             if not customer:
@@ -253,7 +246,7 @@ async def update_payment(
             if new_amount > remaining:
                 new_excess = new_amount - remaining
                 if order.customer_id and new_add_to_balance:
-                    customer = await tenant_member_crud.get_tenant_member(
+                    customer = await TenantMemberCRUD.get_tenant_member(
                         db, tenant_id, order.customer_id
                     )
                     if customer:
@@ -261,13 +254,13 @@ async def update_payment(
                 new_paid = order.total_amount
             else:
                 new_paid = order.paid_amount + new_amount
-        
+
         order.paid_amount = new_paid
 
         payment_update_data["excess_amount"] = new_excess
         payment_update_data["split_cash_amount"] = new_split_cash_to_store
 
-        updated_payment = await payment_crud.update(
+        updated_payment = await PaymentCRUD.update(
             db=db, db_obj=payment, **payment_update_data
         )
         await db.commit()
@@ -283,15 +276,12 @@ async def delete_payment(
     tenant_id: UUID,
     payment_id: UUID,
 ) -> None:
-    payment_crud = PaymentCRUD()
-    order_crud = OrderCRUD()
-    tenant_member_crud = TenantMemberCRUD()
 
-    payment = await payment_crud.get_by_id(db, payment_id)
+    payment = await PaymentCRUD.get_by_id(db, payment_id)
     if not payment or payment.tenant_id != tenant_id:
         raise ValueError("Payment not found or does not belong to the tenant.")
 
-    order = await order_crud.get_by_id(db, payment.order_id)
+    order = await OrderCRUD.get_by_id(db, payment.order_id)
     if not order:
         raise ValueError("Associated order not found.")
     if order.status == OrderStatus.CANCELLED:
@@ -307,7 +297,7 @@ async def delete_payment(
         order.paid_amount -= contribution
 
         if payment.payment_method == PaymentMethod.BALANCE and order.customer_id:
-            customer = await tenant_member_crud.get_tenant_member(
+            customer = await TenantMemberCRUD.get_tenant_member(
                 db, tenant_id, order.customer_id
             )
             if customer:
@@ -316,13 +306,13 @@ async def delete_payment(
                 else:
                     customer.balance += payment.amount
         elif payment.excess_amount > 0 and payment.add_to_balance and order.customer_id:
-            customer = await tenant_member_crud.get_tenant_member(
+            customer = await TenantMemberCRUD.get_tenant_member(
                 db, tenant_id, order.customer_id
             )
             if customer:
                 customer.balance -= payment.excess_amount
 
-        await payment_crud.delete(db, id=payment_id)
+        await PaymentCRUD.delete(db, id=payment_id)
         await db.commit()
 
     except Exception as e:
@@ -337,17 +327,14 @@ async def settle_payments_for_customer(
     settle_payment_create: SettlePaymentCreate,
 ) -> SettlePaymentResponse:
     """Settle all unpaid orders for a customer with a single payment."""
-    order_crud = OrderCRUD()
-    payment_crud = PaymentCRUD()
-    tenant_member_crud = TenantMemberCRUD()
 
-    customer = await tenant_member_crud.get_tenant_member(
+    customer = await TenantMemberCRUD.get_tenant_member(
         db, tenant_id, settle_payment_create.customer_id
     )
     if not customer:
         raise ValueError("Customer not found or does not belong to the tenant.")
 
-    unpaid_orders = await order_crud.get_unpaid_orders(
+    unpaid_orders = await OrderCRUD.get_unpaid_orders(
         db, tenant_id, settle_payment_create.customer_id
     )
     if not unpaid_orders:
@@ -376,12 +363,12 @@ async def settle_payments_for_customer(
 
             new_paid = order.paid_amount + payment_amount
 
-            await order_crud.update(db=db, db_obj=order, paid_amount=new_paid)
+            await OrderCRUD.update(db=db, db_obj=order, paid_amount=new_paid)
             remaining -= payment_amount
 
             payments.append(payment)
 
-        payments_items = await payment_crud.batch_create(db=db, items_data=payments)
+        payments_items = await PaymentCRUD.batch_create(db=db, items_data=payments)
         added_to_balance = Decimal("0")
         if remaining > 0:
             customer.balance += remaining
@@ -405,14 +392,12 @@ async def get_customer_balance(
     db: AsyncSession, tenant_id: UUID, customer_id: UUID
 ) -> CustomerBalanceResponse:
     """Get the current balance for a customer."""
-    tenant_member_crud = TenantMemberCRUD()
-    order_crud = OrderCRUD()
 
-    customer = await tenant_member_crud.get_tenant_member(db, tenant_id, customer_id)
+    customer = await TenantMemberCRUD.get_tenant_member(db, tenant_id, customer_id)
     if not customer:
         raise ValueError("Customer not found or does not belong to the tenant.")
 
-    unpaid_orders = await order_crud.get_unpaid_orders(db, tenant_id, customer_id)
+    unpaid_orders = await OrderCRUD.get_unpaid_orders(db, tenant_id, customer_id)
     unpaid_total = sum(
         order.total_amount - order.paid_amount for order in unpaid_orders
     )
