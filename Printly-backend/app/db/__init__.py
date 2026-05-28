@@ -11,6 +11,7 @@ from .pricing_crud import PricingRuleCRUD, CustomerPricingCRUD
 from .order_crud import OrderCRUD, OrderItemsCRUD
 from .payment_crud import PaymentCRUD
 from .tenant_member_crud import TenantMemberCRUD
+from .expense_crud import ExpenseCRUD
 
 __all__ = [
     "BaseCRUD",
@@ -29,4 +30,5 @@ __all__ = [
     "OrderItemsCRUD",
     "PaymentCRUD",
     "TenantMemberCRUD",
+    "ExpenseCRUD",
 ]

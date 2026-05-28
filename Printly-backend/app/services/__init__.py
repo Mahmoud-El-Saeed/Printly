@@ -66,7 +66,13 @@ from .payment import (
     settle_payments_for_customer,
     get_customer_balance,
 )
-
+from .expense import (
+    create_expense,
+    get_expense_by_id,
+    update_expense,
+    delete_expense,
+    get_expenses,
+)
 
 __all__ = [
     "register_shop_owner",
@@ -118,4 +124,9 @@ __all__ = [
     "delete_payment",
     "settle_payments_for_customer",
     "get_customer_balance",
+    "create_expense",
+    "get_expense_by_id",
+    "update_expense",
+    "delete_expense",
+    "get_expenses",
 ]

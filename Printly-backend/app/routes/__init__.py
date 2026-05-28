@@ -5,7 +5,7 @@ from .material import router as material_router
 from .pricing import router as pricing_router
 from .order import router as order_router
 from .payment import router as payment_router
-
+from .expense import router as expense_router
 __all__ = [
     "auth_router",
     "customer_router",
@@ -14,4 +14,5 @@ __all__ = [
     "pricing_router",
     "order_router",
     "payment_router",
-    ]
+    "expense_router"
+]

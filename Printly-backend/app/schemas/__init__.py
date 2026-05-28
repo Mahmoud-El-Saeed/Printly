@@ -67,6 +67,13 @@ from .payment import (
     CustomerBalanceResponse,
 )
 
+from .expense import (
+    ExpenseCreate,
+    ExpenseResponse,
+    ExpenseUpdate,
+    ExpenseListResponse,
+    ExpenseRequest,
+)
 
 __all__ = [
     "RefreshRequest",
@@ -119,4 +126,9 @@ __all__ = [
     "SettlePaymentCreate",
     "SettlePaymentResponse",
     "CustomerBalanceResponse",
+    "ExpenseCreate",
+    "ExpenseResponse",
+    "ExpenseUpdate",
+    "ExpenseListResponse",
+    "ExpenseRequest",
 ]
