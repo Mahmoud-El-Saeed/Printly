@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 @router.post("/", response_model=BookResponse, status_code=status.HTTP_201_CREATED)
 async def create_book_endpoint(
-    book: Annotated[BookCreate, Depends()],
+    book: BookCreate,
     db: Annotated[AsyncSession, Depends(get_db)],
     current_user: Annotated[TokenData, Depends(require_tenant_staff)],
 ):
@@ -90,7 +90,7 @@ async def get_book_endpoint(
 @router.put("/{book_id}", response_model=BookResponse)
 async def update_book_endpoint(
     book_id: UUID,
-    book_data: Annotated[BookUpdate, Depends()],
+    book_data: BookUpdate,
     db: Annotated[AsyncSession, Depends(get_db)],
     current_user: Annotated[TokenData, Depends(require_tenant_staff)],
 ):

@@ -33,7 +33,7 @@ logger = logging.getLogger(__name__)
 
 @router.post("/", response_model=PaymentResponse, status_code=status.HTTP_201_CREATED)
 async def create_payment_endpoint(
-    payment: Annotated[PaymentCreate, Depends()],
+    payment: PaymentCreate,
     db: Annotated[AsyncSession, Depends(get_db)],
     user: Annotated[TokenData, Depends(require_tenant_staff)],
 ) -> PaymentResponse:
@@ -53,7 +53,7 @@ async def create_payment_endpoint(
 
 @router.post("/settle", response_model=SettlePaymentResponse)
 async def settle_payments_endpoint(
-    settle_request: Annotated[SettlePaymentCreate, Depends()],
+    settle_request: SettlePaymentCreate,
     db: Annotated[AsyncSession, Depends(get_db)],
     user: Annotated[TokenData, Depends(require_tenant_staff)],
 ) -> SettlePaymentResponse:
@@ -114,7 +114,7 @@ async def get_payment_endpoint(
 @router.put("/{payment_id}", response_model=PaymentResponse)
 async def update_payment_endpoint(
     payment_id: UUID,
-    payment_update: Annotated[PaymentUpdate, Depends()],
+    payment_update: PaymentUpdate,
     db: Annotated[AsyncSession, Depends(get_db)],
     user: Annotated[TokenData, Depends(require_tenant_staff)],
 ) -> PaymentResponse:

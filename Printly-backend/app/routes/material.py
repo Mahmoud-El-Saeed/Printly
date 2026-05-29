@@ -33,7 +33,7 @@ logger = logging.getLogger(__name__)
 
 @router.post("/", response_model=MaterialResponse, status_code=status.HTTP_201_CREATED)
 async def create_material_endpoint(
-    material: Annotated[MaterialCreate, Depends()],
+    material: MaterialCreate,
     db: Annotated[AsyncSession, Depends(get_db)],
     user: Annotated[TokenData, Depends(require_tenant_staff)],
 ):
@@ -86,7 +86,7 @@ async def get_material_endpoint(
 @router.put("/{material_id}", response_model=MaterialResponse)
 async def update_material_endpoint(
     material_id: UUID,
-    material_update: Annotated[MaterialUpdate, Depends()],
+    material_update: MaterialUpdate,
     db: Annotated[AsyncSession, Depends(get_db)],
     user: Annotated[TokenData, Depends(require_tenant_staff)],
 ):
@@ -143,7 +143,7 @@ async def list_material_transactions_endpoint(
 )
 async def create_material_transaction_endpoint(
     material_id: UUID,
-    transaction: Annotated[TransactionCreate, Depends()],
+    transaction: TransactionCreate,
     db: Annotated[AsyncSession, Depends(get_db)],
     user: Annotated[TokenData, Depends(require_tenant_staff)],
 ):

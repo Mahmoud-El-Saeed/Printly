@@ -42,7 +42,7 @@ logger = logging.getLogger(__name__)
     status_code=status.HTTP_201_CREATED,
 )
 async def create_pricing_rule_endpoint(
-    pricing_rule: Annotated[PricingRuleCreate, Depends()],
+    pricing_rule: PricingRuleCreate,
     db: Annotated[AsyncSession, Depends(get_db)],
     user: Annotated[TokenData, Depends(require_tenant_staff)],
 ):
@@ -95,7 +95,7 @@ async def get_pricing_rule_endpoint(
 @router.put("/pricing-rules/{pricing_rule_id}", response_model=PricingRuleResponse)
 async def update_pricing_rule_endpoint(
     pricing_rule_id: UUID,
-    pricing_rule_update: Annotated[PricingRuleUpdate, Depends()],
+    pricing_rule_update: PricingRuleUpdate,
     db: Annotated[AsyncSession, Depends(get_db)],
     user: Annotated[TokenData, Depends(require_tenant_staff)],
 ):
@@ -140,7 +140,7 @@ async def delete_pricing_rule_endpoint(
 )
 async def create_customer_pricing_endpoint(
     pricing_rule_id: UUID,
-    customer_pricing: Annotated[CustomerPricingCreate, Depends()],
+    customer_pricing: CustomerPricingCreate,
     db: Annotated[AsyncSession, Depends(get_db)],
     user: Annotated[TokenData, Depends(require_tenant_staff)],
 ):
@@ -208,7 +208,7 @@ async def get_customer_pricing_endpoint(
 async def update_customer_pricing_endpoint(
     pricing_rule_id: UUID,
     customer_pricing_id: UUID,
-    customer_pricing_update: Annotated[CustomerPricingUpdate, Depends()],
+    customer_pricing_update: CustomerPricingUpdate,
     db: Annotated[AsyncSession, Depends(get_db)],
     user: Annotated[TokenData, Depends(require_tenant_staff)],
 ):

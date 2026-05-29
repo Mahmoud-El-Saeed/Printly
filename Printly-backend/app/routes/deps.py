@@ -47,6 +47,13 @@ async def require_tenant_staff(
     return current_user
 
 
+async def require_admin(
+    current_user: TokenData = Depends(get_current_user),
+) -> TokenData:
+    if current_user.role != UserRole.ADMIN.value:
+        raise HTTPException(status_code=403, detail="Access denied")
+    return current_user
+
 
 async def get_redis() -> AsyncGenerator:
     redis_client = get_redis_client()

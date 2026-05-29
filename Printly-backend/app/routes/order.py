@@ -31,7 +31,7 @@ logger = logging.getLogger(__name__)
 
 @router.post("/", response_model=OrderResponse, status_code=status.HTTP_201_CREATED)
 async def create_order_endpoint(
-    order_create: Annotated[OrderCreate, Depends()],
+    order_create: OrderCreate,
     db: Annotated[AsyncSession, Depends(get_db)],
     redis_client: Annotated[Redis, Depends(get_redis_client)],
     current_user: Annotated[TokenData, Depends(require_tenant_staff)],
@@ -105,7 +105,7 @@ async def get_order_endpoint(
 @router.put("/{order_id}", response_model=OrderResponse)
 async def update_order_endpoint(
     order_id: UUID,
-    order_update: Annotated[OrderUpdate, Depends()],
+    order_update: OrderUpdate,
     db: Annotated[AsyncSession, Depends(get_db)],
     current_user: Annotated[TokenData, Depends(require_tenant_staff)],
 ):
