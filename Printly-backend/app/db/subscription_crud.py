@@ -1,5 +1,5 @@
 from .base_crud import BaseCRUD
-from app.models.tenant_subscriptions import TenantSubscriptions
+from app.models import TenantSubscriptions
 from uuid import UUID
 from datetime import datetime, timezone
 from sqlalchemy import select

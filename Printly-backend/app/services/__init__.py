@@ -73,6 +73,11 @@ from .expense import (
     delete_expense,
     get_expenses,
 )
+from .activation_code import (
+    create_activation_code,
+    list_activation_codes,
+    apply_activation_code,
+)
 
 __all__ = [
     "register_shop_owner",
@@ -129,4 +134,7 @@ __all__ = [
     "update_expense",
     "delete_expense",
     "get_expenses",
+    "create_activation_code",
+    "list_activation_codes",
+    "apply_activation_code",
 ]

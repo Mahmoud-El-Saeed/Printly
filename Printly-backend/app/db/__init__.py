@@ -12,7 +12,7 @@ from .order_crud import OrderCRUD, OrderItemsCRUD
 from .payment_crud import PaymentCRUD
 from .tenant_member_crud import TenantMemberCRUD
 from .expense_crud import ExpenseCRUD
-
+from .activation_code_crud import ActivationCodeCRUD
 __all__ = [
     "BaseCRUD",
     "UserCRUD",
@@ -31,4 +31,5 @@ __all__ = [
     "PaymentCRUD",
     "TenantMemberCRUD",
     "ExpenseCRUD",
+    "ActivationCodeCRUD",
 ]
