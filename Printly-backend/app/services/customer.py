@@ -24,9 +24,7 @@ async def create_walk_in_customer(
         walk_in_customer: WalkInCustomers = await WalkInCustomerCRUD.create(
             db=db,
             tenant_id=tenant_id,
-            name=data.name,
-            phone=data.phone,
-            notes=data.notes,
+            **data.model_dump()
         )
         await db.commit()
         return WalkInCustomerResponse.model_validate(walk_in_customer)
@@ -47,7 +45,7 @@ async def list_walk_in_customers(
     walk_in_customers, total = await WalkInCustomerCRUD.get_list(
         db=db,
         filters={"tenant_id": tenant_id},
-        offset=data.skip,
+        offset=data.offset,
         limit=data.limit,
         order_by=data.order_by,
         order_dir=data.order_dir,
@@ -72,14 +70,12 @@ async def update_walk_in_customer(
     )
     if not walk_in_customer or walk_in_customer.tenant_id != tenant_id:
         raise ValueError("Walk-in customer not found")
-
+    data_dict = data.model_dump(exclude_unset=True, exclude_none=True)
     try:
         updated_customer = await WalkInCustomerCRUD.update(
             db=db,
             db_obj=walk_in_customer,
-            name=data.name,
-            phone=data.phone,
-            notes=data.notes,
+            **data_dict
         )
         await db.commit()
         return WalkInCustomerResponse.model_validate(updated_customer)

@@ -20,13 +20,13 @@ class WalkInCustomerResponse(BaseModel):
 
 
 class WalkInCustomerUpdate(BaseModel):
-    name: str | None = None
-    phone: str | None = None
-    notes: str | None = None
+    name: str | None 
+    phone: str | None 
+    notes: str | None 
 
 
 class WalkInCustomerListRequest(BaseModel):
-    skip: int = 0
+    offset: int = 0
     limit: int = 100
     order_by: str = "created_at"
     order_dir: str = "desc"
