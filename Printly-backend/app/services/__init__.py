@@ -78,6 +78,12 @@ from .activation_code import (
     list_activation_codes,
     apply_activation_code,
 )
+from .notification import (
+    get_notifications,
+    mark_as_read,
+    mark_all_as_read,
+    create_notification,
+)
 
 __all__ = [
     "register_shop_owner",
@@ -137,4 +143,8 @@ __all__ = [
     "create_activation_code",
     "list_activation_codes",
     "apply_activation_code",
+    "get_notifications",
+    "mark_as_read",
+    "mark_all_as_read",
+    "create_notification",
 ]

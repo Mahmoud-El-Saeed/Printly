@@ -6,6 +6,9 @@ from .pricing import router as pricing_router
 from .order import router as order_router
 from .payment import router as payment_router
 from .expense import router as expense_router
+from .activation_code import router as activation_code_router
+from .notification import router as notification_router
+
 __all__ = [
     "auth_router",
     "customer_router",
@@ -14,5 +17,7 @@ __all__ = [
     "pricing_router",
     "order_router",
     "payment_router",
-    "expense_router"
+    "expense_router",
+    "activation_code_router",
+    "notification_router"
 ]
