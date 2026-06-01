@@ -1,7 +1,7 @@
 import uuid
 from decimal import Decimal
-from datetime import date
-from sqlalchemy import String, Numeric, ForeignKey, Date, Index, Text, Enum, CheckConstraint
+from datetime import date, datetime
+from sqlalchemy import DateTime, String, Numeric, ForeignKey, Date, Index, Text, Enum, CheckConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID
 from app.models.base import Base, TenantMixin, TimestampMixin, generate_uuid
@@ -49,6 +49,7 @@ class Orders(Base, TenantMixin, TimestampMixin):
     )
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
     due_date: Mapped[date | None] = mapped_column(Date, nullable=True)
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     __table_args__ = (
         Index("ix_orders_tenant_id", "tenant_id"),
@@ -56,6 +57,8 @@ class Orders(Base, TenantMixin, TimestampMixin):
         Index("ix_orders_walk_in_customer_id", "walk_in_customer_id"),
         Index("ix_orders_status", "status"),
         Index("ix_orders_created_by", "created_by"),
+        Index("idx_orders_tenant_status", "tenant_id", "status"),
+        Index("idx_orders_tenant_status_completed", "tenant_id", "status", "completed_at"),
         CheckConstraint(
             "customer_id IS NOT NULL OR walk_in_customer_id IS NOT NULL",
             name="ck_orders_one_customer_type"

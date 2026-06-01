@@ -33,6 +33,7 @@ class Expenses(Base, TenantMixin, TimestampMixin):
         Index("ix_expenses_tenant_id", "tenant_id"),
         Index("ix_expenses_category", "category"),
         Index("ix_expenses_expense_date", "expense_date"),
+        Index("idx_expenses_tenant_date", "tenant_id", "expense_date")
     )
 
     tenant: Mapped["Tenants"] = relationship(
