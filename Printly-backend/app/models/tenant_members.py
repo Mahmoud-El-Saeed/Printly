@@ -24,7 +24,7 @@ class TenantMembers(Base, TenantMixin):
     display_name: Mapped[str | None] = mapped_column(String(200), nullable=True)
     balance: Mapped[Decimal] = mapped_column(
         Numeric(12, 2),
-        default="0",
+        default=Decimal("0"),
         nullable=False,
     )
     is_approved: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)

@@ -14,7 +14,7 @@ from .tenant_member_crud import TenantMemberCRUD
 from .expense_crud import ExpenseCRUD
 from .activation_code_crud import ActivationCodeCRUD
 from .notification_crud import NotificationCRUD
-
+from .customer_tenant_link_crud import CustomerTenantLinkCRUD
 __all__ = [
     "BaseCRUD",
     "UserCRUD",
@@ -35,4 +35,5 @@ __all__ = [
     "ExpenseCRUD",
     "ActivationCodeCRUD",
     "NotificationCRUD"
+    "CustomerTenantLinkCRUD",
 ]

@@ -12,6 +12,15 @@ from .customer import (
     update_walk_in_customer,
     delete_walk_in_customer,
     get_walk_in_customer_by_id,
+    create_customer_member,
+    list_customer_members,
+    update_customer_member,
+    delete_customer_member,
+    get_customer_member_by_id,
+    request_customer_link,
+    get_pending_link_requests,
+    get_customer_link_requests,
+    approve_or_reject_link_request,
 )
 
 from .book import (
@@ -147,4 +156,13 @@ __all__ = [
     "mark_as_read",
     "mark_all_as_read",
     "create_notification",
+    "create_customer_member",
+    "list_customer_members",
+    "update_customer_member",
+    "delete_customer_member",
+    "get_customer_member_by_id",
+    "request_customer_link",
+    "get_pending_link_requests",
+    "get_customer_link_requests",
+    "approve_or_reject_link_request",
 ]
