@@ -93,6 +93,15 @@ from .notification import (
     mark_all_as_read,
     create_notification,
 )
+from .dashboard import (
+    get_expenses_stats,
+    get_profit_stats,
+    get_orders_stats,
+    get_top_materials,
+    get_top_customers,
+    get_overview_stats,
+    get_revenue_stats
+)
 
 __all__ = [
     "register_shop_owner",
@@ -165,4 +174,11 @@ __all__ = [
     "get_pending_link_requests",
     "get_customer_link_requests",
     "approve_or_reject_link_request",
+    "get_revenue_stats",
+    "get_expenses_stats",
+    "get_profit_stats",
+    "get_orders_stats",
+    "get_top_materials",
+    "get_top_customers",
+    "get_overview_stats",
 ]
