@@ -12,7 +12,8 @@ from app.routes import (
     payment_router,
     expense_router,
     activation_code_router,
-    notification_router
+    notification_router,
+    dashboard_router,
 )
 
 
@@ -43,7 +44,7 @@ app.include_router(payment_router)
 app.include_router(expense_router)
 app.include_router(activation_code_router)
 app.include_router(notification_router)
-
+app.include_router(dashboard_router)
 @app.get("/")
 async def read_root():
     return {"Hello": "World"}
