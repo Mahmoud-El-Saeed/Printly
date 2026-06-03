@@ -48,6 +48,13 @@ async def mark_all_notifications_as_read(
     """Mark all notifications for the tenant as read."""
     try:
         await mark_all_as_read(db=db, tenant_id=token_data.tenant_id)
+        
+    except ValueError as ve:
+        logger.warning(f"Attempt to mark all notifications as read failed: {ve}")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(ve),
+        )
     except Exception as e:
         logger.error(f"Error occurred while marking all notifications as read: {e}")
         raise HTTPException(

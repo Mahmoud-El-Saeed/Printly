@@ -9,6 +9,7 @@ from app.schemas import (
     NotificationResponse,
 )
 
+
 async def get_notifications(
     db: AsyncSession,
     tenant_id: UUID,
@@ -23,8 +24,7 @@ async def get_notifications(
         filters["notification_type"] = request.notification_type
     if request.is_read is not None:
         filters["is_read"] = request.is_read
-    
-    
+
     notifications, total_count = await NotificationCRUD.get_list(
         db=db,
         filters=filters,
@@ -44,6 +44,7 @@ async def get_notifications(
         total_count=total_count,
     )
 
+
 async def mark_as_read(
     db: AsyncSession,
     tenant_id: UUID,
@@ -51,10 +52,15 @@ async def mark_as_read(
 ) -> None:
     """Mark a specific notification as read."""
     notification = await NotificationCRUD.get_by_id(db, notification_id)
-    if notification and notification.tenant_id == tenant_id:
-        notification.is_read = True
-    else:
-        raise ValueError("Notification not found or unauthorized")
+    try:
+        if notification and notification.tenant_id == tenant_id:
+            notification.is_read = True
+            await db.commit()
+        else:
+            raise ValueError("Notification not found or unauthorized")
+    except Exception as e:
+        raise ValueError("Error occurred while marking notification as read") from e
+
 
 async def mark_all_as_read(
     db: AsyncSession,
@@ -62,7 +68,12 @@ async def mark_all_as_read(
     user_id: UUID | None = None,
 ) -> int:
     """Mark all notifications as read for a specific tenant and optionally for a specific user. Returns the number of notifications marked as read."""
-    return await NotificationCRUD.mark_all_read(db, tenant_id, user_id)
+    try:
+        await NotificationCRUD.mark_all_read(db, tenant_id=tenant_id, user_id=user_id)
+        await db.commit()
+    except Exception as e:
+        raise ValueError("Error occurred while marking all notifications as read") from e
+
 
 async def create_notification(
     db: AsyncSession,
