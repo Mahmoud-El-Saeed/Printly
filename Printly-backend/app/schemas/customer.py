@@ -22,9 +22,9 @@ class WalkInCustomerResponse(BaseModel):
 
 
 class WalkInCustomerUpdate(BaseModel):
-    name: str | None
-    phone: str | None
-    notes: str | None
+    name: str | None = None
+    phone: str | None = None
+    notes: str | None = None
 
 
 class WalkInCustomerListRequest(BaseModel):
@@ -59,9 +59,9 @@ class CustomerMemberResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 class CustomerMemberUpdate(BaseModel):
-    name: str | None
-    email: EmailStr | None
-    phone: str | None
+    name: str | None = None
+    email: EmailStr | None = None
+    phone: str | None = None
 
 class CustomerMemberListRequest(BaseModel):
     search_query: str | None = None

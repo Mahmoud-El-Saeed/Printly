@@ -96,6 +96,7 @@ async def update_walk_in_customer(
             db=db, db_obj=walk_in_customer, **data_dict
         )
         await db.commit()
+        await db.refresh(updated_customer)
         return WalkInCustomerResponse.model_validate(updated_customer)
 
     except Exception as e:
