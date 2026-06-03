@@ -175,15 +175,11 @@ class DashboardDB:
                 SELECT
                     m.id,
                     m.name,
-                    COALESCE(SUM(oi.quantity), 0),
-                    COALESCE(SUM(oi.quantity * m.cost_per_unit), 0)
+                    0,
+                    0
                 FROM materials m
-                JOIN order_items oi ON oi.material_id = m.id
-                JOIN orders o ON o.id = oi.order_id
                 WHERE m.tenant_id = :tenant_id
-                    AND o.status IN ('DELIVERED', 'READY')
-                GROUP BY m.id, m.name
-                ORDER BY SUM(oi.quantity) DESC
+                ORDER BY m.name
                 LIMIT 10
             """),
             {"tenant_id": tenant_id},
@@ -213,7 +209,7 @@ class DashboardDB:
                 LEFT JOIN users u ON u.id = o.customer_id
                 LEFT JOIN walk_in_customers w ON w.id = o.walk_in_customer_id
                 WHERE p.tenant_id = :tenant_id
-                    AND o.status != 'cancelled'
+                    AND o.status != 'CANCELLED'
                 GROUP BY o.customer_id, o.walk_in_customer_id, u.full_name, w.name
                 ORDER BY SUM(p.amount) DESC
                 LIMIT 10

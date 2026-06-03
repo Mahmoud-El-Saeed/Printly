@@ -98,6 +98,7 @@ async def get_top_customers(db: AsyncSession, tenant_id: UUID) -> TopCustomersRe
 async def get_overview_stats(db: AsyncSession, tenant_id: UUID) -> DashboardOverviewResponse:
     revenue = await DashboardDB.get_revenue_stats(db, tenant_id)
     expenses = await DashboardDB.get_expense_stats(db, tenant_id)
+    expenses_by_category = await DashboardDB.get_expenses_by_category(db, tenant_id)
     orders = await DashboardDB.get_orders_stats(db, tenant_id)
     materials = await DashboardDB.get_top_materials(db, tenant_id)
     customers = await DashboardDB.get_top_customers(db, tenant_id)
@@ -120,7 +121,7 @@ async def get_overview_stats(db: AsyncSession, tenant_id: UUID) -> DashboardOver
             today=expenses["today"],
             this_month=expenses["this_month"],
             this_year=expenses["this_year"],
-            by_category=[ExpenseCategoryItem(**c) for c in expenses["by_category"]],
+            by_category=[ExpenseCategoryItem(**c) for c in expenses_by_category],
         ),
         profit=ProfitStatsResponse(
             today=p_today,
