@@ -34,7 +34,7 @@ async def create_expense_endpoint(
         return await create_expense(
             db=db,
             tenant_id=token_data.tenant_id,
-            create_by=token_data.user_id,
+            created_by=token_data.user_id,
             expense_data=expense_data,
         )
     except Exception as e:
