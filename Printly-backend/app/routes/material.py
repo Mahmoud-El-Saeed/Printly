@@ -150,8 +150,14 @@ async def create_material_transaction_endpoint(
     """Endpoint to create a new transaction for a specific material."""
     try:
         return await create_transaction(
-            db, user.tenant_id, material_id, user.user_id, transaction
-        )
+        db=db,
+        tenant_id=user.tenant_id,
+        created_by=user.user_id,
+        material_id=material_id,
+        transaction=transaction,
+    )
+        
+        
     except ValueError as e:
         logger.warning(f"Validation error creating transaction: {e}")
         raise HTTPException(status_code=400, detail=str(e))
