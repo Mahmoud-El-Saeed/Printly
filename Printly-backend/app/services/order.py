@@ -125,6 +125,7 @@ async def create_order(
             
         
         await db.commit()
+        await db.refresh(new_order, attribute_names=["items"])
         return OrderResponse.model_validate(new_order)
 
     except Exception as e:
@@ -169,6 +170,7 @@ async def update_order(
             db=db, db_obj=existing_order, **update_data
         )
         await db.commit()
+        await db.refresh(updated_order, attribute_names=["items"])
         return OrderResponse.model_validate(updated_order)
     except Exception as e:
         await db.rollback()
@@ -210,6 +212,7 @@ async def update_order_status(
             db=db, db_obj=existing_order, status=new_status
         )
         await db.commit()
+        await db.refresh(updated_order, attribute_names=["items"])
         return OrderResponse.model_validate(updated_order)
 
     except Exception as e:

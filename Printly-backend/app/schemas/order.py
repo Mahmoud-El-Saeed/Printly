@@ -1,9 +1,10 @@
 from pydantic import BaseModel, Field, ConfigDict
 from uuid import UUID
-from datetime import date
+from datetime import date, datetime
 from decimal import Decimal
 
 from app.enums import OrderStatus
+
 
 class OrderItemCreate(BaseModel):
     book_id: UUID | None = None
@@ -20,12 +21,13 @@ class OrderItemCreate(BaseModel):
     lamination_price: Decimal = 0
     extra_services: list[dict] = Field(default_factory=list)
 
+
 class OrderCreate(BaseModel):
     customer_id: UUID | None = Field(default=None)
     walk_in_customer_id: UUID | None = Field(default=None)
     notes: str | None = Field(default=None)
     due_date: date | None = Field(default=None)
-    items: list[OrderItemCreate] = Field(..., min_items=1)
+    items: list[OrderItemCreate] = Field(..., min_length=1)
 
 
 class OrderItemResponse(BaseModel):
@@ -47,6 +49,7 @@ class OrderItemResponse(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+
 class OrderResponse(BaseModel):
     id: UUID
     order_number: str
@@ -59,11 +62,8 @@ class OrderResponse(BaseModel):
     notes: str | None
     due_date: date | None
     items: list[OrderItemResponse] = list()
-    created_at: date
-    updated_at: date
-
-    model_config = ConfigDict(from_attributes=True)
-
+    created_at: datetime
+    updated_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -93,11 +93,3 @@ class OrdersRequest(BaseModel):
 class OrdersListResponse(BaseModel):
     total: int
     orders: list[OrderResponse]
-
-
-
-
-
-
-
-

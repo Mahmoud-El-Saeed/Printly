@@ -1,14 +1,27 @@
 from .base_crud import BaseCRUD
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
+from sqlalchemy.orm import selectinload
 from uuid import UUID
 from datetime import date
 
 from app.models import Orders, OrderItems
 from app.enums import OrderStatus
 
+
 class OrderCRUD(BaseCRUD[Orders]):
     model = Orders
+
+    @classmethod
+    async def get_by_id(cls, db: AsyncSession, id: UUID) -> Orders | None:
+        """Get an order by ID, including its items."""
+        query = (
+            select(cls.model)
+            .where(cls.model.id == id)
+            .options(selectinload(cls.model.items))
+        )
+        result = await db.execute(query)
+        return result.scalar_one_or_none()
 
     @classmethod
     async def get_orders(
@@ -59,19 +72,19 @@ class OrderCRUD(BaseCRUD[Orders]):
                 order_column = order_column.asc()
             query = query.order_by(order_column)
 
+        query = query.options(
+            selectinload(cls.model.items)
+        )  # Eager load items to avoid N+1 problem and ignore LazyLoad warnings
         result = await db.execute(query.offset(offset).limit(limit))
         orders = result.scalars().all()
 
         return orders, total_count
-    
+
     @classmethod
     async def get_unpaid_orders(
-        cls,
-        db: AsyncSession,
-        tenant_id: UUID,
-        customer_id: UUID
+        cls, db: AsyncSession, tenant_id: UUID, customer_id: UUID
     ) -> list[Orders]:
-        """Get all unpaid orders for a tenant."""
+        """Get unpaid orders for a specific customer."""
         query = (
             select(Orders)
             .where(Orders.tenant_id == tenant_id)
@@ -79,6 +92,9 @@ class OrderCRUD(BaseCRUD[Orders]):
             .where(Orders.total_amount > Orders.paid_amount)
             .where(Orders.status.notin_([OrderStatus.CANCELLED]))
             .order_by(Orders.created_at.asc())
+            .options(
+                selectinload(cls.model.items)
+            )  # Eager load items to avoid N+1 problem and ignore LazyLoad warnings
         )
         result = await db.execute(query)
         return result.scalars().all()
@@ -89,7 +105,7 @@ class OrderItemsCRUD(BaseCRUD[OrderItems]):
 
     @classmethod
     async def batch_create(self, db: AsyncSession, items_data: list[OrderItems]):
-        """Batch create order items."""
+        """Create multiple order items in a batch operation."""
         db.add_all(items_data)
         await db.flush()
         return items_data
