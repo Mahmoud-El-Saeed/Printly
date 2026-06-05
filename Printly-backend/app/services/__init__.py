@@ -100,7 +100,18 @@ from .dashboard import (
     get_top_materials,
     get_top_customers,
     get_overview_stats,
-    get_revenue_stats
+    get_revenue_stats,
+)
+from .customer_portal import (
+    get_my_profile,
+    get_my_balance,
+    get_my_notifications,
+    mark_my_notification_read,
+    get_my_orders,
+    get_my_books,
+    get_my_order,
+    get_my_tenants,
+    mark_all_my_notifications_read,
 )
 
 __all__ = [
@@ -181,4 +192,13 @@ __all__ = [
     "get_top_materials",
     "get_top_customers",
     "get_overview_stats",
+    "get_my_profile",
+    "get_my_balance",
+    "get_my_notifications",
+    "mark_my_notification_read",
+    "get_my_orders",
+    "get_my_books",
+    "get_my_order",
+    "get_my_tenants",
+    "mark_all_my_notifications_read",
 ]

@@ -86,3 +86,47 @@ class TenantMemberCRUD(BaseCRUD[TenantMembers]):
         members = result.scalars().all()
 
         return members, total
+
+    @classmethod
+    async def get_approved_memberships(
+        cls,
+        db: AsyncSession,
+        customer_user_id: UUID,
+        offset: int = 0,
+        limit: int = 20,
+        order_by: str = "linked_at",
+        order_dir: str = "desc",
+    ) -> list[TenantMembers]:
+        """Get all approved tenant memberships for a customer user, with tenant info loaded."""
+        from sqlalchemy.orm import joinedload
+
+        stmt = (
+            select(cls.model)
+            .where(cls.model.customer_user_id == customer_user_id)
+            .where(cls.model.is_approved == True)  # noqa: E712
+            .options(joinedload(cls.model.tenant))
+        )
+        order_column = getattr(cls.model, order_by, cls.model.linked_at)
+        if order_dir == "desc":
+            stmt = stmt.order_by(order_column.desc())
+        else:
+            stmt = stmt.order_by(order_column.asc())
+        stmt = stmt.offset(offset).limit(limit)
+        result = await db.execute(stmt)
+        return result.scalars().all()
+
+    @classmethod
+    async def count_approved_memberships(
+        cls,
+        db: AsyncSession,
+        customer_user_id: UUID,
+    ) -> int:
+        """Count the total approved memberships for a customer user."""
+        stmt = (
+            select(func.count())
+            .select_from(cls.model)
+            .where(cls.model.customer_user_id == customer_user_id)
+            .where(cls.model.is_approved == True)  # noqa: E712
+        )
+        result = await db.execute(stmt)
+        return result.scalar_one() or 0

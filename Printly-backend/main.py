@@ -14,6 +14,7 @@ from app.routes import (
     activation_code_router,
     notification_router,
     dashboard_router,
+    customer_portal_router,
 )
 
 
@@ -45,6 +46,8 @@ app.include_router(expense_router)
 app.include_router(activation_code_router)
 app.include_router(notification_router)
 app.include_router(dashboard_router)
+app.include_router(customer_portal_router)
+
 @app.get("/")
 async def read_root():
     return {"Hello": "World"}

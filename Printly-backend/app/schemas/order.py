@@ -93,3 +93,12 @@ class OrdersRequest(BaseModel):
 class OrdersListResponse(BaseModel):
     total: int
     orders: list[OrderResponse]
+
+class OrdersCustomerRequest(BaseModel):
+    status: OrderStatus | None = None
+    date_from: date | None = None
+    date_to: date | None = None
+    offset: int = 0
+    limit: int = 10
+    order_by: str = "created_at"
+    order_dir: str = "desc"

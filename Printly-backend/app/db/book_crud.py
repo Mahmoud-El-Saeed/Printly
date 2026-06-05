@@ -16,6 +16,7 @@ class BookCRUD(BaseCRUD[Books]):
         title: str | None = None,
         subject: str | None = None,
         has_file: bool | None = None,
+        customer_id: UUID | None = None,
         offset: int = 0,
         limit: int = 20,
         order_by: str = "created_at",
@@ -24,6 +25,9 @@ class BookCRUD(BaseCRUD[Books]):
         """Search books by title "or" subject with pagination."""
 
         query = select(Books).where(Books.tenant_id == tenant_id)
+
+        if customer_id is not None:
+            query = query.where(Books.customer_id == customer_id)
 
         if has_file is True:
             query = query.where(Books.file_url.isnot(None))
@@ -70,7 +74,7 @@ class BookCRUD(BaseCRUD[Books]):
         )
         result = await db.execute(query)
         return result.scalar_one()
-    
+
     @classmethod
     async def get_books_by_ids(
         cls,

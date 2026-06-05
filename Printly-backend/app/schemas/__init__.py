@@ -64,6 +64,7 @@ from .order import (
     OrderStatusUpdate,
     OrdersRequest,
     OrdersListResponse,
+    OrdersCustomerRequest,
 )
 
 from .payment import (
@@ -111,6 +112,12 @@ from .dashboard import (
     TopCustomersResponse,
     TopMaterialItem,
     TopMaterialsResponse,
+)
+
+from .customer_portal import (
+    PortalProfileResponse,
+    PortalTenantInfo,
+    PortalTenantsResponse,
 )
 
 
@@ -201,4 +208,8 @@ __all__ = [
     "TopCustomersResponse",
     "TopMaterialItem",
     "TopMaterialsResponse",
+    "PortalProfileResponse",
+    "PortalTenantInfo",
+    "PortalTenantsResponse",
+    "OrdersCustomerRequest",
 ]
