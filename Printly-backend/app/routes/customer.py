@@ -4,7 +4,7 @@ import logging
 from typing import Annotated
 from uuid import UUID
 
-from app.routes.deps import get_db, require_tenant_staff, require_customer
+from app.routes.deps import get_db, require_tenant_staff, require_customer_or_staff
 from app.services import (
     create_walk_in_customer,
     list_walk_in_customers,
@@ -294,7 +294,7 @@ async def delete_customer_member_endpoint(
 async def request_customer_link_endpoint(
     data: CustomerLinkRequest,
     db: Annotated[AsyncSession, Depends(get_db)],
-    current_user: Annotated[TokenData, Depends(require_customer)],
+    current_user: Annotated[TokenData, Depends(require_customer_or_staff)],
 ) -> CustomerLinkResponse:
     """Endpoint for customers to request a link to the tenant"""
     try:
@@ -318,7 +318,7 @@ async def request_customer_link_endpoint(
 async def get_customer_link_requests_endpoint(
     data: Annotated[CustomerLinkListRequest, Depends()],
     db: Annotated[AsyncSession, Depends(get_db)],
-    current_user: Annotated[TokenData, Depends(require_customer)],
+    current_user: Annotated[TokenData, Depends(require_customer_or_staff)],
 ) -> CustomerLinkListResponse:
     """Endpoint for customers to get their link requests to tenants"""
     try:

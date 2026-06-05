@@ -35,10 +35,17 @@ async def get_current_user(
             headers={"WWW-Authenticate": "Bearer"},
         ) from e
 
-async def require_customer(
+async def require_customer_or_staff(
     current_user: TokenData = Depends(get_current_user),
 ) -> TokenData:
     if current_user.role not in [UserRole.CUSTOMER.value, UserRole.SHOP_OWNER.value, UserRole.STAFF.value]:
+        raise HTTPException(status_code=403, detail="Access denied")
+    return current_user
+
+async def require_customer(
+    current_user: TokenData = Depends(get_current_user),
+) -> TokenData:
+    if current_user.role != UserRole.CUSTOMER.value:
         raise HTTPException(status_code=403, detail="Access denied")
     return current_user
 
