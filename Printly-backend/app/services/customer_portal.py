@@ -238,6 +238,9 @@ async def get_my_notifications(
         tenant_id=tenant_id,
         user_id=customer_user_id,
     )
+    if notifications is None:
+        raise ValueError("Failed to fetch notifications")
+
     return NotificationListResponse(
         notifications=[NotificationResponse.model_validate(n) for n in notifications],
         unread_count=unread_count,

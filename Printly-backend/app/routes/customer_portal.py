@@ -97,7 +97,7 @@ async def get_my_orders_endpoint(
         )
     except ValueError as e:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_404_NOT_FOUND,
             detail=str(e),
         ) from e
     except Exception as e:
@@ -158,7 +158,7 @@ async def get_my_books_endpoint(
         )
     except ValueError as e:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_404_NOT_FOUND,
             detail=str(e),
         ) from e
     except Exception as e:
@@ -208,6 +208,12 @@ async def get_my_notifications_endpoint(
             current_user.user_id,
             request,
         )
+
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e),
+        ) from e
     except Exception as e:
         logger.error(f"Error fetching notifications: {e}")
         raise HTTPException(
@@ -267,6 +273,7 @@ async def mark_all_my_notifications_read_endpoint(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=str(e),
         ) from e
+
     except Exception as e:
         logger.error(f"Error marking all notifications as read: {e}")
         raise HTTPException(
