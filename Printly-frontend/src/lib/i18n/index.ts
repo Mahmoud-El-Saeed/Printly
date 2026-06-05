@@ -20,17 +20,19 @@ export function getTranslation(lang: Language): MakeStrings<TranslationKeys> {
 
 export function t(lang: Language, key: string): string {
 	const keys = key.split(".");
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	let result: Record<string, unknown> = translations[lang] as unknown as Record<
-		string,
-		unknown
-	>;
+	let result: unknown = translations[lang];
+	
 	for (const k of keys) {
-		if (result && typeof result === "object" && k in result) {
-			result = result[k];
+		if (
+			result &&
+			typeof result === "object" &&
+			k in (result as Record<string, unknown>)
+		) {
+			result = (result as Record<string, unknown>)[k];
 		} else {
-			return key; // fallback: return the key itself
+			return key;
 		}
 	}
+	
 	return typeof result === "string" ? result : key;
 }
