@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from app.routes.db import engine
 from app.routes.redis_client import get_redis_client
@@ -47,6 +48,15 @@ app.include_router(activation_code_router)
 app.include_router(notification_router)
 app.include_router(dashboard_router)
 app.include_router(customer_portal_router)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 @app.get("/")
 async def read_root():
