@@ -12,6 +12,7 @@ import LoginPage from "@/pages/auth/LoginPage";
 import RegisterCustomerPage from "@/pages/auth/RegisterCustomerPage";
 import RegisterShopOwnerPage from "@/pages/auth/RegisterShopOwnerPage";
 import BooksListPage from "@/pages/books/BooksListPage";
+import LinkRequestsPage from "@/pages/customers/LinkRequestsPage";
 import MembersPage from "@/pages/customers/MembersPage";
 import WalkInCustomersPage from "@/pages/customers/WalkInCustomersPage";
 // Dashboard Pages
@@ -67,7 +68,7 @@ function App() {
 								<Route path="customers/members" element={<MembersPage />} />
 								<Route
 									path="customers/link-requests"
-									element={<PlaceholderPage />}
+									element={<LinkRequestsPage />}
 								/>
 								<Route path="materials" element={<PlaceholderPage />} />
 								<Route path="pricing" element={<PlaceholderPage />} />
