@@ -23,9 +23,9 @@ import NewOrderPage from "@/pages/orders/NewOrderPage";
 import OrderDetailPage from "@/pages/orders/OrderDetailPage";
 // Orders Pages
 import OrdersListPage from "@/pages/orders/OrdersListPage";
-
 // Portal Pages
 import PortalHomePage from "@/pages/portal/PortalHomePage";
+import PricingPage from "@/pages/pricing/PricingPage";
 
 const queryClient = new QueryClient({
 	defaultOptions: {
@@ -72,7 +72,7 @@ function App() {
 									element={<LinkRequestsPage />}
 								/>
 								<Route path="materials" element={<MaterialsPage />} />
-								<Route path="pricing" element={<PlaceholderPage />} />
+								<Route path="pricing" element={<PricingPage />} />
 								<Route path="payments" element={<PlaceholderPage />} />
 								<Route path="expenses" element={<PlaceholderPage />} />
 								<Route path="notifications" element={<PlaceholderPage />} />
