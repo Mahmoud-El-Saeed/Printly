@@ -1,6 +1,7 @@
 import { Loader2, LogOut } from "lucide-react";
 import type { ReactNode } from "react";
 import { Navigate, Outlet } from "react-router-dom";
+import { LanguageSwitcher } from "@/components/shared/LanguageSwitcher";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -40,15 +41,18 @@ function PortalLayout() {
 						<h1 className="text-lg font-bold text-primary">
 							{t("portal.title")}
 						</h1>
-						<Button
-							variant="ghost"
-							size="sm"
-							onClick={logout}
-							className="gap-2"
-						>
-							<LogOut className="h-4 w-4" />
-							{t("auth.logout")}
-						</Button>
+						<div className="flex items-center gap-2">
+							<LanguageSwitcher />
+							<Button
+								variant="ghost"
+								size="sm"
+								onClick={logout}
+								className="gap-2"
+							>
+								<LogOut className="h-4 w-4" />
+								{t("auth.logout")}
+							</Button>
+						</div>
 					</div>
 				</header>
 				<main className="max-w-6xl mx-auto p-6">

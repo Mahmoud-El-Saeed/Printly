@@ -24,7 +24,7 @@ import { cn } from "@/lib/utils/cn";
 export default function Sidebar() {
 	const [collapsed, setCollapsed] = useState(false);
 	const { logout } = useAuth();
-	const { t } = useLanguage();
+	const { t, isRTL } = useLanguage();
 	const location = useLocation();
 
 	const isActive = (path: string) => {
@@ -56,7 +56,7 @@ export default function Sidebar() {
 	return (
 		<aside
 			className={cn(
-				"flex flex-col h-screen border-l bg-sidebar-background transition-all duration-300 sticky top-0",
+				"flex flex-col h-screen border-e bg-sidebar-background transition-all duration-300 sticky top-0",
 				collapsed ? "w-16" : "w-64",
 			)}
 		>
@@ -72,6 +72,12 @@ export default function Sidebar() {
 					className="shrink-0"
 				>
 					{collapsed ? (
+						isRTL ? (
+							<ChevronRight className="h-4 w-4" />
+						) : (
+							<ChevronLeft className="h-4 w-4" />
+						)
+					) : isRTL ? (
 						<ChevronLeft className="h-4 w-4" />
 					) : (
 						<ChevronRight className="h-4 w-4" />

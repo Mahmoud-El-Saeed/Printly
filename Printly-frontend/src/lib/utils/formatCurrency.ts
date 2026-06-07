@@ -1,6 +1,12 @@
-export function formatCurrency(amount: number | string): string {
+import type { Language } from "@/lib/i18n";
+
+export function formatCurrency(
+	amount: number | string,
+	language: Language = "ar",
+): string {
 	const num = typeof amount === "string" ? parseFloat(amount) : amount;
-	return new Intl.NumberFormat("ar-EG", {
+	const locale = language === "ar" ? "ar-EG" : "en-US";
+	return new Intl.NumberFormat(locale, {
 		style: "currency",
 		currency: "EGP",
 		minimumFractionDigits: 2,
@@ -8,8 +14,9 @@ export function formatCurrency(amount: number | string): string {
 	}).format(num);
 }
 
-export function formatNumber(num: number): string {
-	return new Intl.NumberFormat("ar-EG").format(num);
+export function formatNumber(num: number, language: Language = "ar"): string {
+	const locale = language === "ar" ? "ar-EG" : "en-US";
+	return new Intl.NumberFormat(locale).format(num);
 }
 
 export function formatPercentage(value: number): string {

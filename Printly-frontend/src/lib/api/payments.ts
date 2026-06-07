@@ -1,5 +1,4 @@
 import type {
-	CustomerBalanceResponse,
 	PaymentCreate,
 	PaymentListResponse,
 	PaymentResponse,
@@ -43,14 +42,6 @@ export const paymentsApi = {
 		const response = await apiClient.post<SettlePaymentResponse>(
 			"/payments/settle",
 			data,
-		);
-		return response.data;
-	},
-	getCustomerBalance: async (
-		customerId: string,
-	): Promise<CustomerBalanceResponse> => {
-		const response = await apiClient.get<CustomerBalanceResponse>(
-			`/customers/${customerId}/balance`,
 		);
 		return response.data;
 	},

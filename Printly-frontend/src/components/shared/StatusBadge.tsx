@@ -1,4 +1,5 @@
-import { ORDER_STATUS_COLORS, ORDER_STATUS_LABELS } from "@/lib/constants";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { ORDER_STATUS_COLORS } from "@/lib/constants";
 import { cn } from "@/lib/utils/cn";
 import type { OrderStatus } from "@/types/order";
 
@@ -8,8 +9,9 @@ interface StatusBadgeProps {
 }
 
 export function StatusBadge({ status, className }: StatusBadgeProps) {
+	const { t } = useLanguage();
 	const colorClass = ORDER_STATUS_COLORS[status] || "bg-gray-100 text-gray-800";
-	const label = ORDER_STATUS_LABELS[status] || status;
+	const label = t(`status.${status}`);
 
 	return (
 		<span

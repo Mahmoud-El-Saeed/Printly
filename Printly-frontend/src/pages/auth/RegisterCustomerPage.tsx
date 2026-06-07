@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { z } from "zod";
+import { LanguageSwitcher } from "@/components/shared/LanguageSwitcher";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -16,19 +17,21 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { authApi } from "@/lib/api/auth";
 
-const registerSchema = z.object({
-	email: z.string().email("البريد الإلكتروني غير صالح"),
-	password: z.string().min(8, "كلمة المرور يجب أن تكون 8 أحرف على الأقل"),
-	full_name: z.string().min(3, "الاسم يجب أن يكون 3 أحرف على الأقل"),
-});
-
-type RegisterFormData = z.infer<typeof registerSchema>;
-
 export default function RegisterCustomerPage() {
+	const { t } = useLanguage();
 	const navigate = useNavigate();
 	const [isLoading, setIsLoading] = useState(false);
+
+	const registerSchema = z.object({
+		email: z.string().email(t("auth.validation.email_invalid")),
+		password: z.string().min(8, t("auth.validation.password_min")),
+		full_name: z.string().min(3, t("auth.validation.name_min")),
+	});
+
+	type RegisterFormData = z.infer<typeof registerSchema>;
 
 	const {
 		register,
@@ -42,30 +45,36 @@ export default function RegisterCustomerPage() {
 		setIsLoading(true);
 		try {
 			await authApi.registerCustomer(data);
-			toast.success("تم إنشاء الحساب بنجاح! يمكنك تسجيل الدخول الآن");
+			toast.success(t("auth.register_success"));
 			navigate("/login");
 		} catch (error: unknown) {
 			const err = error as { response?: { data?: { detail?: string } } };
-			toast.error(err.response?.data?.detail || "فشل إنشاء الحساب");
+			toast.error(err.response?.data?.detail || t("auth.register_failed"));
 		} finally {
 			setIsLoading(false);
 		}
 	};
 
 	return (
-		<div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
+		<div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-background to-muted p-4">
+			<div className="absolute top-4 left-4">
+				<LanguageSwitcher />
+			</div>
+
 			<Card className="w-full max-w-md">
 				<CardHeader className="text-center">
-					<CardTitle className="text-2xl font-bold">Printly</CardTitle>
-					<CardDescription>إنشاء حساب عميل</CardDescription>
+					<CardTitle className="text-2xl font-bold">{t("app.name")}</CardTitle>
+					<CardDescription>
+						{t("auth.register_customer_description")}
+					</CardDescription>
 				</CardHeader>
 				<form onSubmit={handleSubmit(onSubmit)}>
 					<CardContent className="space-y-4">
 						<div className="space-y-2">
-							<Label htmlFor="full_name">الاسم الكامل</Label>
+							<Label htmlFor="full_name">{t("auth.full_name")}</Label>
 							<Input
 								id="full_name"
-								placeholder="أحمد محمد"
+								placeholder={t("auth.full_name")}
 								{...register("full_name")}
 							/>
 							{errors.full_name && (
@@ -75,7 +84,7 @@ export default function RegisterCustomerPage() {
 							)}
 						</div>
 						<div className="space-y-2">
-							<Label htmlFor="email">البريد الإلكتروني</Label>
+							<Label htmlFor="email">{t("auth.email")}</Label>
 							<Input
 								id="email"
 								type="email"
@@ -90,7 +99,7 @@ export default function RegisterCustomerPage() {
 							)}
 						</div>
 						<div className="space-y-2">
-							<Label htmlFor="password">كلمة المرور</Label>
+							<Label htmlFor="password">{t("auth.password")}</Label>
 							<Input
 								id="password"
 								type="password"
@@ -107,13 +116,13 @@ export default function RegisterCustomerPage() {
 					<CardFooter className="flex flex-col gap-3">
 						<Button type="submit" className="w-full" disabled={isLoading}>
 							{isLoading ? <Loader2 className="animate-spin" /> : <UserPlus />}
-							إنشاء الحساب
+							{t("auth.register_button")}
 						</Button>
 						<Link
 							to="/login"
 							className="text-sm text-muted-foreground hover:text-primary transition-colors"
 						>
-							لديك حساب؟ تسجيل الدخول
+							{t("auth.have_account")} {t("auth.login")}
 						</Link>
 					</CardFooter>
 				</form>

@@ -21,7 +21,7 @@ export function getTranslation(lang: Language): MakeStrings<TranslationKeys> {
 export function t(lang: Language, key: string): string {
 	const keys = key.split(".");
 	let result: unknown = translations[lang];
-	
+
 	for (const k of keys) {
 		if (
 			result &&
@@ -33,6 +33,6 @@ export function t(lang: Language, key: string): string {
 			return key;
 		}
 	}
-	
+
 	return typeof result === "string" ? result : key;
 }

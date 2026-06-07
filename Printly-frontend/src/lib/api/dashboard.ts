@@ -1,4 +1,12 @@
-import type { DashboardOverviewResponse } from "@/types";
+import type {
+	DashboardOverviewResponse,
+	ExpenseStatsResponse,
+	OrdersStatsResponse,
+	ProfitStatsResponse,
+	RevenueStatsResponse,
+	TopCustomersResponse,
+	TopMaterialsResponse,
+} from "@/types";
 import apiClient from "./client";
 
 export const dashboardApi = {
@@ -8,32 +16,37 @@ export const dashboardApi = {
 		);
 		return response.data;
 	},
-	getRevenue: async (): Promise<import("@/types").RevenueStatsResponse> => {
-		const response = await apiClient.get("/dashboard/revenue");
+	getRevenue: async (): Promise<RevenueStatsResponse> => {
+		const response =
+			await apiClient.get<RevenueStatsResponse>("/dashboard/revenue");
 		return response.data;
 	},
-	getExpenses: async (): Promise<import("@/types").ExpenseStatsResponse> => {
-		const response = await apiClient.get("/dashboard/expenses");
+	getExpenses: async (): Promise<ExpenseStatsResponse> => {
+		const response = await apiClient.get<ExpenseStatsResponse>(
+			"/dashboard/expenses",
+		);
 		return response.data;
 	},
-	getProfit: async (): Promise<import("@/types").ProfitStatsResponse> => {
-		const response = await apiClient.get("/dashboard/profit");
+	getProfit: async (): Promise<ProfitStatsResponse> => {
+		const response =
+			await apiClient.get<ProfitStatsResponse>("/dashboard/profit");
 		return response.data;
 	},
-	getOrdersStats: async (): Promise<import("@/types").OrdersStatsResponse> => {
-		const response = await apiClient.get("/dashboard/orders");
+	getOrdersStats: async (): Promise<OrdersStatsResponse> => {
+		const response =
+			await apiClient.get<OrdersStatsResponse>("/dashboard/orders");
 		return response.data;
 	},
-	getTopMaterials: async (): Promise<
-		import("@/types").TopMaterialsResponse
-	> => {
-		const response = await apiClient.get("/dashboard/top-materials");
+	getTopMaterials: async (): Promise<TopMaterialsResponse> => {
+		const response = await apiClient.get<TopMaterialsResponse>(
+			"/dashboard/top-materials",
+		);
 		return response.data;
 	},
-	getTopCustomers: async (): Promise<
-		import("@/types").TopCustomersResponse
-	> => {
-		const response = await apiClient.get("/dashboard/top-customers");
+	getTopCustomers: async (): Promise<TopCustomersResponse> => {
+		const response = await apiClient.get<TopCustomersResponse>(
+			"/dashboard/top-customers",
+		);
 		return response.data;
 	},
 };
