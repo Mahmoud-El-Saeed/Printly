@@ -15,6 +15,10 @@ import RegisterShopOwnerPage from "@/pages/auth/RegisterShopOwnerPage";
 // Dashboard Pages
 import DashboardPage from "@/pages/dashboard/DashboardPage";
 import PlaceholderPage from "@/pages/dashboard/PlaceholderPage";
+import NewOrderPage from "@/pages/orders/NewOrderPage";
+import OrderDetailPage from "@/pages/orders/OrderDetailPage";
+// Orders Pages
+import OrdersListPage from "@/pages/orders/OrdersListPage";
 
 // Portal Pages
 import PortalHomePage from "@/pages/portal/PortalHomePage";
@@ -50,7 +54,9 @@ function App() {
 							{/* Dashboard Routes (Protected) */}
 							<Route element={<DashboardLayout />}>
 								<Route index element={<DashboardPage />} />
-								<Route path="orders" element={<PlaceholderPage />} />
+								<Route path="orders" element={<OrdersListPage />} />
+								<Route path="orders/new" element={<NewOrderPage />} />
+								<Route path="orders/:id" element={<OrderDetailPage />} />
 								<Route path="books" element={<PlaceholderPage />} />
 								<Route path="customers/walk-in" element={<PlaceholderPage />} />
 								<Route path="customers/members" element={<PlaceholderPage />} />

@@ -1,5 +1,14 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, UserPlus } from "lucide-react";
+import {
+	ArrowRight,
+	Eye,
+	EyeOff,
+	Loader2,
+	Lock,
+	Mail,
+	Printer,
+	User,
+} from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
@@ -7,14 +16,6 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { LanguageSwitcher } from "@/components/shared/LanguageSwitcher";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardFooter,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -24,6 +25,7 @@ export default function RegisterCustomerPage() {
 	const { t } = useLanguage();
 	const navigate = useNavigate();
 	const [isLoading, setIsLoading] = useState(false);
+	const [showPassword, setShowPassword] = useState(false);
 
 	const registerSchema = z.object({
 		email: z.string().email(t("auth.validation.email_invalid")),
@@ -56,27 +58,37 @@ export default function RegisterCustomerPage() {
 	};
 
 	return (
-		<div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-background to-muted p-4">
-			<div className="absolute top-4 left-4">
+		<div className="min-h-screen flex flex-col items-center justify-center bg-background p-6">
+			<div className="fixed top-6 start-6">
 				<LanguageSwitcher />
 			</div>
 
-			<Card className="w-full max-w-md">
-				<CardHeader className="text-center">
-					<CardTitle className="text-2xl font-bold">{t("app.name")}</CardTitle>
-					<CardDescription>
-						{t("auth.register_customer_description")}
-					</CardDescription>
-				</CardHeader>
-				<form onSubmit={handleSubmit(onSubmit)}>
-					<CardContent className="space-y-4">
+			<main className="w-full max-w-[440px]">
+				<div className="flex flex-col items-center mb-6 text-center">
+					<div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center text-primary-foreground mb-4">
+						<Printer className="h-6 w-6" />
+					</div>
+					<h1 className="font-bold text-2xl tracking-tight text-primary">
+						{t("app.name")}
+					</h1>
+					<p className="text-sm text-muted-foreground mt-1">
+						{t("auth.register_customer_title")}
+					</p>
+				</div>
+
+				<div className="bg-card border border-border rounded-xl p-8">
+					<form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
 						<div className="space-y-2">
 							<Label htmlFor="full_name">{t("auth.full_name")}</Label>
-							<Input
-								id="full_name"
-								placeholder={t("auth.full_name")}
-								{...register("full_name")}
-							/>
+							<div className="relative">
+								<User className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+								<Input
+									id="full_name"
+									placeholder="John Doe"
+									className="ps-10"
+									{...register("full_name")}
+								/>
+							</div>
 							{errors.full_name && (
 								<p className="text-sm text-destructive">
 									{errors.full_name.message}
@@ -85,13 +97,17 @@ export default function RegisterCustomerPage() {
 						</div>
 						<div className="space-y-2">
 							<Label htmlFor="email">{t("auth.email")}</Label>
-							<Input
-								id="email"
-								type="email"
-								dir="ltr"
-								placeholder="example@email.com"
-								{...register("email")}
-							/>
+							<div className="relative">
+								<Mail className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+								<Input
+									id="email"
+									type="email"
+									dir="ltr"
+									placeholder="name@example.com"
+									className="ps-10"
+									{...register("email")}
+								/>
+							</div>
 							{errors.email && (
 								<p className="text-sm text-destructive">
 									{errors.email.message}
@@ -100,33 +116,64 @@ export default function RegisterCustomerPage() {
 						</div>
 						<div className="space-y-2">
 							<Label htmlFor="password">{t("auth.password")}</Label>
-							<Input
-								id="password"
-								type="password"
-								placeholder="••••••••"
-								{...register("password")}
-							/>
+							<div className="relative">
+								<Lock className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+								<Input
+									id="password"
+									type={showPassword ? "text" : "password"}
+									placeholder="••••••••"
+									className="ps-10 pe-12"
+									{...register("password")}
+								/>
+								<Button
+									type="button"
+									variant="ghost"
+									size="icon"
+									className="absolute end-3 top-1/2 -translate-y-1/2"
+									onClick={() => setShowPassword(!showPassword)}
+								>
+									{showPassword ? (
+										<EyeOff className="h-4 w-4" />
+									) : (
+										<Eye className="h-4 w-4" />
+									)}
+								</Button>
+							</div>
+							<p className="text-xs text-muted-foreground">
+								Must be at least 8 characters with a mix of letters and numbers.
+							</p>
 							{errors.password && (
 								<p className="text-sm text-destructive">
 									{errors.password.message}
 								</p>
 							)}
 						</div>
-					</CardContent>
-					<CardFooter className="flex flex-col gap-3">
-						<Button type="submit" className="w-full" disabled={isLoading}>
-							{isLoading ? <Loader2 className="animate-spin" /> : <UserPlus />}
+						<Button
+							type="submit"
+							className="w-full py-3.5 gap-2"
+							disabled={isLoading}
+						>
+							{isLoading ? (
+								<Loader2 className="animate-spin h-4 w-4" />
+							) : (
+								<ArrowRight className="h-4 w-4" />
+							)}
 							{t("auth.register_button")}
 						</Button>
-						<Link
-							to="/login"
-							className="text-sm text-muted-foreground hover:text-primary transition-colors"
-						>
-							{t("auth.have_account")} {t("auth.login")}
-						</Link>
-					</CardFooter>
-				</form>
-			</Card>
+					</form>
+					<div className="mt-8 pt-6 border-t border-border text-center">
+						<p className="text-sm text-muted-foreground">
+							{t("auth.have_account")}{" "}
+							<Link
+								to="/login"
+								className="text-primary font-bold hover:underline"
+							>
+								{t("auth.login")}
+							</Link>
+						</p>
+					</div>
+				</div>
+			</main>
 		</div>
 	);
 }

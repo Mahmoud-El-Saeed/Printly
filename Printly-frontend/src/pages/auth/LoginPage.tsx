@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, LogIn } from "lucide-react";
+import { ArrowRight, Loader2, Lock, Mail, Printer } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
@@ -7,14 +7,6 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { LanguageSwitcher } from "@/components/shared/LanguageSwitcher";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardFooter,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
@@ -56,28 +48,47 @@ export default function LoginPage() {
 	};
 
 	return (
-		<div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-background to-muted p-4">
-			{/* Language Switcher at top */}
-			<div className="absolute top-4 left-4">
+		<div className="min-h-screen flex flex-col items-center justify-center bg-background p-6">
+			<div className="fixed top-6 start-6">
 				<LanguageSwitcher />
 			</div>
 
-			<Card className="w-full max-w-md">
-				<CardHeader className="text-center">
-					<CardTitle className="text-2xl font-bold">{t("app.name")}</CardTitle>
-					<CardDescription>{t("auth.login_description")}</CardDescription>
-				</CardHeader>
-				<form onSubmit={handleSubmit(onSubmit)}>
-					<CardContent className="space-y-4">
+			<main className="w-full max-w-[440px] flex flex-col items-center">
+				<div className="mb-6 text-center flex flex-col items-center gap-2">
+					<div className="w-16 h-16 rounded-xl bg-primary flex items-center justify-center text-primary-foreground mb-2">
+						<Printer className="h-8 w-8" />
+					</div>
+					<h1 className="font-bold text-2xl tracking-tight text-primary">
+						{t("app.name")}
+					</h1>
+					<p className="text-sm font-medium text-muted-foreground uppercase tracking-widest">
+						Management System
+					</p>
+				</div>
+
+				<div className="w-full bg-card border border-border p-10 rounded-xl">
+					<div className="mb-8">
+						<h2 className="font-bold text-xl text-foreground mb-1">
+							{t("auth.login_title")}
+						</h2>
+						<p className="text-xs text-muted-foreground">
+							{t("auth.login_description")}
+						</p>
+					</div>
+					<form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
 						<div className="space-y-2">
 							<Label htmlFor="email">{t("auth.email")}</Label>
-							<Input
-								id="email"
-								type="email"
-								placeholder="example@email.com"
-								dir="ltr"
-								{...register("email")}
-							/>
+							<div className="relative">
+								<Mail className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+								<Input
+									id="email"
+									type="email"
+									placeholder="name@printshop.com"
+									dir="ltr"
+									className="ps-10"
+									{...register("email")}
+								/>
+							</div>
 							{errors.email && (
 								<p className="text-sm text-destructive">
 									{errors.email.message}
@@ -86,42 +97,61 @@ export default function LoginPage() {
 						</div>
 						<div className="space-y-2">
 							<Label htmlFor="password">{t("auth.password")}</Label>
-							<Input
-								id="password"
-								type="password"
-								placeholder="••••••••"
-								{...register("password")}
-							/>
+							<div className="relative">
+								<Lock className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+								<Input
+									id="password"
+									type="password"
+									placeholder="••••••••"
+									className="ps-10"
+									{...register("password")}
+								/>
+							</div>
 							{errors.password && (
 								<p className="text-sm text-destructive">
 									{errors.password.message}
 								</p>
 							)}
 						</div>
-					</CardContent>
-					<CardFooter className="flex flex-col gap-3">
-						<Button type="submit" className="w-full" disabled={isLoading}>
-							{isLoading ? <Loader2 className="animate-spin" /> : <LogIn />}
+						<Button
+							type="submit"
+							className="w-full py-3.5 gap-2"
+							disabled={isLoading}
+						>
+							{isLoading ? (
+								<Loader2 className="animate-spin h-4 w-4" />
+							) : (
+								<ArrowRight className="h-4 w-4" />
+							)}
 							{t("auth.login_button")}
 						</Button>
-						<div className="flex gap-4 text-sm text-muted-foreground w-full justify-center">
-							<Link
-								to="/register/shop-owner"
-								className="hover:text-primary transition-colors"
-							>
-								{t("auth.create_shop_owner")}
-							</Link>
-							<span>|</span>
-							<Link
-								to="/register/customer"
-								className="hover:text-primary transition-colors"
-							>
-								{t("auth.create_customer")}
-							</Link>
-						</div>
-					</CardFooter>
-				</form>
-			</Card>
+					</form>
+				</div>
+
+				<div className="mt-8 grid grid-cols-1 gap-4 w-full">
+					<div className="flex items-center justify-center gap-4 text-xs">
+						<span className="h-px flex-1 bg-border" />
+						<span className="text-muted-foreground">
+							{t("auth.no_account")}
+						</span>
+						<span className="h-px flex-1 bg-border" />
+					</div>
+					<div className="flex flex-col sm:flex-row gap-3">
+						<Link
+							to="/register/shop-owner"
+							className="flex-1 text-center py-2.5 px-4 border border-border rounded-lg text-primary font-medium text-sm bg-muted hover:bg-secondary transition-colors"
+						>
+							{t("auth.create_shop_owner")}
+						</Link>
+						<Link
+							to="/register/customer"
+							className="flex-1 text-center py-2.5 px-4 border border-border rounded-lg text-secondary font-medium text-sm bg-muted hover:bg-secondary transition-colors"
+						>
+							{t("auth.create_customer")}
+						</Link>
+					</div>
+				</div>
+			</main>
 		</div>
 	);
 }
