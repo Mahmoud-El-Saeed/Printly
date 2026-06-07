@@ -18,6 +18,7 @@ import WalkInCustomersPage from "@/pages/customers/WalkInCustomersPage";
 // Dashboard Pages
 import DashboardPage from "@/pages/dashboard/DashboardPage";
 import PlaceholderPage from "@/pages/dashboard/PlaceholderPage";
+import MaterialsPage from "@/pages/materials/MaterialsPage";
 import NewOrderPage from "@/pages/orders/NewOrderPage";
 import OrderDetailPage from "@/pages/orders/OrderDetailPage";
 // Orders Pages
@@ -70,7 +71,7 @@ function App() {
 									path="customers/link-requests"
 									element={<LinkRequestsPage />}
 								/>
-								<Route path="materials" element={<PlaceholderPage />} />
+								<Route path="materials" element={<MaterialsPage />} />
 								<Route path="pricing" element={<PlaceholderPage />} />
 								<Route path="payments" element={<PlaceholderPage />} />
 								<Route path="expenses" element={<PlaceholderPage />} />

@@ -1,0 +1,203 @@
+import { useQuery } from "@tanstack/react-query";
+import {
+	AlertTriangle,
+	CheckCircle,
+	Eye,
+	Package,
+	PackagePlus,
+	Pencil,
+	Trash2,
+	Wallet,
+} from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { FilterBar } from "@/components/shared/FilterBar";
+import { PageHeader } from "@/components/shared/PageHeader";
+import { StatsCard } from "@/components/shared/StatsCard";
+import { DataTable } from "@/components/tables/DataTable";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { materialsApi } from "@/lib/api/materials";
+import { formatCurrency } from "@/lib/utils/formatCurrency";
+import type { MaterialResponse } from "@/types/material";
+
+export default function MaterialsPage() {
+	const { t, language } = useLanguage();
+	const navigate = useNavigate();
+	const [search, setSearch] = useState("");
+	const [page, setPage] = useState(1);
+	const pageSize = 10;
+
+	const { data, isLoading } = useQuery({
+		queryKey: ["materials", search, page],
+		queryFn: () =>
+			materialsApi.list({
+				name: search || undefined,
+				offset: (page - 1) * pageSize,
+				limit: pageSize,
+			}),
+	});
+
+	const stats = useMemo(() => {
+		const items = data?.items ?? [];
+		const lowStock = items.filter(
+			(i) => i.current_stock <= i.min_stock_alert,
+		).length;
+		const totalValue = items.reduce(
+			(sum, i) => sum + i.cost_per_unit * i.current_stock,
+			0,
+		);
+		const activeCount = items.filter((i) => i.is_active).length;
+		return { lowStock, totalValue, activeCount };
+	}, [data]);
+
+	const columns = [
+		{
+			key: "name",
+			header: t("materials.name"),
+			render: (row: MaterialResponse) => (
+				<span className="font-semibold text-primary">{row.name}</span>
+			),
+		},
+		{
+			key: "unit",
+			header: t("materials.unit"),
+			render: (row: MaterialResponse) => (
+				<span className="text-on-surface-variant">{row.unit}</span>
+			),
+		},
+		{
+			key: "current_stock",
+			header: t("materials.current_stock"),
+			render: (row: MaterialResponse) =>
+				row.current_stock <= row.min_stock_alert ? (
+					<span className="inline-flex items-center gap-1 text-error tabular-nums">
+						{row.current_stock}
+						<AlertTriangle className="h-3.5 w-3.5" />
+					</span>
+				) : (
+					<span className="tabular-nums">{row.current_stock}</span>
+				),
+		},
+		{
+			key: "cost_per_unit",
+			header: t("materials.cost_per_unit"),
+			render: (row: MaterialResponse) => (
+				<span className="tabular-nums">
+					{formatCurrency(row.cost_per_unit, language)}
+				</span>
+			),
+		},
+		{
+			key: "min_stock_alert",
+			header: t("materials.min_alert"),
+			render: (row: MaterialResponse) => (
+				<span className="tabular-nums">{row.min_stock_alert}</span>
+			),
+		},
+		{
+			key: "status",
+			header: t("materials.status"),
+			render: (row: MaterialResponse) => (
+				<span
+					className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+						row.is_active
+							? "bg-green-100 text-green-800"
+							: "bg-gray-100 text-gray-600"
+					}`}
+				>
+					{row.is_active ? t("materials.active") : t("materials.inactive")}
+				</span>
+			),
+		},
+		{
+			key: "actions",
+			header: t("materials.actions"),
+			render: (row: MaterialResponse) => (
+				<div className="flex justify-end gap-1">
+					<button
+						type="button"
+						className="p-1.5 rounded-md hover:bg-surface-container text-on-surface-variant transition-colors"
+						onClick={() => navigate(`/materials/${row.id}`)}
+					>
+						<Eye className="h-4 w-4" />
+					</button>
+					<button
+						type="button"
+						className="p-1.5 rounded-md hover:bg-surface-container text-on-surface-variant transition-colors"
+						onClick={() => navigate(`/materials/${row.id}/edit`)}
+					>
+						<Pencil className="h-4 w-4" />
+					</button>
+					<button
+						type="button"
+						className="p-1.5 rounded-md hover:bg-error-container text-error transition-colors"
+					>
+						<Trash2 className="h-4 w-4" />
+					</button>
+				</div>
+			),
+		},
+	];
+
+	const onSearchChange = useCallback(
+		(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value),
+		[],
+	);
+
+	return (
+		<div className="space-y-6">
+			<PageHeader
+				title={t("materials.title")}
+				subtitle={t("materials.subtitle")}
+				actionLabel={t("materials.add_material")}
+				actionIcon={PackagePlus}
+				onAction={() => navigate("/materials/new")}
+			/>
+
+			<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+				<StatsCard
+					icon={Package}
+					label={t("materials.total_materials")}
+					value={String(data?.total ?? 0)}
+				/>
+				<StatsCard
+					icon={CheckCircle}
+					label={t("materials.active_items")}
+					value={String(stats.activeCount)}
+					changeColor="text-primary"
+				/>
+				<StatsCard
+					icon={AlertTriangle}
+					label={t("materials.low_stock")}
+					value={String(stats.lowStock)}
+					changeColor="text-error"
+				/>
+				<StatsCard
+					icon={Wallet}
+					label={t("materials.total_value")}
+					value={formatCurrency(stats.totalValue, language)}
+				/>
+			</div>
+
+			<div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex flex-wrap items-center gap-4">
+				<FilterBar
+					searchValue={search}
+					onSearchChange={onSearchChange}
+					searchPlaceholder={t("materials.search_placeholder")}
+				/>
+			</div>
+
+			<DataTable
+				columns={columns}
+				data={data?.items ?? []}
+				total={data?.total ?? 0}
+				page={page}
+				pageSize={pageSize}
+				onPageChange={setPage}
+				onRowClick={(row) => navigate(`/materials/${row.id}`)}
+				rowKey={(row) => row.id}
+				emptyMessage={isLoading ? t("common.loading") : t("materials.no_data")}
+			/>
+		</div>
+	);
+}
