@@ -17,15 +17,18 @@ import MembersPage from "@/pages/customers/MembersPage";
 import WalkInCustomersPage from "@/pages/customers/WalkInCustomersPage";
 // Dashboard Pages
 import DashboardPage from "@/pages/dashboard/DashboardPage";
-import PlaceholderPage from "@/pages/dashboard/PlaceholderPage";
+import ExpensesPage from "@/pages/expenses/ExpensesPage";
 import MaterialsPage from "@/pages/materials/MaterialsPage";
+import NotificationsPage from "@/pages/notifications/NotificationsPage";
 import NewOrderPage from "@/pages/orders/NewOrderPage";
 import OrderDetailPage from "@/pages/orders/OrderDetailPage";
 // Orders Pages
 import OrdersListPage from "@/pages/orders/OrdersListPage";
+import PaymentsPage from "@/pages/payments/PaymentsPage";
 // Portal Pages
 import PortalHomePage from "@/pages/portal/PortalHomePage";
 import PricingPage from "@/pages/pricing/PricingPage";
+import SettingsPage from "@/pages/settings/SettingsPage";
 
 const queryClient = new QueryClient({
 	defaultOptions: {
@@ -73,10 +76,10 @@ function App() {
 								/>
 								<Route path="materials" element={<MaterialsPage />} />
 								<Route path="pricing" element={<PricingPage />} />
-								<Route path="payments" element={<PlaceholderPage />} />
-								<Route path="expenses" element={<PlaceholderPage />} />
-								<Route path="notifications" element={<PlaceholderPage />} />
-								<Route path="settings" element={<PlaceholderPage />} />
+								<Route path="payments" element={<PaymentsPage />} />
+								<Route path="expenses" element={<ExpensesPage />} />
+								<Route path="notifications" element={<NotificationsPage />} />
+								<Route path="settings" element={<SettingsPage />} />
 							</Route>
 
 							{/* Customer Portal Routes (Protected - Customer Only) */}
