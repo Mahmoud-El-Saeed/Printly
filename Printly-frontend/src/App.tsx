@@ -12,6 +12,7 @@ import LoginPage from "@/pages/auth/LoginPage";
 import RegisterCustomerPage from "@/pages/auth/RegisterCustomerPage";
 import RegisterShopOwnerPage from "@/pages/auth/RegisterShopOwnerPage";
 import BooksListPage from "@/pages/books/BooksListPage";
+import WalkInCustomersPage from "@/pages/customers/WalkInCustomersPage";
 // Dashboard Pages
 import DashboardPage from "@/pages/dashboard/DashboardPage";
 import PlaceholderPage from "@/pages/dashboard/PlaceholderPage";
@@ -58,7 +59,10 @@ function App() {
 								<Route path="orders/new" element={<NewOrderPage />} />
 								<Route path="orders/:id" element={<OrderDetailPage />} />
 								<Route path="books" element={<BooksListPage />} />
-								<Route path="customers/walk-in" element={<PlaceholderPage />} />
+								<Route
+									path="customers/walk-in"
+									element={<WalkInCustomersPage />}
+								/>
 								<Route path="customers/members" element={<PlaceholderPage />} />
 								<Route
 									path="customers/link-requests"
