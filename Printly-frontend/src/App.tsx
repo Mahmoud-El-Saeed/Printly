@@ -11,7 +11,7 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import LoginPage from "@/pages/auth/LoginPage";
 import RegisterCustomerPage from "@/pages/auth/RegisterCustomerPage";
 import RegisterShopOwnerPage from "@/pages/auth/RegisterShopOwnerPage";
-
+import BooksListPage from "@/pages/books/BooksListPage";
 // Dashboard Pages
 import DashboardPage from "@/pages/dashboard/DashboardPage";
 import PlaceholderPage from "@/pages/dashboard/PlaceholderPage";
@@ -57,7 +57,7 @@ function App() {
 								<Route path="orders" element={<OrdersListPage />} />
 								<Route path="orders/new" element={<NewOrderPage />} />
 								<Route path="orders/:id" element={<OrderDetailPage />} />
-								<Route path="books" element={<PlaceholderPage />} />
+								<Route path="books" element={<BooksListPage />} />
 								<Route path="customers/walk-in" element={<PlaceholderPage />} />
 								<Route path="customers/members" element={<PlaceholderPage />} />
 								<Route
