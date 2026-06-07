@@ -12,6 +12,7 @@ import LoginPage from "@/pages/auth/LoginPage";
 import RegisterCustomerPage from "@/pages/auth/RegisterCustomerPage";
 import RegisterShopOwnerPage from "@/pages/auth/RegisterShopOwnerPage";
 import BooksListPage from "@/pages/books/BooksListPage";
+import MembersPage from "@/pages/customers/MembersPage";
 import WalkInCustomersPage from "@/pages/customers/WalkInCustomersPage";
 // Dashboard Pages
 import DashboardPage from "@/pages/dashboard/DashboardPage";
@@ -63,7 +64,7 @@ function App() {
 									path="customers/walk-in"
 									element={<WalkInCustomersPage />}
 								/>
-								<Route path="customers/members" element={<PlaceholderPage />} />
+								<Route path="customers/members" element={<MembersPage />} />
 								<Route
 									path="customers/link-requests"
 									element={<PlaceholderPage />}
