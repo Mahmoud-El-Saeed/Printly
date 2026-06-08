@@ -349,6 +349,16 @@ const en = {
 		coming_soon: "Coming Soon",
 		page_under_development:
 			"This page is under development and will be ready soon.",
+		back: "Back",
+		saving: "Saving...",
+		deleting: "Deleting...",
+		delete_confirm: "Are you sure you want to delete this item?",
+		delete_success: "Deleted successfully",
+		delete_failed: "Failed to delete",
+		create_success: "Created successfully",
+		update_success: "Updated successfully",
+		action_failed: "Action failed",
+		required: "Required",
 	},
 	status: {
 		new: "New",
