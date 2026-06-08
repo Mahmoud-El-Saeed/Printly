@@ -2,6 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { UserPlus } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { FormField } from "@/components/shared/FormField";
 import { PageFormLayout } from "@/components/shared/PageFormLayout";
 import { Button } from "@/components/ui/button";
@@ -44,6 +45,9 @@ export default function CreateWalkInCustomerPage() {
 		},
 		onSuccess: () => {
 			navigate("/customers/walk-in");
+		},
+		onError: () => {
+			toast.error(t("common.error"));
 		},
 	});
 

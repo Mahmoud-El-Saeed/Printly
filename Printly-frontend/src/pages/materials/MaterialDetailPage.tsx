@@ -93,7 +93,7 @@ export default function MaterialDetailPage() {
 			),
 		},
 		{
-			key: "created_by",
+			key: "created_at",
 			header: t("materials.created_at"),
 			render: (row: TransactionResponse) => (
 				<span className="text-on-surface-variant text-xs">

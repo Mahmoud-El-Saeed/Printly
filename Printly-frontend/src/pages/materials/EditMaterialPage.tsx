@@ -1,10 +1,12 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "sonner";
 import { FormField } from "@/components/shared/FormField";
 import { PageFormLayout } from "@/components/shared/PageFormLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { materialsApi } from "@/lib/api/materials";
 import type { MaterialUpdate } from "@/types/material";
@@ -32,6 +34,8 @@ export default function EditMaterialPage() {
 	const {
 		register,
 		handleSubmit,
+		watch,
+		setValue,
 		formState: { errors },
 	} = useForm<FormValues>({
 		values: material
@@ -45,9 +49,15 @@ export default function EditMaterialPage() {
 			: undefined,
 	});
 
+	const maxChars = (max: number) =>
+		t("validation.max_chars").replace("{max}", String(max));
+
 	const mutation = useMutation({
 		mutationFn: (data: MaterialUpdate) => materialsApi.update(materialId, data),
 		onSuccess: () => navigate(`/materials/${materialId}`),
+		onError: () => {
+			toast.error(t("common.error"));
+		},
 	});
 
 	const onSubmit = (data: FormValues) => {
@@ -85,7 +95,7 @@ export default function EditMaterialPage() {
 									required: t("common.required"),
 									maxLength: {
 										value: 200,
-										message: "Max 200 characters",
+										message: maxChars(200),
 									},
 								})}
 							/>
@@ -100,7 +110,7 @@ export default function EditMaterialPage() {
 									required: t("common.required"),
 									maxLength: {
 										value: 20,
-										message: "Max 20 characters",
+										message: maxChars(20),
 									},
 								})}
 							/>
@@ -117,7 +127,7 @@ export default function EditMaterialPage() {
 									valueAsNumber: true,
 									min: {
 										value: 0,
-										message: "Must be >= 0",
+										message: t("validation.min_value").replace("{min}", "0"),
 									},
 								})}
 							/>
@@ -134,22 +144,21 @@ export default function EditMaterialPage() {
 									valueAsNumber: true,
 									min: {
 										value: 0,
-										message: "Must be >= 0",
+										message: t("validation.min_value").replace("{min}", "0"),
 									},
 								})}
 							/>
 						</FormField>
 						<FormField label={t("materials.status")}>
-							<label className="flex items-center gap-2">
-								<input
-									type="checkbox"
-									{...register("is_active")}
-									className="h-4 w-4 rounded border-input"
+							<div className="flex items-center gap-2">
+								<Switch
+									checked={watch("is_active")}
+									onCheckedChange={(val) => setValue("is_active", val)}
 								/>
 								<span className="text-sm text-on-surface">
 									{t("materials.active")}
 								</span>
-							</label>
+							</div>
 						</FormField>
 					</div>
 				</div>

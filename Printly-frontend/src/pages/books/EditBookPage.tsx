@@ -3,6 +3,7 @@ import { Upload } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "sonner";
 import { FormField } from "@/components/shared/FormField";
 import { PageFormLayout } from "@/components/shared/PageFormLayout";
 import { Button } from "@/components/ui/button";
@@ -52,6 +53,9 @@ export default function EditBookPage() {
 			: undefined,
 	});
 
+	const maxChars = (max: number) =>
+		t("validation.max_chars").replace("{max}", String(max));
+
 	const updateMutation = useMutation({
 		mutationFn: async (data: BookFormValues) => {
 			const updateData: BookUpdate = {
@@ -67,6 +71,9 @@ export default function EditBookPage() {
 		},
 		onSuccess: () => {
 			navigate(`/books/${id}`);
+		},
+		onError: () => {
+			toast.error(t("common.error"));
 		},
 	});
 
@@ -97,7 +104,7 @@ export default function EditBookPage() {
 							<Input
 								{...register("title", {
 									required: t("common.required"),
-									maxLength: { value: 300, message: "Max 300 characters" },
+									maxLength: { value: 300, message: maxChars(300) },
 								})}
 								className="h-11"
 							/>
@@ -108,7 +115,7 @@ export default function EditBookPage() {
 						>
 							<Input
 								{...register("subject", {
-									maxLength: { value: 200, message: "Max 200 characters" },
+									maxLength: { value: 200, message: maxChars(200) },
 								})}
 								className="h-11"
 							/>
@@ -122,7 +129,10 @@ export default function EditBookPage() {
 								type="number"
 								{...register("total_pages", {
 									required: t("common.required"),
-									min: { value: 1, message: "Min 1 page" },
+									min: {
+										value: 1,
+										message: t("validation.min_value").replace("{min}", "1"),
+									},
 									valueAsNumber: true,
 								})}
 								className="h-11 tabular-nums"

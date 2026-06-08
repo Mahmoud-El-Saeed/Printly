@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2, Plus } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { FormField } from "@/components/shared/FormField";
 import { Button } from "@/components/ui/button";
 import {
@@ -78,6 +79,9 @@ export function AddTransactionDialog({
 			queryClient.invalidateQueries({ queryKey: ["materials"] });
 			reset();
 			onOpenChange(false);
+		},
+		onError: () => {
+			toast.error(t("common.error"));
 		},
 	});
 

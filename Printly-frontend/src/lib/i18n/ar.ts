@@ -44,6 +44,11 @@ const ar = {
 			name_min: "الاسم يجب أن يكون 3 أحرف على الأقل",
 			shop_name_min: "اسم المحل يجب أن يكون 3 أحرف على الأقل",
 			password_mismatch: "كلمات المرور غير متطابقة",
+			password_hint: "يجب أن تكون 8 أحرف على الأقل مع مزيج من الحروف والأرقام.",
+			max_chars: "الحد الأقصى {max} حرف",
+			min_value: "يجب أن يكون على الأقل {min}",
+			positive_value: "يجب أن يكون أكبر من صفر",
+			required: "هذا الحقل مطلوب",
 		},
 	},
 	nav: {
@@ -412,6 +417,10 @@ const ar = {
 		update_success: "تم التحديث بنجاح",
 		action_failed: "فشلت العملية",
 		required: "مطلوب",
+		error: "حدث خطأ. يرجى المحاولة مرة أخرى.",
+		detail: "التفاصيل",
+		actions: "إجراءات",
+		status: "الحالة",
 	},
 	status: {
 		new: "جديد",

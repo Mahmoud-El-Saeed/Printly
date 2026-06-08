@@ -1,7 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CheckCircle, Eye, Pencil, Plus, Trash2, X } from "lucide-react";
 import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { ConfirmDeleteDialog } from "@/components/shared/ConfirmDeleteDialog";
 import { FilterBar } from "@/components/shared/FilterBar";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { StatusBadge } from "@/components/shared/StatusBadge";
@@ -17,8 +19,10 @@ const STATUS_OPTIONS: Array<{ value: string; label: string }> = [];
 export default function OrdersListPage() {
 	const { t, language } = useLanguage();
 	const navigate = useNavigate();
+	const queryClient = useQueryClient();
 	const [search, setSearch] = useState("");
 	const [statusFilter, setStatusFilter] = useState("");
+	const [deleteId, setDeleteId] = useState<string | null>(null);
 	const [page, setPage] = useState(1);
 	const pageSize = 10;
 
@@ -37,6 +41,17 @@ export default function OrdersListPage() {
 				offset: (page - 1) * pageSize,
 				limit: pageSize,
 			}),
+	});
+
+	const deleteMutation = useMutation({
+		mutationFn: () => ordersApi.delete(deleteId!),
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ["orders"] });
+			setDeleteId(null);
+		},
+		onError: () => {
+			toast.error(t("common.error"));
+		},
 	});
 
 	const columns = [
@@ -124,6 +139,7 @@ export default function OrdersListPage() {
 					<button
 						type="button"
 						className="p-1.5 rounded-md hover:bg-error-container text-error transition-colors"
+						onClick={() => setDeleteId(row.id)}
 					>
 						<Trash2 className="h-4 w-4" />
 					</button>
@@ -174,6 +190,16 @@ export default function OrdersListPage() {
 				onRowClick={(row) => navigate(`/orders/${row.id}`)}
 				rowKey={(row) => row.id}
 				emptyMessage={isLoading ? t("common.loading") : t("common.no_data")}
+			/>
+			<ConfirmDeleteDialog
+				open={!!deleteId}
+				onOpenChange={(open) => {
+					if (!open) setDeleteId(null);
+				}}
+				onConfirm={() => deleteMutation.mutate()}
+				title={t("common.delete")}
+				description={t("common.delete_confirm")}
+				isLoading={deleteMutation.isPending}
 			/>
 		</div>
 	);

@@ -34,16 +34,6 @@ export default function DashboardPage() {
 		queryFn: dashboardApi.getOverview,
 	});
 
-	const { data: topMaterials } = useQuery({
-		queryKey: ["dashboard-top-materials"],
-		queryFn: dashboardApi.getTopMaterials,
-	});
-
-	const { data: topCustomers } = useQuery({
-		queryKey: ["dashboard-top-customers"],
-		queryFn: dashboardApi.getTopCustomers,
-	});
-
 	const stats = [
 		{
 			icon: TrendingUp,
@@ -255,7 +245,8 @@ export default function DashboardPage() {
 								</tr>
 							</thead>
 							<tbody className="divide-y divide-border">
-								{!topMaterials || topMaterials.materials.length === 0 ? (
+								{!overview?.top_materials ||
+								overview.top_materials.materials.length === 0 ? (
 									<tr>
 										<td
 											colSpan={3}
@@ -265,7 +256,7 @@ export default function DashboardPage() {
 										</td>
 									</tr>
 								) : (
-									topMaterials.materials.map((m) => (
+									overview.top_materials.materials.map((m) => (
 										<tr key={m.material_id} className="hover:bg-muted/30">
 											<td className="px-6 py-4 text-sm">{m.material_name}</td>
 											<td className="px-6 py-4 text-sm tabular-nums">
@@ -304,7 +295,8 @@ export default function DashboardPage() {
 								</tr>
 							</thead>
 							<tbody className="divide-y divide-border">
-								{!topCustomers || topCustomers.customers.length === 0 ? (
+								{!overview?.top_customers ||
+								overview.top_customers.customers.length === 0 ? (
 									<tr>
 										<td
 											colSpan={3}
@@ -314,7 +306,7 @@ export default function DashboardPage() {
 										</td>
 									</tr>
 								) : (
-									topCustomers.customers.map((c) => (
+									overview.top_customers.customers.map((c) => (
 										<tr key={c.customer_id} className="hover:bg-muted/30">
 											<td className="px-6 py-4 text-sm">{c.customer_name}</td>
 											<td className="px-6 py-4 text-sm tabular-nums">

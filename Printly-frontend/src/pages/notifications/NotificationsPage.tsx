@@ -60,6 +60,9 @@ export default function NotificationsPage() {
 			toast.success(t("notifications.marked_all_read"));
 			queryClient.invalidateQueries({ queryKey: ["notifications"] });
 		},
+		onError: () => {
+			toast.error(t("common.error"));
+		},
 	});
 
 	const stats = useMemo(() => {

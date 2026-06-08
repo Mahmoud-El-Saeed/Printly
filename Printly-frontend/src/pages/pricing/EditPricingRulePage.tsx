@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "sonner";
 import { FormField } from "@/components/shared/FormField";
 import { PageFormLayout } from "@/components/shared/PageFormLayout";
 import { Button } from "@/components/ui/button";
@@ -62,10 +63,16 @@ export default function EditPricingRulePage() {
 			: undefined,
 	});
 
+	const maxChars = (max: number) =>
+		t("validation.max_chars").replace("{max}", String(max));
+
 	const mutation = useMutation({
 		mutationFn: (data: PricingRuleUpdate) =>
 			pricingApi.updateRule(ruleId, data),
 		onSuccess: () => navigate("/pricing"),
+		onError: () => {
+			toast.error(t("common.error"));
+		},
 	});
 
 	const onSubmit = (data: FormValues) => {
@@ -108,7 +115,7 @@ export default function EditPricingRulePage() {
 									required: t("common.required"),
 									maxLength: {
 										value: 100,
-										message: "Max 100 characters",
+										message: maxChars(100),
 									},
 								})}
 							/>
@@ -160,7 +167,7 @@ export default function EditPricingRulePage() {
 									valueAsNumber: true,
 									min: {
 										value: 0.01,
-										message: "Must be > 0",
+										message: t("validation.positive_value"),
 									},
 								})}
 							/>

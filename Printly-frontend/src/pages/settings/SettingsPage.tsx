@@ -1,6 +1,5 @@
-import { AlertTriangle, Globe, Palette, Save, Store } from "lucide-react";
+import { AlertTriangle, Globe, Palette, Store } from "lucide-react";
 import { useState } from "react";
-import { toast } from "sonner";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -141,7 +140,8 @@ export default function SettingsPage() {
 				</Button>
 			</div>
 
-			<div className="flex justify-end">
+			{/* TODO: wire to API */}
+			{/* <div className="flex justify-end">
 				<Button
 					onClick={() => toast.success(t("settings.saved"))}
 					className="gap-2"
@@ -149,7 +149,7 @@ export default function SettingsPage() {
 					<Save className="h-4 w-4" />
 					{t("settings.save")}
 				</Button>
-			</div>
+			</div> */}
 		</div>
 	);
 }

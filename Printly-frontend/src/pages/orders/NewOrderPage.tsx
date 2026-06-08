@@ -1,14 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
-import {
-	ArrowLeft,
-	Plus,
-	PlusCircle,
-	Printer,
-	Trash2,
-	XCircle,
-} from "lucide-react";
-import { useState } from "react";
+import { ArrowLeft, Plus, PlusCircle, Trash2, XCircle } from "lucide-react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -42,11 +36,17 @@ interface OrderItemForm {
 	subtotal: number;
 }
 
-let uidCounter = 0;
-const nextUid = () => `item-${++uidCounter}`;
+function calcItemSubtotal(item: OrderItemForm): number {
+	return (
+		item.printing_price +
+		item.cover_price +
+		item.binding_price +
+		item.lamination_price
+	);
+}
 
 const defaultItem: OrderItemForm = {
-	uid: nextUid(),
+	uid: "item-0",
 	book_title: "",
 	copies: 1,
 	pages_per_copy: 0,
@@ -61,18 +61,11 @@ const defaultItem: OrderItemForm = {
 	subtotal: 0,
 };
 
-function calcItemSubtotal(item: OrderItemForm): number {
-	return (
-		item.printing_price +
-		item.cover_price +
-		item.binding_price +
-		item.lamination_price
-	);
-}
-
 export default function NewOrderPage() {
 	const { t, language } = useLanguage();
 	const navigate = useNavigate();
+	const uidRef = useRef(0);
+	const nextUid = () => `item-${++uidRef.current}`;
 	const [customer, setCustomer] = useState("");
 	const [dueDate, setDueDate] = useState("");
 	const [notes, setNotes] = useState("");
@@ -83,6 +76,9 @@ export default function NewOrderPage() {
 		mutationFn: (data: OrderCreate) => ordersApi.create(data),
 		onSuccess: (order) => {
 			navigate(`/orders/${order.id}`);
+		},
+		onError: () => {
+			toast.error(t("common.error"));
 		},
 	});
 
@@ -106,6 +102,18 @@ export default function NewOrderPage() {
 	const balanceDue = totalAmount - (parseFloat(paidAmount) || 0);
 
 	const handleSubmit = () => {
+		if (items.length === 0) {
+			toast.error(t("common.error"));
+			return;
+		}
+		const invalidItem = items.find(
+			(i) => !i.book_title.trim() || i.copies < 1 || i.pages_per_copy < 1,
+		);
+		if (invalidItem) {
+			toast.error(t("common.error"));
+			return;
+		}
+
 		const orderItems: OrderItemCreate[] = items.map((item) => ({
 			book_title: item.book_title,
 			copies: item.copies,
@@ -125,6 +133,7 @@ export default function NewOrderPage() {
 			due_date: dueDate || undefined,
 			notes: notes || undefined,
 			items: orderItems,
+			paid_amount: parseFloat(paidAmount) || undefined,
 		});
 	};
 
@@ -479,27 +488,17 @@ export default function NewOrderPage() {
 								>
 									{t("orders.create_order")}
 								</Button>
-								<Button
-									variant="outline"
-									className="w-full h-10 border-on-primary/30 text-on-primary hover:bg-white/10"
-								>
-									{t("orders.save_draft")}
-								</Button>
+								{/* TODO: implement */}
 							</div>
 						</div>
 					</div>
 
 					<div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex flex-col gap-3">
-						<button
-							type="button"
-							className="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container transition-colors rounded-lg font-medium text-sm"
-						>
-							<Printer className="h-4 w-4" />
-							{t("orders.print_receipt")}
-						</button>
+						{/* TODO: implement */}
 						<button
 							type="button"
 							className="flex items-center gap-3 px-3 py-2 text-error hover:bg-error-container/20 transition-colors rounded-lg font-medium text-sm"
+							onClick={() => navigate(-1)}
 						>
 							<XCircle className="h-4 w-4" />
 							{t("orders.cancel_order")}

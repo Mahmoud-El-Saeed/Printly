@@ -205,7 +205,11 @@ export default function OrderDetailPage() {
 								</div>
 							</div>
 							<div className="flex flex-col gap-3 pt-2">
-								<Button className="w-full h-12 bg-on-primary text-primary font-bold hover:bg-surface-bright shadow-md active:scale-[0.98] gap-2">
+								{/* TODO: implement */}
+								<Button
+									className="w-full h-12 bg-on-primary text-primary font-bold hover:bg-surface-bright shadow-md active:scale-[0.98] gap-2"
+									disabled
+								>
 									{t("orders.settle_payments")}
 								</Button>
 								<Button
@@ -220,16 +224,20 @@ export default function OrderDetailPage() {
 					</div>
 
 					<div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex flex-col gap-3">
+						{/* TODO: implement */}
 						<button
 							type="button"
-							className="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container transition-colors rounded-lg font-medium text-sm"
+							className="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container transition-colors rounded-lg font-medium text-sm opacity-50"
+							disabled
 						>
 							<Printer className="h-4 w-4" />
 							{t("orders.print_receipt")}
 						</button>
+						{/* TODO: implement */}
 						<button
 							type="button"
-							className="flex items-center gap-3 px-3 py-2 text-error hover:bg-error-container/20 transition-colors rounded-lg font-medium text-sm"
+							className="flex items-center gap-3 px-3 py-2 text-error hover:bg-error-container/20 transition-colors rounded-lg font-medium text-sm opacity-50"
+							disabled
 						>
 							<XCircle className="h-4 w-4" />
 							{t("orders.cancel_order")}

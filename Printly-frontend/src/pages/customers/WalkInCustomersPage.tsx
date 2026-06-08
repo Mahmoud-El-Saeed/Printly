@@ -100,7 +100,7 @@ export default function WalkInCustomersPage() {
 		},
 		{
 			key: "actions",
-			header: t("orders.actions"),
+			header: t("common.actions"),
 			render: (row: WalkInCustomerResponse) => (
 				<div className="flex justify-end gap-1">
 					<button

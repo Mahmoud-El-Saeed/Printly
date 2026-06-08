@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Controller, useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "sonner";
 import { FormField } from "@/components/shared/FormField";
 import { PageFormLayout } from "@/components/shared/PageFormLayout";
 import { Button } from "@/components/ui/button";
@@ -61,9 +62,15 @@ export default function EditExpensePage() {
 			: undefined,
 	});
 
+	const maxChars = (max: number) =>
+		t("validation.max_chars").replace("{max}", String(max));
+
 	const mutation = useMutation({
 		mutationFn: (data: ExpenseUpdate) => expensesApi.update(expenseId, data),
 		onSuccess: () => navigate("/expenses"),
+		onError: () => {
+			toast.error(t("common.error"));
+		},
 	});
 
 	const onSubmit = (data: FormValues) => {
@@ -129,7 +136,7 @@ export default function EditExpensePage() {
 									valueAsNumber: true,
 									min: {
 										value: 0.01,
-										message: "Must be > 0",
+										message: t("validation.positive_value"),
 									},
 								})}
 							/>
@@ -154,7 +161,7 @@ export default function EditExpensePage() {
 								{...register("description", {
 									maxLength: {
 										value: 500,
-										message: "Max 500 characters",
+										message: maxChars(500),
 									},
 								})}
 							/>

@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { FormField } from "@/components/shared/FormField";
 import { PageFormLayout } from "@/components/shared/PageFormLayout";
 import { Button } from "@/components/ui/button";
@@ -35,18 +36,24 @@ export default function CreateMaterialPage() {
 		},
 	});
 
+	const maxChars = (max: number) =>
+		t("validation.max_chars").replace("{max}", String(max));
+
 	const mutation = useMutation({
 		mutationFn: (data: MaterialCreate) => materialsApi.create(data),
 		onSuccess: () => navigate("/materials"),
+		onError: () => {
+			toast.error(t("common.error"));
+		},
 	});
 
 	const onSubmit = (data: FormValues) => {
 		mutation.mutate({
 			name: data.name,
 			unit: data.unit,
-			current_stock: data.current_stock || undefined,
-			min_stock_alert: data.min_stock_alert || undefined,
-			cost_per_unit: data.cost_per_unit || undefined,
+			current_stock: data.current_stock ?? undefined,
+			min_stock_alert: data.min_stock_alert ?? undefined,
+			cost_per_unit: data.cost_per_unit ?? undefined,
 		});
 	};
 
@@ -74,7 +81,7 @@ export default function CreateMaterialPage() {
 									required: t("common.required"),
 									maxLength: {
 										value: 200,
-										message: "Max 200 characters",
+										message: maxChars(200),
 									},
 								})}
 							/>
@@ -89,7 +96,7 @@ export default function CreateMaterialPage() {
 									required: t("common.required"),
 									maxLength: {
 										value: 20,
-										message: "Max 20 characters",
+										message: maxChars(20),
 									},
 								})}
 							/>
@@ -106,7 +113,7 @@ export default function CreateMaterialPage() {
 									valueAsNumber: true,
 									min: {
 										value: 0,
-										message: "Must be >= 0",
+										message: t("validation.min_value").replace("{min}", "0"),
 									},
 								})}
 							/>
@@ -123,7 +130,7 @@ export default function CreateMaterialPage() {
 									valueAsNumber: true,
 									min: {
 										value: 0,
-										message: "Must be >= 0",
+										message: t("validation.min_value").replace("{min}", "0"),
 									},
 								})}
 							/>
@@ -140,7 +147,7 @@ export default function CreateMaterialPage() {
 									valueAsNumber: true,
 									min: {
 										value: 0,
-										message: "Must be >= 0",
+										message: t("validation.min_value").replace("{min}", "0"),
 									},
 								})}
 							/>

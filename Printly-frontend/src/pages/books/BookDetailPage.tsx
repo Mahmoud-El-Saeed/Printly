@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
 	ArrowLeft,
 	CheckCircle,
@@ -27,6 +27,7 @@ export default function BookDetailPage() {
 	const navigate = useNavigate();
 	const { id } = useParams<{ id: string }>();
 	const [deleteOpen, setDeleteOpen] = useState(false);
+	const queryClient = useQueryClient();
 
 	const { data: book, isLoading } = useQuery({
 		queryKey: ["book", id],
@@ -38,6 +39,7 @@ export default function BookDetailPage() {
 		mutationFn: () => booksApi.delete(id ?? ""),
 		onSuccess: () => {
 			setDeleteOpen(false);
+			queryClient.invalidateQueries({ queryKey: ["books"] });
 			navigate("/books");
 		},
 	});

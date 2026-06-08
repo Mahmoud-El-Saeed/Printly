@@ -85,7 +85,7 @@ export default function LinkRequestsPage() {
 		},
 		{
 			key: "status",
-			header: t("orders.status"),
+			header: t("common.status"),
 			render: (row: CustomerLinkResponse) => (
 				<span
 					className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
@@ -120,7 +120,7 @@ export default function LinkRequestsPage() {
 		},
 		{
 			key: "actions",
-			header: t("orders.actions"),
+			header: t("common.actions"),
 			render: (row: CustomerLinkResponse) => (
 				<div className="flex justify-end gap-1">
 					<button

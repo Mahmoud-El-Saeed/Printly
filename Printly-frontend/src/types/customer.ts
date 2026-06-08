@@ -7,6 +7,7 @@ export interface WalkInCustomerResponse {
 	notes: string | null;
 	tenant_id: string;
 	created_at: string;
+	updated_at?: string;
 }
 
 export interface WalkInCustomerCreate {
@@ -35,6 +36,7 @@ export interface CustomerMemberResponse {
 	is_approved: boolean;
 	balance: number;
 	created_at: string;
+	updated_at?: string;
 }
 
 export interface CustomerMemberCreate {

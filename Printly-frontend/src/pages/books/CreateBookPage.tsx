@@ -3,6 +3,7 @@ import { Upload } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { FormField } from "@/components/shared/FormField";
 import { PageFormLayout } from "@/components/shared/PageFormLayout";
 import { Button } from "@/components/ui/button";
@@ -43,13 +44,15 @@ export default function CreateBookPage() {
 		},
 	});
 
+	const maxChars = (max: number) =>
+		t("validation.max_chars").replace("{max}", String(max));
+
 	const createMutation = useMutation({
 		mutationFn: async (data: BookFormValues) => {
 			const bookData: BookCreate = {
 				title: data.title,
 				subject: data.subject || undefined,
 				total_pages: data.total_pages,
-				file: file || undefined,
 			};
 			const book = await booksApi.create(bookData);
 			if (file) {
@@ -59,6 +62,9 @@ export default function CreateBookPage() {
 		},
 		onSuccess: () => {
 			navigate("/books");
+		},
+		onError: () => {
+			toast.error(t("common.error"));
 		},
 	});
 
@@ -88,7 +94,7 @@ export default function CreateBookPage() {
 							<Input
 								{...register("title", {
 									required: t("common.required"),
-									maxLength: { value: 300, message: "Max 300 characters" },
+									maxLength: { value: 300, message: maxChars(300) },
 								})}
 								className="h-11"
 							/>
@@ -99,7 +105,7 @@ export default function CreateBookPage() {
 						>
 							<Input
 								{...register("subject", {
-									maxLength: { value: 200, message: "Max 200 characters" },
+									maxLength: { value: 200, message: maxChars(200) },
 								})}
 								className="h-11"
 							/>
@@ -113,7 +119,10 @@ export default function CreateBookPage() {
 								type="number"
 								{...register("total_pages", {
 									required: t("common.required"),
-									min: { value: 1, message: "Min 1 page" },
+									min: {
+										value: 1,
+										message: t("validation.min_value").replace("{min}", "1"),
+									},
 									valueAsNumber: true,
 								})}
 								className="h-11 tabular-nums"

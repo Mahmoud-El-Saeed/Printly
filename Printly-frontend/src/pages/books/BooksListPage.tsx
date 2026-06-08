@@ -23,8 +23,6 @@ import { booksApi } from "@/lib/api/books";
 import { formatDate } from "@/lib/utils/formatDate";
 import type { BookResponse } from "@/types/book";
 
-const SUBJECT_OPTIONS: Array<{ value: string; label: string }> = [];
-
 function formatFileSize(size: number | null): string {
 	if (size === null) return "—";
 	if (size < 1024) return `${size} B`;
@@ -214,7 +212,7 @@ export default function BooksListPage() {
 						{
 							key: "subject",
 							placeholder: t("books.all_subjects"),
-							options: SUBJECT_OPTIONS,
+							options: [],
 							value: subjectFilter,
 							onChange: setSubjectFilter,
 						},

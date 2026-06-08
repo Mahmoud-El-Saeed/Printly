@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { FormField } from "@/components/shared/FormField";
 import { PageFormLayout } from "@/components/shared/PageFormLayout";
 import { Button } from "@/components/ui/button";
@@ -67,6 +68,9 @@ export default function CreatePaymentPage() {
 	const mutation = useMutation({
 		mutationFn: (data: PaymentCreate) => paymentsApi.create(data),
 		onSuccess: () => navigate("/payments"),
+		onError: () => {
+			toast.error(t("common.error"));
+		},
 	});
 
 	const onSubmit = (data: FormValues) => {
@@ -129,7 +133,7 @@ export default function CreatePaymentPage() {
 									required: t("common.required"),
 									min: {
 										value: 0.01,
-										message: "Must be > 0",
+										message: t("validation.positive_value"),
 									},
 								})}
 							/>

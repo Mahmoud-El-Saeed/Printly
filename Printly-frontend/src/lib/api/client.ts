@@ -68,7 +68,7 @@ apiClient.interceptors.response.use(
 		// Skip if not a 401 or if it's already a retry or auth endpoint
 		if (
 			error.response?.status !== 401 ||
-			originalRequest._retry ||
+			(originalRequest as any)._retry ||
 			originalRequest.url?.startsWith("/auth")
 		) {
 			return Promise.reject(error);
@@ -86,7 +86,7 @@ apiClient.interceptors.response.use(
 				.catch((err) => Promise.reject(err));
 		}
 
-		originalRequest._retry = true;
+		(originalRequest as any)._retry = true;
 		isRefreshing = true;
 
 		const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);

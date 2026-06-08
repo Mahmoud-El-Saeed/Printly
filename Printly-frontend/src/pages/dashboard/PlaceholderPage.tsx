@@ -16,7 +16,7 @@ const placeholderPages: Record<string, { key: string; phase: string }> = {
 	"/settings": { key: "nav.settings", phase: "—" },
 };
 
-export default function PlaceholderPage() {
+export default function PlaceholderPage({ title }: { title?: string }) {
 	const location = useLocation();
 	const { t } = useLanguage();
 	const page = placeholderPages[location.pathname] || {
@@ -24,10 +24,12 @@ export default function PlaceholderPage() {
 		phase: "—",
 	};
 
+	const displayTitle = title ?? t(page.key);
+
 	return (
 		<div className="space-y-6">
 			<div>
-				<h1 className="text-2xl font-bold">{t(page.key)}</h1>
+				<h1 className="text-2xl font-bold">{displayTitle}</h1>
 			</div>
 			<Card>
 				<CardHeader>

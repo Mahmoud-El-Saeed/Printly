@@ -84,7 +84,7 @@ export default function RegisterCustomerPage() {
 								<User className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
 								<Input
 									id="full_name"
-									placeholder="John Doe"
+									placeholder={t("auth.full_name_placeholder")}
 									className="ps-10"
 									{...register("full_name")}
 								/>
@@ -140,7 +140,7 @@ export default function RegisterCustomerPage() {
 								</Button>
 							</div>
 							<p className="text-xs text-muted-foreground">
-								Must be at least 8 characters with a mix of letters and numbers.
+								{t("auth.validation.password_hint")}
 							</p>
 							{errors.password && (
 								<p className="text-sm text-destructive">

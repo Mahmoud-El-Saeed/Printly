@@ -66,6 +66,7 @@ export interface OrderCreate {
 	notes?: string;
 	due_date?: string;
 	items: OrderItemCreate[];
+	paid_amount?: number;
 }
 
 export interface OrderUpdate {

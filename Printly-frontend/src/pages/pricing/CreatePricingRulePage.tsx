@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { FormField } from "@/components/shared/FormField";
 import { PageFormLayout } from "@/components/shared/PageFormLayout";
 import { Button } from "@/components/ui/button";
@@ -37,6 +38,7 @@ export default function CreatePricingRulePage() {
 		register,
 		handleSubmit,
 		setValue,
+		watch,
 		formState: { errors },
 	} = useForm<FormValues>({
 		defaultValues: {
@@ -48,9 +50,15 @@ export default function CreatePricingRulePage() {
 		},
 	});
 
+	const maxChars = (max: number) =>
+		t("validation.max_chars").replace("{max}", String(max));
+
 	const mutation = useMutation({
 		mutationFn: (data: PricingRuleCreate) => pricingApi.createRule(data),
 		onSuccess: () => navigate("/pricing"),
+		onError: () => {
+			toast.error(t("common.error"));
+		},
 	});
 
 	const onSubmit = (data: FormValues) => {
@@ -87,7 +95,7 @@ export default function CreatePricingRulePage() {
 									required: t("common.required"),
 									maxLength: {
 										value: 100,
-										message: "Max 100 characters",
+										message: maxChars(100),
 									},
 								})}
 							/>
@@ -98,6 +106,7 @@ export default function CreatePricingRulePage() {
 							error={errors.component_type?.message}
 						>
 							<Select
+								value={watch("component_type")}
 								onValueChange={(val: PricingComponentType) =>
 									setValue("component_type", val, { shouldValidate: true })
 								}
@@ -138,7 +147,7 @@ export default function CreatePricingRulePage() {
 									valueAsNumber: true,
 									min: {
 										value: 0.01,
-										message: "Must be > 0",
+										message: t("validation.positive_value"),
 									},
 								})}
 							/>
@@ -149,6 +158,7 @@ export default function CreatePricingRulePage() {
 							error={errors.unit_type?.message}
 						>
 							<Select
+								value={watch("unit_type")}
 								onValueChange={(val: PricingUnitType) =>
 									setValue("unit_type", val, { shouldValidate: true })
 								}

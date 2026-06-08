@@ -44,6 +44,12 @@ const en = {
 			name_min: "Name must be at least 3 characters",
 			shop_name_min: "Shop name must be at least 3 characters",
 			password_mismatch: "Passwords do not match",
+			password_hint:
+				"Must be at least 8 characters with a mix of letters and numbers.",
+			max_chars: "Maximum {max} characters",
+			min_value: "Must be at least {min}",
+			positive_value: "Must be greater than 0",
+			required: "This field is required",
 		},
 	},
 	nav: {
@@ -413,6 +419,10 @@ const en = {
 		update_success: "Updated successfully",
 		action_failed: "Action failed",
 		required: "Required",
+		error: "Something went wrong. Please try again.",
+		detail: "Detail",
+		actions: "Actions",
+		status: "Status",
 	},
 	status: {
 		new: "New",

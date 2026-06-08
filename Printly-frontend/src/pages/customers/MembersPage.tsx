@@ -125,7 +125,7 @@ export default function MembersPage() {
 		},
 		{
 			key: "actions",
-			header: t("orders.actions"),
+			header: t("common.actions"),
 			render: (row: CustomerMemberResponse) => (
 				<div className="flex justify-end gap-1">
 					<button

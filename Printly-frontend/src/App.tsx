@@ -24,6 +24,7 @@ import MembersPage from "@/pages/customers/MembersPage";
 import WalkInCustomersPage from "@/pages/customers/WalkInCustomersPage";
 // Dashboard Pages
 import DashboardPage from "@/pages/dashboard/DashboardPage";
+import PlaceholderPage from "@/pages/dashboard/PlaceholderPage";
 import CreateExpensePage from "@/pages/expenses/CreateExpensePage";
 import EditExpensePage from "@/pages/expenses/EditExpensePage";
 import ExpensesPage from "@/pages/expenses/ExpensesPage";
@@ -91,6 +92,10 @@ function App() {
 									element={<WalkInCustomersPage />}
 								/>
 								<Route
+									path="customers/walk-in/:id"
+									element={<PlaceholderPage />}
+								/>
+								<Route
 									path="customers/walk-in/new"
 									element={<CreateWalkInCustomerPage />}
 								/>
@@ -99,6 +104,10 @@ function App() {
 									element={<EditWalkInCustomerPage />}
 								/>
 								<Route path="customers/members" element={<MembersPage />} />
+								<Route
+									path="customers/members/:id"
+									element={<PlaceholderPage />}
+								/>
 								<Route
 									path="customers/members/new"
 									element={<CreateMemberPage />}
@@ -120,15 +129,18 @@ function App() {
 								/>
 								<Route path="pricing" element={<PricingPage />} />
 								<Route path="pricing/new" element={<CreatePricingRulePage />} />
+								<Route path="pricing/:id" element={<PlaceholderPage />} />
 								<Route
 									path="pricing/:id/edit"
 									element={<EditPricingRulePage />}
 								/>
 								<Route path="payments" element={<PaymentsPage />} />
 								<Route path="payments/new" element={<CreatePaymentPage />} />
+								<Route path="payments/:id" element={<PlaceholderPage />} />
 								<Route path="payments/:id/edit" element={<EditPaymentPage />} />
 								<Route path="expenses" element={<ExpensesPage />} />
 								<Route path="expenses/new" element={<CreateExpensePage />} />
+								<Route path="expenses/:id" element={<PlaceholderPage />} />
 								<Route path="expenses/:id/edit" element={<EditExpensePage />} />
 								<Route path="notifications" element={<NotificationsPage />} />
 								<Route path="settings" element={<SettingsPage />} />

@@ -2,6 +2,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { Save } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "sonner";
 import { FormField } from "@/components/shared/FormField";
 import { PageFormLayout } from "@/components/shared/PageFormLayout";
 import { Button } from "@/components/ui/button";
@@ -52,6 +53,9 @@ export default function EditMemberPage() {
 		},
 		onSuccess: () => {
 			navigate("/customers/members");
+		},
+		onError: () => {
+			toast.error(t("common.error"));
 		},
 	});
 

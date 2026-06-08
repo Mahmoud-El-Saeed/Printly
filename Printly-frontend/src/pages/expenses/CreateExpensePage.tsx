@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { Controller, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { FormField } from "@/components/shared/FormField";
 import { PageFormLayout } from "@/components/shared/PageFormLayout";
 import { Button } from "@/components/ui/button";
@@ -55,9 +56,15 @@ export default function CreateExpensePage() {
 		},
 	});
 
+	const maxChars = (max: number) =>
+		t("validation.max_chars").replace("{max}", String(max));
+
 	const mutation = useMutation({
 		mutationFn: (data: ExpenseCreate) => expensesApi.create(data),
 		onSuccess: () => navigate("/expenses"),
+		onError: () => {
+			toast.error(t("common.error"));
+		},
 	});
 
 	const onSubmit = (data: FormValues) => {
@@ -122,7 +129,7 @@ export default function CreateExpensePage() {
 									valueAsNumber: true,
 									min: {
 										value: 0.01,
-										message: "Must be > 0",
+										message: t("validation.positive_value"),
 									},
 								})}
 							/>
@@ -147,7 +154,7 @@ export default function CreateExpensePage() {
 								{...register("description", {
 									maxLength: {
 										value: 500,
-										message: "Max 500 characters",
+										message: maxChars(500),
 									},
 								})}
 							/>

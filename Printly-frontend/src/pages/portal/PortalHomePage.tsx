@@ -20,7 +20,7 @@ export default function PortalHomePage() {
 	});
 
 	const totalBalance =
-		tenants?.tenants?.reduce((sum, t) => sum + t.balance, 0) ?? 0;
+		tenants?.tenants?.reduce((sum, tenant) => sum + tenant.balance, 0) ?? 0;
 
 	return (
 		<div className="space-y-6">
