@@ -41,6 +41,8 @@ import EditPaymentPage from "@/pages/payments/EditPaymentPage";
 import PaymentsPage from "@/pages/payments/PaymentsPage";
 // Portal Pages
 import PortalHomePage from "@/pages/portal/PortalHomePage";
+import ShopPortalPage from "@/pages/portal/ShopPortalPage";
+import PortalOrderDetailPage from "@/pages/portal/PortalOrderDetailPage";
 import PricingPage from "@/pages/pricing/PricingPage";
 import CreatePricingRulePage from "@/pages/pricing/CreatePricingRulePage";
 import EditPricingRulePage from "@/pages/pricing/EditPricingRulePage";
@@ -129,6 +131,8 @@ function App() {
 							{/* Customer Portal Routes (Protected - Customer Only) */}
 							<Route element={<PortalLayout />}>
 								<Route path="/portal" element={<PortalHomePage />} />
+								<Route path="/portal/:tenantId" element={<ShopPortalPage />} />
+								<Route path="/portal/:tenantId/orders/:orderId" element={<PortalOrderDetailPage />} />
 							</Route>
 
 							{/* Catch all */}

@@ -17,15 +17,22 @@ export default function RegisterShopOwnerPage() {
 	const navigate = useNavigate();
 	const [isLoading, setIsLoading] = useState(false);
 	const [showPassword, setShowPassword] = useState(false);
+	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-	const registerSchema = z.object({
-		email: z.string().email(t("auth.validation.email_invalid")),
-		password: z.string().min(8, t("auth.validation.password_min")),
-		full_name: z.string().min(3, t("auth.validation.name_min")),
-		shop_name: z.string().min(3, t("auth.validation.shop_name_min")),
-		shop_phone: z.string().optional(),
-		shop_address: z.string().optional(),
-	});
+	const registerSchema = z
+		.object({
+			email: z.string().email(t("auth.validation.email_invalid")),
+			password: z.string().min(8, t("auth.validation.password_min")),
+			confirm_password: z.string().min(1, t("auth.validation.password_required")),
+			full_name: z.string().min(3, t("auth.validation.name_min")),
+			shop_name: z.string().min(3, t("auth.validation.shop_name_min")),
+			shop_phone: z.string().optional(),
+			shop_address: z.string().optional(),
+		})
+		.refine((data) => data.password === data.confirm_password, {
+			message: t("auth.validation.password_mismatch"),
+			path: ["confirm_password"],
+		});
 
 	type RegisterFormData = z.infer<typeof registerSchema>;
 
@@ -40,7 +47,14 @@ export default function RegisterShopOwnerPage() {
 	const onSubmit = async (data: RegisterFormData) => {
 		setIsLoading(true);
 		try {
-			await authApi.registerShopOwner(data);
+			await authApi.registerShopOwner({
+				email: data.email,
+				password: data.password,
+				full_name: data.full_name,
+				shop_name: data.shop_name,
+				shop_phone: data.shop_phone,
+				shop_address: data.shop_address,
+			});
 			toast.success(t("auth.register_success"));
 			navigate("/login");
 		} catch (error: unknown) {
@@ -78,102 +92,149 @@ export default function RegisterShopOwnerPage() {
 							{t("auth.register_shop_owner_title")}
 						</h2>
 						<p className="text-xs text-muted-foreground">
-							Fill in the details below to set up your business workspace.
+							{t("auth.register_shop_owner_description")}
 						</p>
 					</div>
-					<form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-						<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-							<div className="space-y-1.5">
-								<Label htmlFor="full_name">{t("auth.full_name")}</Label>
-								<Input
-									id="full_name"
-									placeholder="John Doe"
-									{...register("full_name")}
-								/>
-								{errors.full_name && (
-									<p className="text-sm text-destructive">
-										{errors.full_name.message}
-									</p>
-								)}
-							</div>
-							<div className="space-y-1.5">
-								<Label htmlFor="email">{t("auth.email")}</Label>
-								<Input
-									id="email"
-									type="email"
-									dir="ltr"
-									placeholder="john@example.com"
-									{...register("email")}
-								/>
-								{errors.email && (
-									<p className="text-sm text-destructive">
-										{errors.email.message}
-									</p>
-								)}
-							</div>
-						</div>
-						<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-							<div className="space-y-1.5">
-								<Label htmlFor="shop_phone">{t("auth.phone")}</Label>
-								<Input
-									id="shop_phone"
-									type="tel"
-									dir="ltr"
-									placeholder="+1 (555) 000-0000"
-									{...register("shop_phone")}
-								/>
-							</div>
-							<div className="space-y-1.5">
-								<Label htmlFor="shop_name">{t("auth.shop_name")}</Label>
-								<Input
-									id="shop_name"
-									placeholder="Elite Prints Co."
-									{...register("shop_name")}
-								/>
-								{errors.shop_name && (
-									<p className="text-sm text-destructive">
-										{errors.shop_name.message}
-									</p>
-								)}
-							</div>
-						</div>
-						<div className="space-y-1.5">
-							<Label htmlFor="shop_address">{t("auth.address")}</Label>
-							<Input
-								id="shop_address"
-								placeholder="123 Printing Ave, Design District"
-								{...register("shop_address")}
-							/>
-						</div>
-						<div className="space-y-1.5">
-							<Label htmlFor="password">{t("auth.password")}</Label>
-							<div className="relative">
-								<Input
-									id="password"
-									type={showPassword ? "text" : "password"}
-									placeholder="••••••••"
-									{...register("password")}
-								/>
-								<Button
-									type="button"
-									variant="ghost"
-									size="icon"
-									className="absolute end-3 top-1/2 -translate-y-1/2"
-									onClick={() => setShowPassword(!showPassword)}
-								>
-									{showPassword ? (
-										<EyeOff className="h-4 w-4" />
-									) : (
-										<Eye className="h-4 w-4" />
+					<form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+						<div>
+							<h3 className="font-bold text-sm text-primary mb-4">
+								{t("auth.personal_info")}
+							</h3>
+							<div className="space-y-4">
+								<div className="space-y-1.5">
+									<Label htmlFor="full_name">{t("auth.full_name")}</Label>
+									<Input
+										id="full_name"
+										placeholder={t("auth.full_name_placeholder")}
+										{...register("full_name")}
+									/>
+									{errors.full_name && (
+										<p className="text-sm text-destructive">
+											{errors.full_name.message}
+										</p>
 									)}
-								</Button>
+								</div>
+								<div className="space-y-1.5">
+									<Label htmlFor="email">{t("auth.email")}</Label>
+									<Input
+										id="email"
+										type="email"
+										dir="ltr"
+										placeholder={t("auth.email_placeholder")}
+										{...register("email")}
+									/>
+									{errors.email && (
+										<p className="text-sm text-destructive">
+											{errors.email.message}
+										</p>
+									)}
+								</div>
+								<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+									<div className="space-y-1.5">
+										<Label htmlFor="password">{t("auth.password")}</Label>
+										<div className="relative">
+											<Input
+												id="password"
+												type={showPassword ? "text" : "password"}
+												placeholder="••••••••"
+												{...register("password")}
+											/>
+											<Button
+												type="button"
+												variant="ghost"
+												size="icon"
+												className="absolute end-3 top-1/2 -translate-y-1/2"
+												onClick={() => setShowPassword(!showPassword)}
+											>
+												{showPassword ? (
+													<EyeOff className="h-4 w-4" />
+												) : (
+													<Eye className="h-4 w-4" />
+												)}
+											</Button>
+										</div>
+										{errors.password && (
+											<p className="text-sm text-destructive">
+												{errors.password.message}
+											</p>
+										)}
+									</div>
+									<div className="space-y-1.5">
+										<Label htmlFor="confirm_password">
+											{t("auth.confirm_password")}
+										</Label>
+										<div className="relative">
+											<Input
+												id="confirm_password"
+												type={showConfirmPassword ? "text" : "password"}
+												placeholder="••••••••"
+												{...register("confirm_password")}
+											/>
+											<Button
+												type="button"
+												variant="ghost"
+												size="icon"
+												className="absolute end-3 top-1/2 -translate-y-1/2"
+												onClick={() =>
+													setShowConfirmPassword(!showConfirmPassword)
+												}
+											>
+												{showConfirmPassword ? (
+													<EyeOff className="h-4 w-4" />
+												) : (
+													<Eye className="h-4 w-4" />
+												)}
+											</Button>
+										</div>
+										{errors.confirm_password && (
+											<p className="text-sm text-destructive">
+												{errors.confirm_password.message}
+											</p>
+										)}
+									</div>
+								</div>
 							</div>
-							{errors.password && (
-								<p className="text-sm text-destructive">
-									{errors.password.message}
-								</p>
-							)}
 						</div>
+
+						<div className="border-t border-border pt-6">
+							<h3 className="font-bold text-sm text-primary mb-4">
+								{t("auth.shop_info")}
+							</h3>
+							<div className="space-y-4">
+								<div className="space-y-1.5">
+									<Label htmlFor="shop_name">{t("auth.shop_name")}</Label>
+									<Input
+										id="shop_name"
+										placeholder={t("auth.shop_name_placeholder")}
+										{...register("shop_name")}
+									/>
+									{errors.shop_name && (
+										<p className="text-sm text-destructive">
+											{errors.shop_name.message}
+										</p>
+									)}
+								</div>
+								<div className="space-y-1.5">
+									<Label htmlFor="shop_phone">{t("auth.phone")}</Label>
+									<Input
+										id="shop_phone"
+										type="tel"
+										dir="ltr"
+										placeholder={t("auth.phone_placeholder")}
+										{...register("shop_phone")}
+									/>
+								</div>
+								<div className="space-y-1.5">
+									<Label htmlFor="shop_address">{t("auth.address")}</Label>
+									<Input
+										id="shop_address"
+										placeholder={t("auth.address_placeholder")}
+										{...register("shop_address")}
+									/>
+								</div>
+							</div>
+						</div>
+
 						<Button
 							type="submit"
 							className="w-full py-3.5 gap-2 mt-4"
@@ -184,7 +245,7 @@ export default function RegisterShopOwnerPage() {
 							) : (
 								<ArrowRight className="h-4 w-4" />
 							)}
-							{t("auth.register_button")}
+							{t("auth.create_shop_owner")}
 						</Button>
 						<div className="pt-6 text-center border-t border-border">
 							<p className="text-sm text-muted-foreground">
