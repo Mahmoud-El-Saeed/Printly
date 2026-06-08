@@ -11,7 +11,10 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import LoginPage from "@/pages/auth/LoginPage";
 import RegisterCustomerPage from "@/pages/auth/RegisterCustomerPage";
 import RegisterShopOwnerPage from "@/pages/auth/RegisterShopOwnerPage";
+import BookDetailPage from "@/pages/books/BookDetailPage";
 import BooksListPage from "@/pages/books/BooksListPage";
+import CreateBookPage from "@/pages/books/CreateBookPage";
+import EditBookPage from "@/pages/books/EditBookPage";
 import LinkRequestsPage from "@/pages/customers/LinkRequestsPage";
 import MembersPage from "@/pages/customers/MembersPage";
 import WalkInCustomersPage from "@/pages/customers/WalkInCustomersPage";
@@ -65,6 +68,9 @@ function App() {
 								<Route path="orders/new" element={<NewOrderPage />} />
 								<Route path="orders/:id" element={<OrderDetailPage />} />
 								<Route path="books" element={<BooksListPage />} />
+								<Route path="books/new" element={<CreateBookPage />} />
+								<Route path="books/:id" element={<BookDetailPage />} />
+								<Route path="books/:id/edit" element={<EditBookPage />} />
 								<Route
 									path="customers/walk-in"
 									element={<WalkInCustomersPage />}

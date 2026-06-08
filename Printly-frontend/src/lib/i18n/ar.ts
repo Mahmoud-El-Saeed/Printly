@@ -145,6 +145,13 @@ const ar = {
 		created: "تاريخ الإنشاء",
 		actions: "إجراءات",
 		no_data: "لا توجد كتب",
+		detail_title: "تفاصيل الكتاب",
+		edit_title: "تعديل الكتاب",
+		create_title: "كتاب جديد",
+		file_upload: "رفع ملف",
+		no_file: "لم يتم رفع ملف",
+		view_file: "عرض الملف",
+		info: "معلومات الكتاب",
 	},
 	customers: {
 		title: "العملاء",

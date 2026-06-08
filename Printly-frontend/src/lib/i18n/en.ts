@@ -145,6 +145,13 @@ const en = {
 		created: "Created",
 		actions: "Actions",
 		no_data: "No books found",
+		detail_title: "Book Details",
+		edit_title: "Edit Book",
+		create_title: "New Book",
+		file_upload: "Upload File",
+		no_file: "No file uploaded",
+		view_file: "View File",
+		info: "Book Information",
 	},
 	customers: {
 		title: "Customers",
