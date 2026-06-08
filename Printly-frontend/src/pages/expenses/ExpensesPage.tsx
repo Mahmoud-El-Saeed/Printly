@@ -1,15 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-	Calendar,
-	Eye,
-	Pencil,
-	Plus,
-	Receipt,
-	Trash2,
-	TrendingUp,
-	Wallet,
-} from "lucide-react";
-import { useMemo, useState } from "react";
+import { Eye, Pencil, Plus, Receipt, Trash2 } from "lucide-react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { ConfirmDeleteDialog } from "@/components/shared/ConfirmDeleteDialog";
@@ -53,30 +44,6 @@ export default function ExpensesPage() {
 			toast.error(t("common.delete_failed"));
 		},
 	});
-
-	const items = data?.expenses ?? [];
-
-	const stats = useMemo(() => {
-		const totalAmount = items.reduce((sum, i) => sum + i.amount, 0);
-		const now = new Date();
-		const thisMonthItems = items.filter((i) => {
-			const d = new Date(i.created_at);
-			return (
-				d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()
-			);
-		});
-		const thisMonthAmount = thisMonthItems.reduce(
-			(sum, i) => sum + i.amount,
-			0,
-		);
-		const categoryTotals: Record<string, number> = {};
-		for (const i of items) {
-			categoryTotals[i.category] = (categoryTotals[i.category] ?? 0) + i.amount;
-		}
-		const topCategory =
-			Object.entries(categoryTotals).sort((a, b) => b[1] - a[1])[0]?.[0] ?? "";
-		return { totalAmount, thisMonthAmount, topCategory };
-	}, [items]);
 
 	const columns = [
 		{
@@ -172,30 +139,16 @@ export default function ExpensesPage() {
 				onAction={() => navigate("/expenses/new")}
 			/>
 
-			<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+			<div className="grid grid-cols-2 gap-4">
 				<StatsCard
 					icon={Receipt}
 					label={t("expenses.total_expenses")}
 					value={String(data?.total ?? 0)}
 				/>
 				<StatsCard
-					icon={Wallet}
-					label={t("expenses.total_amount")}
-					value={formatCurrency(stats.totalAmount, language)}
-					changeColor="text-error"
-				/>
-				<StatsCard
-					icon={Calendar}
-					label={t("expenses.this_month")}
-					value={formatCurrency(stats.thisMonthAmount, language)}
-					changeColor="text-error"
-				/>
-				<StatsCard
-					icon={TrendingUp}
-					label={t("expenses.top_category")}
-					value={
-						stats.topCategory ? t(`expenses.cat_${stats.topCategory}`) : "—"
-					}
+					icon={Receipt}
+					label={t("common.on_this_page")}
+					value={String((data?.expenses ?? []).length)}
 				/>
 			</div>
 
@@ -222,7 +175,7 @@ export default function ExpensesPage() {
 
 			<DataTable
 				columns={columns}
-				data={items}
+				data={data?.expenses ?? []}
 				total={data?.total ?? 0}
 				page={page}
 				pageSize={pageSize}

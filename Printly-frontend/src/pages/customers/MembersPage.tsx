@@ -1,14 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-	Eye,
-	Pencil,
-	ShieldCheck,
-	Trash2,
-	UserPlus,
-	Users,
-	Wallet,
-} from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { Eye, Pencil, Trash2, UserPlus, Users } from "lucide-react";
+import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { ConfirmDeleteDialog } from "@/components/shared/ConfirmDeleteDialog";
@@ -54,21 +46,6 @@ export default function MembersPage() {
 			toast.error(t("common.delete_failed"));
 		},
 	});
-
-	const stats = useMemo(() => {
-		const members = data?.members ?? [];
-		const totalBalance = members.reduce((sum, m) => sum + m.balance, 0);
-		const activeSubscriptions = members.filter((m) => m.is_approved).length;
-		const newThisMonth = members.filter((m) => {
-			const created = new Date(m.created_at);
-			const now = new Date();
-			return (
-				created.getMonth() === now.getMonth() &&
-				created.getFullYear() === now.getFullYear()
-			);
-		}).length;
-		return { totalBalance, activeSubscriptions, newThisMonth };
-	}, [data]);
 
 	const columns = [
 		{
@@ -189,26 +166,16 @@ export default function MembersPage() {
 				</div>
 			</div>
 
-			<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+			<div className="grid grid-cols-2 gap-4">
 				<StatsCard
 					icon={Users}
 					label={t("customers.total_members")}
 					value={String(data?.total ?? 0)}
 				/>
 				<StatsCard
-					icon={ShieldCheck}
-					label={t("customers.active_subscriptions")}
-					value={String(stats.activeSubscriptions)}
-				/>
-				<StatsCard
-					icon={Wallet}
-					label={t("customers.total_balance")}
-					value={formatCurrency(stats.totalBalance, language)}
-				/>
-				<StatsCard
-					icon={UserPlus}
-					label={t("customers.new_this_month")}
-					value={String(stats.newThisMonth)}
+					icon={Users}
+					label={t("common.on_this_page")}
+					value={String((data?.members ?? []).length)}
 				/>
 			</div>
 

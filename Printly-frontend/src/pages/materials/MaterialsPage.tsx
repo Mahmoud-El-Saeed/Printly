@@ -1,15 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
 	AlertTriangle,
-	CheckCircle,
 	Eye,
 	Package,
 	PackagePlus,
 	Pencil,
 	Trash2,
-	Wallet,
 } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { ConfirmDeleteDialog } from "@/components/shared/ConfirmDeleteDialog";
@@ -52,19 +50,6 @@ export default function MaterialsPage() {
 			toast.error(t("common.delete_failed"));
 		},
 	});
-
-	const stats = useMemo(() => {
-		const items = data?.items ?? [];
-		const lowStock = items.filter(
-			(i) => i.current_stock <= i.min_stock_alert,
-		).length;
-		const totalValue = items.reduce(
-			(sum, i) => sum + i.cost_per_unit * i.current_stock,
-			0,
-		);
-		const activeCount = items.filter((i) => i.is_active).length;
-		return { lowStock, totalValue, activeCount };
-	}, [data]);
 
 	const columns = [
 		{
@@ -180,28 +165,16 @@ export default function MaterialsPage() {
 				onAction={() => navigate("/materials/new")}
 			/>
 
-			<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+			<div className="grid grid-cols-2 gap-4">
 				<StatsCard
 					icon={Package}
 					label={t("materials.total_materials")}
 					value={String(data?.total ?? 0)}
 				/>
 				<StatsCard
-					icon={CheckCircle}
-					label={t("materials.active_items")}
-					value={String(stats.activeCount)}
-					changeColor="text-primary"
-				/>
-				<StatsCard
-					icon={AlertTriangle}
-					label={t("materials.low_stock")}
-					value={String(stats.lowStock)}
-					changeColor="text-error"
-				/>
-				<StatsCard
-					icon={Wallet}
-					label={t("materials.total_value")}
-					value={formatCurrency(stats.totalValue, language)}
+					icon={Package}
+					label={t("common.on_this_page")}
+					value={String((data?.items ?? []).length)}
 				/>
 			</div>
 

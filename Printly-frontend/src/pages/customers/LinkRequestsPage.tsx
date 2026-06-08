@@ -1,14 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-	CheckCircle,
-	Clock,
-	Link2,
-	Timer,
-	Trash2,
-	TrendingUp,
-	XCircle,
-} from "lucide-react";
-import { useMemo, useState } from "react";
+import { CheckCircle, Link2, Trash2, XCircle } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { StatsCard } from "@/components/shared/StatsCard";
@@ -52,19 +44,6 @@ export default function LinkRequestsPage() {
 			toast.error(t("common.action_failed"));
 		},
 	});
-
-	const stats = useMemo(() => {
-		const links = data?.links ?? [];
-		const pendingCount = links.filter((l) => l.status === "pending").length;
-		const approvedCount = links.filter((l) => l.status === "approved").length;
-		const totalDecided =
-			approvedCount + links.filter((l) => l.status === "rejected").length;
-		const approvalRate =
-			totalDecided > 0
-				? `${Math.round((approvedCount / totalDecided) * 100)}%`
-				: "—";
-		return { pendingCount, approvalRate };
-	}, [data]);
 
 	const columns = [
 		{
@@ -176,26 +155,16 @@ export default function LinkRequestsPage() {
 				</div>
 			</div>
 
-			<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+			<div className="grid grid-cols-2 gap-4">
 				<StatsCard
 					icon={Link2}
 					label={t("customers.total_requests")}
 					value={String(data?.total ?? 0)}
 				/>
 				<StatsCard
-					icon={Clock}
-					label={t("customers.pending_approval")}
-					value={String(stats.pendingCount)}
-				/>
-				<StatsCard
-					icon={TrendingUp}
-					label={t("customers.approval_rate")}
-					value={stats.approvalRate}
-				/>
-				<StatsCard
-					icon={Timer}
-					label={t("customers.avg_response_time")}
-					value="—"
+					icon={Link2}
+					label={t("common.on_this_page")}
+					value={String((data?.links ?? []).length)}
 				/>
 			</div>
 

@@ -3,13 +3,12 @@ import {
 	BookOpen,
 	CheckCircle,
 	Eye,
-	HardDrive,
 	Pencil,
 	Trash2,
 	Upload,
 	XCircle,
 } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { ConfirmDeleteDialog } from "@/components/shared/ConfirmDeleteDialog";
@@ -64,14 +63,6 @@ export default function BooksListPage() {
 			toast.error(t("common.delete_failed"));
 		},
 	});
-
-	const stats = useMemo(() => {
-		const items = data?.items ?? [];
-		const totalStorage = items.reduce((sum, b) => sum + (b.file_size ?? 0), 0);
-		const withFiles = items.filter((b) => b.local_file_path !== null).length;
-		const missingFiles = items.filter((b) => b.local_file_path === null).length;
-		return { totalStorage, withFiles, missingFiles };
-	}, [data]);
 
 	const columns = [
 		{
@@ -178,28 +169,16 @@ export default function BooksListPage() {
 				onAction={() => navigate("/books/new")}
 			/>
 
-			<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+			<div className="grid grid-cols-2 gap-4">
 				<StatsCard
 					icon={BookOpen}
 					label={t("books.total_books")}
 					value={String(data?.total ?? 0)}
 				/>
 				<StatsCard
-					icon={HardDrive}
-					label={t("books.storage_used")}
-					value={formatFileSize(stats.totalStorage)}
-				/>
-				<StatsCard
-					icon={CheckCircle}
-					label={t("books.with_files")}
-					value={String(stats.withFiles)}
-					changeColor="text-primary"
-				/>
-				<StatsCard
-					icon={XCircle}
-					label={t("books.missing_files")}
-					value={String(stats.missingFiles)}
-					changeColor="text-error"
+					icon={BookOpen}
+					label={t("common.on_this_page")}
+					value={String((data?.items ?? []).length)}
 				/>
 			</div>
 

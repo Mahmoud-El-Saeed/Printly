@@ -101,6 +101,7 @@ const en = {
 		view: "View",
 		edit: "Edit",
 		delete: "Delete",
+		edit_order: "Edit Order",
 		update_status: "Update Status",
 		notes: "Notes",
 		notes_placeholder: "Specific printing instructions, delivery details...",
@@ -230,6 +231,7 @@ const en = {
 		member_detail_title: "Member Details",
 		initial_balance: "Initial Balance",
 		member_info: "Member Information",
+		status: "Status",
 	},
 	materials: {
 		title: "Materials",
@@ -402,6 +404,7 @@ const en = {
 		net_balance: "Net Balance",
 	},
 	common: {
+		saved: "Saved successfully",
 		save: "Save",
 		cancel: "Cancel",
 		delete: "Delete",
@@ -430,6 +433,7 @@ const en = {
 		actions: "Actions",
 		status: "Status",
 		created: "Created",
+		on_this_page: "On This Page",
 	},
 	status: {
 		new: "New",

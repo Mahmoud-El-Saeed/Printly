@@ -1,14 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-	CheckCircle,
-	Eye,
-	Layers,
-	Pencil,
-	Plus,
-	Trash2,
-	TrendingUp,
-} from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { Eye, Layers, Pencil, Plus, Trash2 } from "lucide-react";
+import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { ConfirmDeleteDialog } from "@/components/shared/ConfirmDeleteDialog";
@@ -53,17 +45,6 @@ export default function PricingPage() {
 			toast.error(t("common.delete_failed"));
 		},
 	});
-
-	const stats = useMemo(() => {
-		const items = data?.items ?? [];
-		const activeCount = items.filter((i) => i.is_active).length;
-		const avgPrice =
-			items.length > 0
-				? items.reduce((sum, i) => sum + i.price, 0) / items.length
-				: 0;
-		const componentTypes = new Set(items.map((i) => i.component_type)).size;
-		return { activeCount, avgPrice, componentTypes };
-	}, [data]);
 
 	const columns = [
 		{
@@ -179,27 +160,16 @@ export default function PricingPage() {
 				onAction={() => navigate("/pricing/new")}
 			/>
 
-			<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+			<div className="grid grid-cols-2 gap-4">
 				<StatsCard
 					icon={Layers}
 					label={t("pricing.total_rules")}
 					value={String(data?.total ?? 0)}
 				/>
 				<StatsCard
-					icon={CheckCircle}
-					label={t("pricing.active_rules")}
-					value={String(stats.activeCount)}
-					changeColor="text-primary"
-				/>
-				<StatsCard
-					icon={TrendingUp}
-					label={t("pricing.avg_price")}
-					value={formatCurrency(stats.avgPrice, language)}
-				/>
-				<StatsCard
 					icon={Layers}
-					label={t("pricing.component_types")}
-					value={String(stats.componentTypes)}
+					label={t("common.on_this_page")}
+					value={String((data?.items ?? []).length)}
 				/>
 			</div>
 

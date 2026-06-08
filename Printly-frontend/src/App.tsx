@@ -35,6 +35,7 @@ import EditMaterialPage from "@/pages/materials/EditMaterialPage";
 import MaterialDetailPage from "@/pages/materials/MaterialDetailPage";
 import MaterialsPage from "@/pages/materials/MaterialsPage";
 import NotificationsPage from "@/pages/notifications/NotificationsPage";
+import EditOrderPage from "@/pages/orders/EditOrderPage";
 import NewOrderPage from "@/pages/orders/NewOrderPage";
 import OrderDetailPage from "@/pages/orders/OrderDetailPage";
 // Orders Pages
@@ -87,6 +88,7 @@ function App() {
 								<Route path="orders" element={<OrdersListPage />} />
 								<Route path="orders/new" element={<NewOrderPage />} />
 								<Route path="orders/:id" element={<OrderDetailPage />} />
+								<Route path="orders/:id/edit" element={<EditOrderPage />} />
 								<Route path="books" element={<BooksListPage />} />
 								<Route path="books/new" element={<CreateBookPage />} />
 								<Route path="books/:id" element={<BookDetailPage />} />

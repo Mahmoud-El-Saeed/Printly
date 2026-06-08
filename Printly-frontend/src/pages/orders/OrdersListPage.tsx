@@ -44,7 +44,10 @@ export default function OrdersListPage() {
 	});
 
 	const deleteMutation = useMutation({
-		mutationFn: () => ordersApi.delete(deleteId!),
+		mutationFn: () => {
+			if (!deleteId) throw new Error("No order selected for deletion");
+			return ordersApi.delete(deleteId);
+		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["orders"] });
 			setDeleteId(null);

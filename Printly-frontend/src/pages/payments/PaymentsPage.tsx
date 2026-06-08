@@ -1,15 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-	Calendar,
-	CreditCard,
-	Eye,
-	Pencil,
-	Plus,
-	Trash2,
-	TrendingUp,
-	Wallet,
-} from "lucide-react";
-import { useMemo, useState } from "react";
+import { CreditCard, Eye, Pencil, Plus, Trash2 } from "lucide-react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { ConfirmDeleteDialog } from "@/components/shared/ConfirmDeleteDialog";
@@ -53,23 +44,6 @@ export default function PaymentsPage() {
 			toast.error(t("common.delete_failed"));
 		},
 	});
-
-	const stats = useMemo(() => {
-		const items = data?.payments ?? [];
-		const totalAmount = items.reduce((sum, i) => sum + i.amount, 0);
-		const now = new Date();
-		const thisMonth = items
-			.filter((i) => {
-				const d = new Date(i.created_at);
-				return (
-					d.getMonth() === now.getMonth() &&
-					d.getFullYear() === now.getFullYear()
-				);
-			})
-			.reduce((sum, i) => sum + i.amount, 0);
-		const avgPayment = items.length > 0 ? totalAmount / items.length : 0;
-		return { totalAmount, thisMonth, avgPayment };
-	}, [data]);
 
 	const columns = [
 		{
@@ -170,26 +144,16 @@ export default function PaymentsPage() {
 				onAction={() => navigate("/payments/new")}
 			/>
 
-			<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+			<div className="grid grid-cols-2 gap-4">
 				<StatsCard
 					icon={CreditCard}
 					label={t("payments.total_payments")}
 					value={String(data?.total ?? 0)}
 				/>
 				<StatsCard
-					icon={Wallet}
-					label={t("payments.total_amount")}
-					value={formatCurrency(stats.totalAmount, language)}
-				/>
-				<StatsCard
-					icon={Calendar}
-					label={t("payments.this_month")}
-					value={formatCurrency(stats.thisMonth, language)}
-				/>
-				<StatsCard
-					icon={TrendingUp}
-					label={t("payments.avg_payment")}
-					value={formatCurrency(stats.avgPayment, language)}
+					icon={CreditCard}
+					label={t("common.on_this_page")}
+					value={String((data?.payments ?? []).length)}
 				/>
 			</div>
 

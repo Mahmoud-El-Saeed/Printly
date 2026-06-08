@@ -21,6 +21,11 @@ export function clearTokens(): void {
 	localStorage.removeItem(REFRESH_TOKEN_KEY);
 }
 
+interface RetryableRequest {
+	_retry?: boolean;
+	[key: string]: unknown;
+}
+
 // ==================== Axios Instance ====================
 
 const apiClient = axios.create({
@@ -68,7 +73,7 @@ apiClient.interceptors.response.use(
 		// Skip if not a 401 or if it's already a retry or auth endpoint
 		if (
 			error.response?.status !== 401 ||
-			(originalRequest as any)._retry ||
+			(originalRequest as RetryableRequest)._retry ||
 			originalRequest.url?.startsWith("/auth")
 		) {
 			return Promise.reject(error);
@@ -86,7 +91,7 @@ apiClient.interceptors.response.use(
 				.catch((err) => Promise.reject(err));
 		}
 
-		(originalRequest as any)._retry = true;
+		(originalRequest as RetryableRequest)._retry = true;
 		isRefreshing = true;
 
 		const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);

@@ -100,6 +100,7 @@ const ar = {
 		view: "عرض",
 		edit: "تعديل",
 		delete: "حذف",
+		edit_order: "تعديل الطلب",
 		update_status: "تحديث الحالة",
 		notes: "ملاحظات",
 		notes_placeholder: "تفاصيل الطباعة، تعليمات التسليم...",
@@ -229,6 +230,7 @@ const ar = {
 		member_detail_title: "تفاصيل العضو",
 		initial_balance: "الرصيد الأولي",
 		member_info: "بيانات العضو",
+		status: "الحالة",
 	},
 	materials: {
 		title: "المواد",
@@ -401,6 +403,7 @@ const ar = {
 		net_balance: "الرصيد الصافي",
 	},
 	common: {
+		saved: "تم الحفظ بنجاح",
 		save: "حفظ",
 		cancel: "إلغاء",
 		delete: "حذف",
@@ -428,6 +431,7 @@ const ar = {
 		actions: "إجراءات",
 		status: "الحالة",
 		created: "تاريخ الإنشاء",
+		on_this_page: "في هذه الصفحة",
 	},
 	status: {
 		new: "جديد",

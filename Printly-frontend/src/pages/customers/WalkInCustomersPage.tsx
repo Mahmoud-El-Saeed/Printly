@@ -1,15 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-	Download,
-	Eye,
-	FileText,
-	Pencil,
-	Trash2,
-	UserCheck,
-	UserPlus,
-	Users,
-} from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { Eye, Pencil, Trash2, UserPlus, Users } from "lucide-react";
+import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { ConfirmDeleteDialog } from "@/components/shared/ConfirmDeleteDialog";
@@ -53,12 +44,6 @@ export default function WalkInCustomersPage() {
 			toast.error(t("common.delete_failed"));
 		},
 	});
-
-	const stats = useMemo(() => {
-		const customers = data?.customers ?? [];
-		const withNotes = customers.filter((c) => c.notes !== null).length;
-		return { withNotes };
-	}, [data]);
 
 	const columns = [
 		{
@@ -153,26 +138,16 @@ export default function WalkInCustomersPage() {
 				onAction={() => navigate("/customers/walk-in/new")}
 			/>
 
-			<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+			<div className="grid grid-cols-2 gap-4">
 				<StatsCard
 					icon={Users}
 					label={t("customers.total_customers")}
 					value={String(data?.total ?? 0)}
 				/>
 				<StatsCard
-					icon={UserCheck}
-					label={t("customers.active_this_week")}
-					value="0"
-				/>
-				<StatsCard
-					icon={FileText}
-					label={t("customers.total_notes")}
-					value={String(stats.withNotes)}
-				/>
-				<StatsCard
-					icon={Download}
-					label={t("customers.quick_export")}
-					value="—"
+					icon={Users}
+					label={t("common.on_this_page")}
+					value={String((data?.customers ?? []).length)}
 				/>
 			</div>
 

@@ -1,13 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-	AlertTriangle,
-	Bell,
-	Calendar,
-	Check,
-	CheckCheck,
-	Mail,
-} from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { Bell, Check, CheckCheck, Mail } from "lucide-react";
+import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import { FilterBar } from "@/components/shared/FilterBar";
 import { PageHeader } from "@/components/shared/PageHeader";
@@ -64,14 +57,6 @@ export default function NotificationsPage() {
 			toast.error(t("common.error"));
 		},
 	});
-
-	const stats = useMemo(() => {
-		const items = data?.notifications ?? [];
-		const alertsCount = items.filter(
-			(n) => n.notification_type === "alert",
-		).length;
-		return { alertsCount };
-	}, [data]);
 
 	const onMarkAllRead = useCallback(() => {
 		markAllReadMutation.mutate();
@@ -179,7 +164,7 @@ export default function NotificationsPage() {
 				</Button>
 			</div>
 
-			<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+			<div className="grid grid-cols-2 gap-4">
 				<StatsCard
 					icon={Bell}
 					label={t("notifications.total")}
@@ -190,16 +175,6 @@ export default function NotificationsPage() {
 					label={t("notifications.unread")}
 					value={String(data?.unread_count ?? 0)}
 					changeColor="text-error"
-				/>
-				<StatsCard
-					icon={Calendar}
-					label={t("notifications.this_week")}
-					value="—"
-				/>
-				<StatsCard
-					icon={AlertTriangle}
-					label={t("notifications.alerts")}
-					value={String(stats.alertsCount)}
 				/>
 			</div>
 

@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { toast } from "sonner";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -15,25 +16,41 @@ export default function ShopPortalPage() {
 	const queryClient = useQueryClient();
 	const tid = tenantId ?? "";
 
-	const { data: orders, isLoading: ordersLoading } = useQuery({
+	const {
+		data: orders,
+		isLoading: ordersLoading,
+		isError: ordersError,
+	} = useQuery({
 		queryKey: ["portal-orders", tid],
 		queryFn: () => portalApi.getOrders(tid),
 		enabled: !!tid,
 	});
 
-	const { data: books, isLoading: booksLoading } = useQuery({
+	const {
+		data: books,
+		isLoading: booksLoading,
+		isError: booksError,
+	} = useQuery({
 		queryKey: ["portal-books", tid],
 		queryFn: () => portalApi.getBooks(tid),
 		enabled: !!tid,
 	});
 
-	const { data: balance, isLoading: balanceLoading } = useQuery({
+	const {
+		data: balance,
+		isLoading: balanceLoading,
+		isError: balanceError,
+	} = useQuery({
 		queryKey: ["portal-balance", tid],
 		queryFn: () => portalApi.getBalance(tid),
 		enabled: !!tid,
 	});
 
-	const { data: notifications, isLoading: notificationsLoading } = useQuery({
+	const {
+		data: notifications,
+		isLoading: notificationsLoading,
+		isError: notificationsError,
+	} = useQuery({
 		queryKey: ["portal-notifications", tid],
 		queryFn: () => portalApi.getNotifications(tid),
 		enabled: !!tid,
@@ -46,6 +63,7 @@ export default function ShopPortalPage() {
 			queryClient.invalidateQueries({
 				queryKey: ["portal-notifications", tid],
 			}),
+		onError: () => toast.error(t("common.error")),
 	});
 
 	const markAllReadMutation = useMutation({
@@ -54,6 +72,7 @@ export default function ShopPortalPage() {
 			queryClient.invalidateQueries({
 				queryKey: ["portal-notifications", tid],
 			}),
+		onError: () => toast.error(t("common.error")),
 	});
 
 	return (
@@ -106,6 +125,15 @@ export default function ShopPortalPage() {
 												<Loader2 className="h-4 w-4 animate-spin mx-auto" />
 											</td>
 										</tr>
+									) : ordersError ? (
+										<tr>
+											<td
+												colSpan={4}
+												className="px-6 py-8 text-center text-error"
+											>
+												{t("common.error")}
+											</td>
+										</tr>
 									) : !orders?.orders?.length ? (
 										<tr>
 											<td
@@ -121,7 +149,7 @@ export default function ShopPortalPage() {
 												key={order.id}
 												className="hover:bg-muted/30 transition-colors cursor-pointer"
 												onClick={() =>
-													navigate(`/portal/${tenantId}/orders/${order.id}`)
+													navigate(`/portal/${tid}/orders/${order.id}`)
 												}
 											>
 												<td className="px-6 py-4 text-sm font-bold tabular-nums">
@@ -178,6 +206,15 @@ export default function ShopPortalPage() {
 												<Loader2 className="h-4 w-4 animate-spin mx-auto" />
 											</td>
 										</tr>
+									) : booksError ? (
+										<tr>
+											<td
+												colSpan={5}
+												className="px-6 py-8 text-center text-error"
+											>
+												{t("common.error")}
+											</td>
+										</tr>
 									) : !books?.books?.length ? (
 										<tr>
 											<td
@@ -226,6 +263,10 @@ export default function ShopPortalPage() {
 					{balanceLoading ? (
 						<div className="flex items-center justify-center py-12">
 							<Loader2 className="h-8 w-8 animate-spin text-primary" />
+						</div>
+					) : balanceError ? (
+						<div className="bg-background border border-border rounded-xl p-12 text-center text-error">
+							{t("common.error")}
 						</div>
 					) : balance ? (
 						<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -301,6 +342,15 @@ export default function ShopPortalPage() {
 													className="px-6 py-8 text-center text-muted-foreground"
 												>
 													<Loader2 className="h-4 w-4 animate-spin mx-auto" />
+												</td>
+											</tr>
+										) : notificationsError ? (
+											<tr>
+												<td
+													colSpan={4}
+													className="px-6 py-8 text-center text-error"
+												>
+													{t("common.error")}
 												</td>
 											</tr>
 										) : !notifications?.notifications?.length ? (
