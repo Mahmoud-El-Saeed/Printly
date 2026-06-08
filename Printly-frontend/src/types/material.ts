@@ -59,5 +59,5 @@ export interface TransactionCreate {
 
 export interface TransactionListResponse {
 	total: number;
-	transactions: TransactionResponse[];
+	items: TransactionResponse[];
 }

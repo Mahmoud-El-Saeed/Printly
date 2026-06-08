@@ -15,7 +15,9 @@ import BookDetailPage from "@/pages/books/BookDetailPage";
 import BooksListPage from "@/pages/books/BooksListPage";
 import CreateBookPage from "@/pages/books/CreateBookPage";
 import EditBookPage from "@/pages/books/EditBookPage";
+import CreateMemberPage from "@/pages/customers/CreateMemberPage";
 import CreateWalkInCustomerPage from "@/pages/customers/CreateWalkInCustomerPage";
+import EditMemberPage from "@/pages/customers/EditMemberPage";
 import EditWalkInCustomerPage from "@/pages/customers/EditWalkInCustomerPage";
 import LinkRequestsPage from "@/pages/customers/LinkRequestsPage";
 import MembersPage from "@/pages/customers/MembersPage";
@@ -24,6 +26,9 @@ import WalkInCustomersPage from "@/pages/customers/WalkInCustomersPage";
 import DashboardPage from "@/pages/dashboard/DashboardPage";
 import ExpensesPage from "@/pages/expenses/ExpensesPage";
 import MaterialsPage from "@/pages/materials/MaterialsPage";
+import CreateMaterialPage from "@/pages/materials/CreateMaterialPage";
+import MaterialDetailPage from "@/pages/materials/MaterialDetailPage";
+import EditMaterialPage from "@/pages/materials/EditMaterialPage";
 import NotificationsPage from "@/pages/notifications/NotificationsPage";
 import NewOrderPage from "@/pages/orders/NewOrderPage";
 import OrderDetailPage from "@/pages/orders/OrderDetailPage";
@@ -87,10 +92,21 @@ function App() {
 								/>
 								<Route path="customers/members" element={<MembersPage />} />
 								<Route
+									path="customers/members/new"
+									element={<CreateMemberPage />}
+								/>
+								<Route
+									path="customers/members/:id/edit"
+									element={<EditMemberPage />}
+								/>
+								<Route
 									path="customers/link-requests"
 									element={<LinkRequestsPage />}
 								/>
 								<Route path="materials" element={<MaterialsPage />} />
+								<Route path="materials/new" element={<CreateMaterialPage />} />
+								<Route path="materials/:id" element={<MaterialDetailPage />} />
+								<Route path="materials/:id/edit" element={<EditMaterialPage />} />
 								<Route path="pricing" element={<PricingPage />} />
 								<Route path="payments" element={<PaymentsPage />} />
 								<Route path="expenses" element={<ExpensesPage />} />
