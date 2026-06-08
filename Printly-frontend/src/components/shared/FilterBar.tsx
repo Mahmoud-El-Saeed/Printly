@@ -8,8 +8,8 @@ import {
 } from "@/components/ui/select";
 
 interface FilterBarProps {
-	searchValue: string;
-	onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+	searchValue?: string;
+	onSearchChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 	searchPlaceholder?: string;
 	filters?: Array<{
 		key: string;
@@ -28,12 +28,14 @@ export function FilterBar({
 }: FilterBarProps) {
 	return (
 		<div className="flex flex-wrap items-center gap-4">
-			<SearchInput
-				value={searchValue}
-				onChange={onSearchChange}
-				placeholder={searchPlaceholder}
-				className="min-w-[240px]"
-			/>
+			{onSearchChange && (
+				<SearchInput
+					value={searchValue ?? ""}
+					onChange={onSearchChange}
+					placeholder={searchPlaceholder}
+					className="min-w-[240px]"
+				/>
+			)}
 			{filters?.map((filter) => (
 				<Select
 					key={filter.key}

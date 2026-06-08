@@ -49,6 +49,9 @@ export default function NotificationsPage() {
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["notifications"] });
 		},
+		onError: () => {
+			toast.error(t("common.action_failed"));
+		},
 	});
 
 	const markAllReadMutation = useMutation({
@@ -66,13 +69,6 @@ export default function NotificationsPage() {
 		).length;
 		return { alertsCount };
 	}, [data]);
-
-	const onSearchChange = useCallback(
-		(e: React.ChangeEvent<HTMLInputElement>) => {
-			e.preventDefault();
-		},
-		[],
-	);
 
 	const onMarkAllRead = useCallback(() => {
 		markAllReadMutation.mutate();
@@ -150,7 +146,10 @@ export default function NotificationsPage() {
 						type="button"
 						className="p-1.5 rounded-md hover:bg-surface-container text-on-surface-variant transition-colors disabled:opacity-50"
 						disabled={row.is_read || markReadMutation.isPending}
-						onClick={() => markReadMutation.mutate(row.id)}
+						onClick={(e) => {
+							e.stopPropagation();
+							markReadMutation.mutate(row.id);
+						}}
 					>
 						<Check className="h-4 w-4" />
 					</button>
@@ -203,9 +202,6 @@ export default function NotificationsPage() {
 
 			<div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex flex-wrap items-center gap-4">
 				<FilterBar
-					searchValue=""
-					onSearchChange={onSearchChange}
-					searchPlaceholder=""
 					filters={[
 						{
 							key: "type",

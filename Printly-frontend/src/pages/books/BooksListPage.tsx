@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
 	BookOpen,
 	CheckCircle,
@@ -11,6 +11,8 @@ import {
 } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { ConfirmDeleteDialog } from "@/components/shared/ConfirmDeleteDialog";
 import { FilterBar } from "@/components/shared/FilterBar";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { StatsCard } from "@/components/shared/StatsCard";
@@ -33,10 +35,12 @@ function formatFileSize(size: number | null): string {
 export default function BooksListPage() {
 	const { t, language } = useLanguage();
 	const navigate = useNavigate();
+	const queryClient = useQueryClient();
 	const [search, setSearch] = useState("");
 	const [subjectFilter, setSubjectFilter] = useState("");
 	const [hasFile, setHasFile] = useState(false);
 	const [page, setPage] = useState(1);
+	const [deleteId, setDeleteId] = useState<string | null>(null);
 	const pageSize = 10;
 
 	const { data, isLoading } = useQuery({
@@ -49,6 +53,18 @@ export default function BooksListPage() {
 				offset: (page - 1) * pageSize,
 				limit: pageSize,
 			}),
+	});
+
+	const deleteMutation = useMutation({
+		mutationFn: (id: string) => booksApi.delete(id),
+		onSuccess: () => {
+			toast.success(t("common.delete_success"));
+			queryClient.invalidateQueries({ queryKey: ["books"] });
+			setDeleteId(null);
+		},
+		onError: () => {
+			toast.error(t("common.delete_failed"));
+		},
 	});
 
 	const stats = useMemo(() => {
@@ -115,20 +131,30 @@ export default function BooksListPage() {
 					<button
 						type="button"
 						className="p-1.5 rounded-md hover:bg-surface-container text-on-surface-variant transition-colors"
-						onClick={() => navigate(`/books/${row.id}`)}
+						onClick={(e) => {
+							e.stopPropagation();
+							navigate(`/books/${row.id}`);
+						}}
 					>
 						<Eye className="h-4 w-4" />
 					</button>
 					<button
 						type="button"
 						className="p-1.5 rounded-md hover:bg-surface-container text-on-surface-variant transition-colors"
-						onClick={() => navigate(`/books/${row.id}/edit`)}
+						onClick={(e) => {
+							e.stopPropagation();
+							navigate(`/books/${row.id}/edit`);
+						}}
 					>
 						<Pencil className="h-4 w-4" />
 					</button>
 					<button
 						type="button"
 						className="p-1.5 rounded-md hover:bg-error-container text-error transition-colors"
+						onClick={(e) => {
+							e.stopPropagation();
+							setDeleteId(row.id);
+						}}
 					>
 						<Trash2 className="h-4 w-4" />
 					</button>
@@ -212,6 +238,17 @@ export default function BooksListPage() {
 				onRowClick={(row) => navigate(`/books/${row.id}`)}
 				rowKey={(row) => row.id}
 				emptyMessage={isLoading ? t("common.loading") : t("books.no_data")}
+			/>
+
+			<ConfirmDeleteDialog
+				open={deleteId !== null}
+				onOpenChange={(open) => {
+					if (!open) setDeleteId(null);
+				}}
+				title={t("common.delete")}
+				description={t("common.delete_confirm")}
+				onConfirm={() => deleteId && deleteMutation.mutate(deleteId)}
+				isLoading={deleteMutation.isPending}
 			/>
 		</div>
 	);

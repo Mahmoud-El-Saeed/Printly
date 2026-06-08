@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
 	CheckCircle,
 	Eye,
@@ -10,6 +10,8 @@ import {
 } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { ConfirmDeleteDialog } from "@/components/shared/ConfirmDeleteDialog";
 import { FilterBar } from "@/components/shared/FilterBar";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { StatsCard } from "@/components/shared/StatsCard";
@@ -22,9 +24,11 @@ import type { PricingRuleResponse } from "@/types/pricing";
 export default function PricingPage() {
 	const { t, language } = useLanguage();
 	const navigate = useNavigate();
+	const queryClient = useQueryClient();
 	const [search, setSearch] = useState("");
 	const [componentTypeFilter, setComponentTypeFilter] = useState("");
 	const [page, setPage] = useState(1);
+	const [deleteId, setDeleteId] = useState<string | null>(null);
 	const pageSize = 10;
 
 	const { data, isLoading } = useQuery({
@@ -36,6 +40,18 @@ export default function PricingPage() {
 				offset: (page - 1) * pageSize,
 				limit: pageSize,
 			}),
+	});
+
+	const deleteMutation = useMutation({
+		mutationFn: (id: string) => pricingApi.deleteRule(id),
+		onSuccess: () => {
+			toast.success(t("common.delete_success"));
+			queryClient.invalidateQueries({ queryKey: ["pricing-rules"] });
+			setDeleteId(null);
+		},
+		onError: () => {
+			toast.error(t("common.delete_failed"));
+		},
 	});
 
 	const stats = useMemo(() => {
@@ -116,20 +132,30 @@ export default function PricingPage() {
 					<button
 						type="button"
 						className="p-1.5 rounded-md hover:bg-surface-container text-on-surface-variant transition-colors"
-						onClick={() => navigate(`/pricing/${row.id}`)}
+						onClick={(e) => {
+							e.stopPropagation();
+							navigate(`/pricing/${row.id}`);
+						}}
 					>
 						<Eye className="h-4 w-4" />
 					</button>
 					<button
 						type="button"
 						className="p-1.5 rounded-md hover:bg-surface-container text-on-surface-variant transition-colors"
-						onClick={() => navigate(`/pricing/${row.id}/edit`)}
+						onClick={(e) => {
+							e.stopPropagation();
+							navigate(`/pricing/${row.id}/edit`);
+						}}
 					>
 						<Pencil className="h-4 w-4" />
 					</button>
 					<button
 						type="button"
 						className="p-1.5 rounded-md hover:bg-error-container text-error transition-colors"
+						onClick={(e) => {
+							e.stopPropagation();
+							setDeleteId(row.id);
+						}}
 					>
 						<Trash2 className="h-4 w-4" />
 					</button>
@@ -219,6 +245,17 @@ export default function PricingPage() {
 				onRowClick={(row) => navigate(`/pricing/${row.id}`)}
 				rowKey={(row) => row.id}
 				emptyMessage={isLoading ? t("common.loading") : t("pricing.no_data")}
+			/>
+
+			<ConfirmDeleteDialog
+				open={deleteId !== null}
+				onOpenChange={(open) => {
+					if (!open) setDeleteId(null);
+				}}
+				title={t("common.delete")}
+				description={t("common.delete_confirm")}
+				onConfirm={() => deleteId && deleteMutation.mutate(deleteId)}
+				isLoading={deleteMutation.isPending}
 			/>
 		</div>
 	);

@@ -39,7 +39,7 @@ export function DataTable<T>({
 	return (
 		<div className="border border-border rounded-xl overflow-hidden">
 			<div className="overflow-x-auto">
-				<table className="w-full text-left border-collapse">
+				<table className="w-full text-start border-collapse">
 					<thead>
 						<tr className="bg-muted/50 text-muted-foreground">
 							{columns.map((col) => (

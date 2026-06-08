@@ -48,6 +48,9 @@ export default function LinkRequestsPage() {
 			toast.success(t("customers.action_success"));
 			queryClient.invalidateQueries({ queryKey: ["link-requests"] });
 		},
+		onError: () => {
+			toast.error(t("common.action_failed"));
+		},
 	});
 
 	const stats = useMemo(() => {
@@ -124,13 +127,14 @@ export default function LinkRequestsPage() {
 						type="button"
 						className="p-1.5 rounded-md hover:bg-green-100 text-green-700 transition-colors disabled:opacity-50"
 						disabled={approveMutation.isPending}
-						onClick={() =>
+						onClick={(e) => {
+							e.stopPropagation();
 							approveMutation.mutate({
 								linkId: row.id,
 								customerUserId: row.customer_user_id,
 								approve: true,
-							})
-						}
+							});
+						}}
 					>
 						<CheckCircle className="h-4 w-4" />
 					</button>
@@ -138,13 +142,14 @@ export default function LinkRequestsPage() {
 						type="button"
 						className="p-1.5 rounded-md hover:bg-red-100 text-red-700 transition-colors disabled:opacity-50"
 						disabled={approveMutation.isPending}
-						onClick={() =>
+						onClick={(e) => {
+							e.stopPropagation();
 							approveMutation.mutate({
 								linkId: row.id,
 								customerUserId: row.customer_user_id,
 								approve: false,
-							})
-						}
+							});
+						}}
 					>
 						<XCircle className="h-4 w-4" />
 					</button>
