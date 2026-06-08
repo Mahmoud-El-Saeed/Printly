@@ -20,13 +20,15 @@ import CreateWalkInCustomerPage from "@/pages/customers/CreateWalkInCustomerPage
 import EditMemberPage from "@/pages/customers/EditMemberPage";
 import EditWalkInCustomerPage from "@/pages/customers/EditWalkInCustomerPage";
 import LinkRequestsPage from "@/pages/customers/LinkRequestsPage";
+import MemberDetailPage from "@/pages/customers/MemberDetailPage";
 import MembersPage from "@/pages/customers/MembersPage";
+import WalkInCustomerDetailPage from "@/pages/customers/WalkInCustomerDetailPage";
 import WalkInCustomersPage from "@/pages/customers/WalkInCustomersPage";
 // Dashboard Pages
 import DashboardPage from "@/pages/dashboard/DashboardPage";
-import PlaceholderPage from "@/pages/dashboard/PlaceholderPage";
 import CreateExpensePage from "@/pages/expenses/CreateExpensePage";
 import EditExpensePage from "@/pages/expenses/EditExpensePage";
+import ExpenseDetailPage from "@/pages/expenses/ExpenseDetailPage";
 import ExpensesPage from "@/pages/expenses/ExpensesPage";
 import CreateMaterialPage from "@/pages/materials/CreateMaterialPage";
 import EditMaterialPage from "@/pages/materials/EditMaterialPage";
@@ -39,6 +41,7 @@ import OrderDetailPage from "@/pages/orders/OrderDetailPage";
 import OrdersListPage from "@/pages/orders/OrdersListPage";
 import CreatePaymentPage from "@/pages/payments/CreatePaymentPage";
 import EditPaymentPage from "@/pages/payments/EditPaymentPage";
+import PaymentDetailPage from "@/pages/payments/PaymentDetailPage";
 import PaymentsPage from "@/pages/payments/PaymentsPage";
 // Portal Pages
 import PortalHomePage from "@/pages/portal/PortalHomePage";
@@ -47,6 +50,7 @@ import ShopPortalPage from "@/pages/portal/ShopPortalPage";
 import CreatePricingRulePage from "@/pages/pricing/CreatePricingRulePage";
 import EditPricingRulePage from "@/pages/pricing/EditPricingRulePage";
 import PricingPage from "@/pages/pricing/PricingPage";
+import PricingRuleDetailPage from "@/pages/pricing/PricingRuleDetailPage";
 import SettingsPage from "@/pages/settings/SettingsPage";
 
 const queryClient = new QueryClient({
@@ -93,7 +97,7 @@ function App() {
 								/>
 								<Route
 									path="customers/walk-in/:id"
-									element={<PlaceholderPage />}
+									element={<WalkInCustomerDetailPage />}
 								/>
 								<Route
 									path="customers/walk-in/new"
@@ -106,7 +110,7 @@ function App() {
 								<Route path="customers/members" element={<MembersPage />} />
 								<Route
 									path="customers/members/:id"
-									element={<PlaceholderPage />}
+									element={<MemberDetailPage />}
 								/>
 								<Route
 									path="customers/members/new"
@@ -129,18 +133,18 @@ function App() {
 								/>
 								<Route path="pricing" element={<PricingPage />} />
 								<Route path="pricing/new" element={<CreatePricingRulePage />} />
-								<Route path="pricing/:id" element={<PlaceholderPage />} />
+								<Route path="pricing/:id" element={<PricingRuleDetailPage />} />
 								<Route
 									path="pricing/:id/edit"
 									element={<EditPricingRulePage />}
 								/>
 								<Route path="payments" element={<PaymentsPage />} />
 								<Route path="payments/new" element={<CreatePaymentPage />} />
-								<Route path="payments/:id" element={<PlaceholderPage />} />
+								<Route path="payments/:id" element={<PaymentDetailPage />} />
 								<Route path="payments/:id/edit" element={<EditPaymentPage />} />
 								<Route path="expenses" element={<ExpensesPage />} />
 								<Route path="expenses/new" element={<CreateExpensePage />} />
-								<Route path="expenses/:id" element={<PlaceholderPage />} />
+								<Route path="expenses/:id" element={<ExpenseDetailPage />} />
 								<Route path="expenses/:id/edit" element={<EditExpensePage />} />
 								<Route path="notifications" element={<NotificationsPage />} />
 								<Route path="settings" element={<SettingsPage />} />
