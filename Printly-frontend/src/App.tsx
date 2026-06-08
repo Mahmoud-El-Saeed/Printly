@@ -34,10 +34,14 @@ import NewOrderPage from "@/pages/orders/NewOrderPage";
 import OrderDetailPage from "@/pages/orders/OrderDetailPage";
 // Orders Pages
 import OrdersListPage from "@/pages/orders/OrdersListPage";
+import CreatePaymentPage from "@/pages/payments/CreatePaymentPage";
+import EditPaymentPage from "@/pages/payments/EditPaymentPage";
 import PaymentsPage from "@/pages/payments/PaymentsPage";
 // Portal Pages
 import PortalHomePage from "@/pages/portal/PortalHomePage";
 import PricingPage from "@/pages/pricing/PricingPage";
+import CreatePricingRulePage from "@/pages/pricing/CreatePricingRulePage";
+import EditPricingRulePage from "@/pages/pricing/EditPricingRulePage";
 import SettingsPage from "@/pages/settings/SettingsPage";
 
 const queryClient = new QueryClient({
@@ -108,7 +112,11 @@ function App() {
 								<Route path="materials/:id" element={<MaterialDetailPage />} />
 								<Route path="materials/:id/edit" element={<EditMaterialPage />} />
 								<Route path="pricing" element={<PricingPage />} />
+								<Route path="pricing/new" element={<CreatePricingRulePage />} />
+								<Route path="pricing/:id/edit" element={<EditPricingRulePage />} />
 								<Route path="payments" element={<PaymentsPage />} />
+								<Route path="payments/new" element={<CreatePaymentPage />} />
+								<Route path="payments/:id/edit" element={<EditPaymentPage />} />
 								<Route path="expenses" element={<ExpensesPage />} />
 								<Route path="notifications" element={<NotificationsPage />} />
 								<Route path="settings" element={<SettingsPage />} />

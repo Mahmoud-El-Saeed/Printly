@@ -274,6 +274,9 @@ const ar = {
 		type_extra_service: "خدمة إضافية",
 		unit_per_page: "لكل صفحة",
 		unit_per_unit: "لكل وحدة",
+		create_title: "قاعدة تسعير جديدة",
+		edit_title: "تعديل قاعدة التسعير",
+		rule_info: "بيانات القاعدة",
 	},
 	payments: {
 		title: "المدفوعات",
@@ -302,6 +305,10 @@ const ar = {
 		method_mobile_wallet: "محفظة موبايل",
 		method_balance: "رصيد",
 		method_other: "أخرى",
+		create_title: "تسجيل دفعة",
+		edit_title: "تعديل الدفعة",
+		select_order: "اختر طلب",
+		payment_info: "بيانات الدفعة",
 	},
 	expenses: {
 		title: "المصروفات",

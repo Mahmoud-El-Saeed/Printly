@@ -274,6 +274,9 @@ const en = {
 		type_extra_service: "Extra Service",
 		unit_per_page: "Per Page",
 		unit_per_unit: "Per Unit",
+		create_title: "New Pricing Rule",
+		edit_title: "Edit Pricing Rule",
+		rule_info: "Rule Information",
 	},
 	payments: {
 		title: "Payments",
@@ -302,6 +305,10 @@ const en = {
 		method_mobile_wallet: "Mobile Wallet",
 		method_balance: "Balance",
 		method_other: "Other",
+		create_title: "Record Payment",
+		edit_title: "Edit Payment",
+		select_order: "Select Order",
+		payment_info: "Payment Information",
 	},
 	expenses: {
 		title: "Expenses",

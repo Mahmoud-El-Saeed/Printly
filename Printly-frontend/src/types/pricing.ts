@@ -25,7 +25,7 @@ export interface PricingRuleCreate {
 	component_name: string;
 	component_type: PricingComponentType;
 	price: number;
-	unit_type?: PricingUnitType;
+	unit_type: PricingUnitType;
 	description?: string;
 }
 
