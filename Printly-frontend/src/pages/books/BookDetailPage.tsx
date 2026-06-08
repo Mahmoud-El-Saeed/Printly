@@ -29,7 +29,11 @@ export default function BookDetailPage() {
 	const [deleteOpen, setDeleteOpen] = useState(false);
 	const queryClient = useQueryClient();
 
-	const { data: book, isLoading } = useQuery({
+	const {
+		data: book,
+		isLoading,
+		isError,
+	} = useQuery({
 		queryKey: ["book", id],
 		queryFn: () => booksApi.get(id ?? ""),
 		enabled: !!id,
@@ -43,6 +47,14 @@ export default function BookDetailPage() {
 			navigate("/books");
 		},
 	});
+
+	if (isError) {
+		return (
+			<div className="flex items-center justify-center py-12 text-error">
+				{t("common.error")}
+			</div>
+		);
+	}
 
 	if (isLoading || !book) {
 		return (

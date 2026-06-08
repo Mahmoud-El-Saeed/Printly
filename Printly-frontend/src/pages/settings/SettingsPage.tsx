@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+// import { tenantApi } from "@/lib/api"; // TODO: Uncomment when /tenants/me endpoint is ready
 
 export default function SettingsPage() {
 	const { t, language, setLanguage, isRTL } = useLanguage();

@@ -20,13 +20,17 @@ export default function MaterialDetailPage() {
 	const [deleteOpen, setDeleteOpen] = useState(false);
 	const [transactionOpen, setTransactionOpen] = useState(false);
 
-	const { data: material, isLoading } = useQuery({
+	const {
+		data: material,
+		isLoading,
+		isError,
+	} = useQuery({
 		queryKey: ["material", materialId],
 		queryFn: () => materialsApi.get(materialId),
 		enabled: !!materialId,
 	});
 
-	const { data: transactionsData } = useQuery({
+	const { data: transactionsData, isError: transactionsError } = useQuery({
 		queryKey: ["material-transactions", materialId],
 		queryFn: () => materialsApi.listTransactions(materialId, { limit: 50 }),
 		enabled: !!materialId,
@@ -39,6 +43,22 @@ export default function MaterialDetailPage() {
 			navigate("/materials");
 		},
 	});
+
+	if (isError || transactionsError) {
+		return (
+			<div className="max-w-7xl mx-auto space-y-6">
+				<Link to="/materials">
+					<Button variant="ghost" size="sm" className="gap-2">
+						<ArrowLeft className="h-4 w-4" />
+						{t("common.back")}
+					</Button>
+				</Link>
+				<div className="flex items-center justify-center py-12 text-error">
+					{t("common.error")}
+				</div>
+			</div>
+		);
+	}
 
 	if (isLoading || !material) {
 		return (

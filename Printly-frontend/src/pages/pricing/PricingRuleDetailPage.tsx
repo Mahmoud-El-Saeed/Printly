@@ -17,7 +17,11 @@ export default function PricingRuleDetailPage() {
 	const [deleteOpen, setDeleteOpen] = useState(false);
 	const queryClient = useQueryClient();
 
-	const { data: rule, isLoading } = useQuery({
+	const {
+		data: rule,
+		isLoading,
+		isError,
+	} = useQuery({
 		queryKey: ["pricingRule", id],
 		queryFn: () => pricingApi.getRule(id ?? ""),
 		enabled: !!id,
@@ -34,6 +38,14 @@ export default function PricingRuleDetailPage() {
 			toast.error(t("common.error"));
 		},
 	});
+
+	if (isError) {
+		return (
+			<div className="flex items-center justify-center py-12 text-error">
+				{t("common.error")}
+			</div>
+		);
+	}
 
 	if (isLoading || !rule) {
 		return (

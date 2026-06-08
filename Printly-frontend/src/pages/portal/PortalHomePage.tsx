@@ -9,15 +9,27 @@ export default function PortalHomePage() {
 	const { t, language } = useLanguage();
 	const navigate = useNavigate();
 
-	const { data: profile } = useQuery({
+	const { data: profile, isError: profileError } = useQuery({
 		queryKey: ["portal-profile"],
 		queryFn: portalApi.getProfile,
 	});
 
-	const { data: tenants, isLoading: tenantsLoading } = useQuery({
+	const {
+		data: tenants,
+		isLoading: tenantsLoading,
+		isError: tenantsError,
+	} = useQuery({
 		queryKey: ["portal-tenants"],
 		queryFn: portalApi.getTenants,
 	});
+
+	if (profileError || tenantsError) {
+		return (
+			<div className="flex items-center justify-center py-12 text-error">
+				{t("common.error")}
+			</div>
+		);
+	}
 
 	const totalBalance =
 		tenants?.tenants?.reduce((sum, tenant) => sum + tenant.balance, 0) ?? 0;

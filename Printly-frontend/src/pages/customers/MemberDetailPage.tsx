@@ -17,7 +17,11 @@ export default function MemberDetailPage() {
 	const [deleteOpen, setDeleteOpen] = useState(false);
 	const queryClient = useQueryClient();
 
-	const { data: member, isLoading } = useQuery({
+	const {
+		data: member,
+		isLoading,
+		isError,
+	} = useQuery({
 		queryKey: ["member", id],
 		queryFn: () => customersApi.getMember(id ?? ""),
 		enabled: !!id,
@@ -34,6 +38,14 @@ export default function MemberDetailPage() {
 			toast.error(t("common.error"));
 		},
 	});
+
+	if (isError) {
+		return (
+			<div className="flex items-center justify-center py-12 text-error">
+				{t("common.error")}
+			</div>
+		);
+	}
 
 	if (isLoading || !member) {
 		return (

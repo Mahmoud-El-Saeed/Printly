@@ -17,7 +17,11 @@ export default function ExpenseDetailPage() {
 	const [deleteOpen, setDeleteOpen] = useState(false);
 	const queryClient = useQueryClient();
 
-	const { data: expense, isLoading } = useQuery({
+	const {
+		data: expense,
+		isLoading,
+		isError,
+	} = useQuery({
 		queryKey: ["expense", id],
 		queryFn: () => expensesApi.get(id ?? ""),
 		enabled: !!id,
@@ -34,6 +38,14 @@ export default function ExpenseDetailPage() {
 			toast.error(t("common.error"));
 		},
 	});
+
+	if (isError) {
+		return (
+			<div className="flex items-center justify-center py-12 text-error">
+				{t("common.error")}
+			</div>
+		);
+	}
 
 	if (isLoading || !expense) {
 		return (

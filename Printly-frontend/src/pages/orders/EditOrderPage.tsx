@@ -26,7 +26,11 @@ export default function EditOrderPage() {
 	const navigate = useNavigate();
 	const queryClient = useQueryClient();
 
-	const { data: order, isLoading } = useQuery({
+	const {
+		data: order,
+		isLoading,
+		isError,
+	} = useQuery({
 		queryKey: ["order", id],
 		queryFn: () => ordersApi.get(id ?? ""),
 		enabled: !!id,
@@ -86,6 +90,14 @@ export default function EditOrderPage() {
 		"delivered",
 		"cancelled",
 	];
+
+	if (isError) {
+		return (
+			<div className="flex items-center justify-center py-12 text-error">
+				{t("common.error")}
+			</div>
+		);
+	}
 
 	if (isLoading) {
 		return (

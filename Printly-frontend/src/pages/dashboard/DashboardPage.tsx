@@ -29,7 +29,11 @@ const STATUS_COLORS: Record<string, string> = {
 export default function DashboardPage() {
 	const { t, language } = useLanguage();
 
-	const { data: overview, isLoading: overviewLoading } = useQuery({
+	const {
+		data: overview,
+		isLoading: overviewLoading,
+		isError: overviewError,
+	} = useQuery({
 		queryKey: ["dashboard-overview"],
 		queryFn: dashboardApi.getOverview,
 	});
@@ -94,6 +98,14 @@ export default function DashboardPage() {
 				color: STATUS_COLORS[status] || "#6b7280",
 			}))
 		: [];
+
+	if (overviewError) {
+		return (
+			<div className="flex items-center justify-center py-12 text-error">
+				{t("common.error")}
+			</div>
+		);
+	}
 
 	return (
 		<div className="space-y-6">

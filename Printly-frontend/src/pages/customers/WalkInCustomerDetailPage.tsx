@@ -16,7 +16,11 @@ export default function WalkInCustomerDetailPage() {
 	const [deleteOpen, setDeleteOpen] = useState(false);
 	const queryClient = useQueryClient();
 
-	const { data: customer, isLoading } = useQuery({
+	const {
+		data: customer,
+		isLoading,
+		isError,
+	} = useQuery({
 		queryKey: ["walkInCustomer", id],
 		queryFn: () => customersApi.getWalkIn(id ?? ""),
 		enabled: !!id,
@@ -33,6 +37,14 @@ export default function WalkInCustomerDetailPage() {
 			toast.error(t("common.error"));
 		},
 	});
+
+	if (isError) {
+		return (
+			<div className="flex items-center justify-center py-12 text-error">
+				{t("common.error")}
+			</div>
+		);
+	}
 
 	if (isLoading || !customer) {
 		return (

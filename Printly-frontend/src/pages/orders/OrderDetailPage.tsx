@@ -13,11 +13,23 @@ export default function OrderDetailPage() {
 	const navigate = useNavigate();
 	const { id } = useParams<{ id: string }>();
 
-	const { data: order, isLoading } = useQuery({
+	const {
+		data: order,
+		isLoading,
+		isError,
+	} = useQuery({
 		queryKey: ["order", id],
 		queryFn: () => ordersApi.get(id ?? ""),
 		enabled: !!id,
 	});
+
+	if (isError) {
+		return (
+			<div className="flex items-center justify-center py-12 text-error">
+				{t("common.error")}
+			</div>
+		);
+	}
 
 	if (isLoading || !order) {
 		return (

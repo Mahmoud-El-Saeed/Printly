@@ -6,6 +6,7 @@ import { Toaster } from "sonner";
 // Layouts
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import PortalLayout from "@/components/layout/PortalLayout";
+import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 
@@ -118,154 +119,174 @@ function App() {
 			<BrowserRouter>
 				<LanguageProvider>
 					<AuthProvider>
-						<Routes>
-							{/* Auth Routes */}
-							<Route path="/login" element={<LoginPage />} />
-							<Route
-								path="/register/shop-owner"
-								element={<RegisterShopOwnerPage />}
-							/>
-							<Route
-								path="/register/customer"
-								element={<RegisterCustomerPage />}
-							/>
+						<ErrorBoundary>
+							<Routes>
+								{/* Auth Routes */}
+								<Route path="/login" element={<LoginPage />} />
+								<Route
+									path="/register/shop-owner"
+									element={<RegisterShopOwnerPage />}
+								/>
+								<Route
+									path="/register/customer"
+									element={<RegisterCustomerPage />}
+								/>
 
-							{/* Dashboard Routes (Protected) */}
-							<Route element={<DashboardLayout />}>
-								<Route
-									index
-									element={
-										<Suspense fallback={<PageLoader />}>
-											<DashboardPage />
-										</Suspense>
-									}
-								/>
-								<Route
-									path="orders"
-									element={
-										<Suspense fallback={<PageLoader />}>
-											<OrdersListPage />
-										</Suspense>
-									}
-								/>
-								<Route
-									path="orders/new"
-									element={
-										<Suspense fallback={<PageLoader />}>
-											<NewOrderPage />
-										</Suspense>
-									}
-								/>
-								<Route
-									path="orders/:id"
-									element={
-										<Suspense fallback={<PageLoader />}>
-											<OrderDetailPage />
-										</Suspense>
-									}
-								/>
-								<Route
-									path="orders/:id/edit"
-									element={
-										<Suspense fallback={<PageLoader />}>
-											<EditOrderPage />
-										</Suspense>
-									}
-								/>
-								<Route path="books" element={<BooksListPage />} />
-								<Route path="books/new" element={<CreateBookPage />} />
-								<Route path="books/:id" element={<BookDetailPage />} />
-								<Route path="books/:id/edit" element={<EditBookPage />} />
-								<Route
-									path="customers/walk-in"
-									element={<WalkInCustomersPage />}
-								/>
-								<Route
-									path="customers/walk-in/:id"
-									element={<WalkInCustomerDetailPage />}
-								/>
-								<Route
-									path="customers/walk-in/new"
-									element={<CreateWalkInCustomerPage />}
-								/>
-								<Route
-									path="customers/walk-in/:id/edit"
-									element={<EditWalkInCustomerPage />}
-								/>
-								<Route path="customers/members" element={<MembersPage />} />
-								<Route
-									path="customers/members/:id"
-									element={<MemberDetailPage />}
-								/>
-								<Route
-									path="customers/members/new"
-									element={<CreateMemberPage />}
-								/>
-								<Route
-									path="customers/members/:id/edit"
-									element={<EditMemberPage />}
-								/>
-								<Route
-									path="customers/link-requests"
-									element={<LinkRequestsPage />}
-								/>
-								<Route path="materials" element={<MaterialsPage />} />
-								<Route path="materials/new" element={<CreateMaterialPage />} />
-								<Route path="materials/:id" element={<MaterialDetailPage />} />
-								<Route
-									path="materials/:id/edit"
-									element={<EditMaterialPage />}
-								/>
-								<Route path="pricing" element={<PricingPage />} />
-								<Route path="pricing/new" element={<CreatePricingRulePage />} />
-								<Route path="pricing/:id" element={<PricingRuleDetailPage />} />
-								<Route
-									path="pricing/:id/edit"
-									element={<EditPricingRulePage />}
-								/>
-								<Route path="payments" element={<PaymentsPage />} />
-								<Route path="payments/new" element={<CreatePaymentPage />} />
-								<Route path="payments/:id" element={<PaymentDetailPage />} />
-								<Route path="payments/:id/edit" element={<EditPaymentPage />} />
-								<Route path="expenses" element={<ExpensesPage />} />
-								<Route path="expenses/new" element={<CreateExpensePage />} />
-								<Route path="expenses/:id" element={<ExpenseDetailPage />} />
-								<Route path="expenses/:id/edit" element={<EditExpensePage />} />
-								<Route path="notifications" element={<NotificationsPage />} />
-								<Route path="settings" element={<SettingsPage />} />
-							</Route>
+								{/* Dashboard Routes (Protected) */}
+								<Route element={<DashboardLayout />}>
+									<Route
+										index
+										element={
+											<Suspense fallback={<PageLoader />}>
+												<DashboardPage />
+											</Suspense>
+										}
+									/>
+									<Route
+										path="orders"
+										element={
+											<Suspense fallback={<PageLoader />}>
+												<OrdersListPage />
+											</Suspense>
+										}
+									/>
+									<Route
+										path="orders/new"
+										element={
+											<Suspense fallback={<PageLoader />}>
+												<NewOrderPage />
+											</Suspense>
+										}
+									/>
+									<Route
+										path="orders/:id"
+										element={
+											<Suspense fallback={<PageLoader />}>
+												<OrderDetailPage />
+											</Suspense>
+										}
+									/>
+									<Route
+										path="orders/:id/edit"
+										element={
+											<Suspense fallback={<PageLoader />}>
+												<EditOrderPage />
+											</Suspense>
+										}
+									/>
+									<Route path="books" element={<BooksListPage />} />
+									<Route path="books/new" element={<CreateBookPage />} />
+									<Route path="books/:id" element={<BookDetailPage />} />
+									<Route path="books/:id/edit" element={<EditBookPage />} />
+									<Route
+										path="customers/walk-in"
+										element={<WalkInCustomersPage />}
+									/>
+									<Route
+										path="customers/walk-in/:id"
+										element={<WalkInCustomerDetailPage />}
+									/>
+									<Route
+										path="customers/walk-in/new"
+										element={<CreateWalkInCustomerPage />}
+									/>
+									<Route
+										path="customers/walk-in/:id/edit"
+										element={<EditWalkInCustomerPage />}
+									/>
+									<Route path="customers/members" element={<MembersPage />} />
+									<Route
+										path="customers/members/:id"
+										element={<MemberDetailPage />}
+									/>
+									<Route
+										path="customers/members/new"
+										element={<CreateMemberPage />}
+									/>
+									<Route
+										path="customers/members/:id/edit"
+										element={<EditMemberPage />}
+									/>
+									<Route
+										path="customers/link-requests"
+										element={<LinkRequestsPage />}
+									/>
+									<Route path="materials" element={<MaterialsPage />} />
+									<Route
+										path="materials/new"
+										element={<CreateMaterialPage />}
+									/>
+									<Route
+										path="materials/:id"
+										element={<MaterialDetailPage />}
+									/>
+									<Route
+										path="materials/:id/edit"
+										element={<EditMaterialPage />}
+									/>
+									<Route path="pricing" element={<PricingPage />} />
+									<Route
+										path="pricing/new"
+										element={<CreatePricingRulePage />}
+									/>
+									<Route
+										path="pricing/:id"
+										element={<PricingRuleDetailPage />}
+									/>
+									<Route
+										path="pricing/:id/edit"
+										element={<EditPricingRulePage />}
+									/>
+									<Route path="payments" element={<PaymentsPage />} />
+									<Route path="payments/new" element={<CreatePaymentPage />} />
+									<Route path="payments/:id" element={<PaymentDetailPage />} />
+									<Route
+										path="payments/:id/edit"
+										element={<EditPaymentPage />}
+									/>
+									<Route path="expenses" element={<ExpensesPage />} />
+									<Route path="expenses/new" element={<CreateExpensePage />} />
+									<Route path="expenses/:id" element={<ExpenseDetailPage />} />
+									<Route
+										path="expenses/:id/edit"
+										element={<EditExpensePage />}
+									/>
+									<Route path="notifications" element={<NotificationsPage />} />
+									<Route path="settings" element={<SettingsPage />} />
+								</Route>
 
-							{/* Customer Portal Routes (Protected - Customer Only) */}
-							<Route element={<PortalLayout />}>
-								<Route
-									path="/portal"
-									element={
-										<Suspense fallback={<PageLoader />}>
-											<PortalHomePage />
-										</Suspense>
-									}
-								/>
-								<Route
-									path="/portal/:tenantId"
-									element={
-										<Suspense fallback={<PageLoader />}>
-											<ShopPortalPage />
-										</Suspense>
-									}
-								/>
-								<Route
-									path="/portal/:tenantId/orders/:orderId"
-									element={
-										<Suspense fallback={<PageLoader />}>
-											<PortalOrderDetailPage />
-										</Suspense>
-									}
-								/>
-							</Route>
+								{/* Customer Portal Routes (Protected - Customer Only) */}
+								<Route element={<PortalLayout />}>
+									<Route
+										path="/portal"
+										element={
+											<Suspense fallback={<PageLoader />}>
+												<PortalHomePage />
+											</Suspense>
+										}
+									/>
+									<Route
+										path="/portal/:tenantId"
+										element={
+											<Suspense fallback={<PageLoader />}>
+												<ShopPortalPage />
+											</Suspense>
+										}
+									/>
+									<Route
+										path="/portal/:tenantId/orders/:orderId"
+										element={
+											<Suspense fallback={<PageLoader />}>
+												<PortalOrderDetailPage />
+											</Suspense>
+										}
+									/>
+								</Route>
 
-							{/* Catch all */}
-							<Route path="*" element={<Navigate to="/" replace />} />
-						</Routes>
+								{/* Catch all */}
+								<Route path="*" element={<Navigate to="/" replace />} />
+							</Routes>
+						</ErrorBoundary>
 						<Toaster position="top-center" richColors closeButton />
 					</AuthProvider>
 				</LanguageProvider>
