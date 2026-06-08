@@ -202,6 +202,9 @@ const ar = {
 		status_approved: "موافق عليه",
 		status_rejected: "مرفوض",
 		link_no_data: "لا يوجد طلبات ربط",
+		create_walkin_title: "عميل واجهة جديد",
+		edit_walkin_title: "تعديل عميل واجهة",
+		customer_info: "بيانات العميل",
 	},
 	materials: {
 		title: "المواد",

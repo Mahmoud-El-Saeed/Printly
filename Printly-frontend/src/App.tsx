@@ -15,6 +15,8 @@ import BookDetailPage from "@/pages/books/BookDetailPage";
 import BooksListPage from "@/pages/books/BooksListPage";
 import CreateBookPage from "@/pages/books/CreateBookPage";
 import EditBookPage from "@/pages/books/EditBookPage";
+import CreateWalkInCustomerPage from "@/pages/customers/CreateWalkInCustomerPage";
+import EditWalkInCustomerPage from "@/pages/customers/EditWalkInCustomerPage";
 import LinkRequestsPage from "@/pages/customers/LinkRequestsPage";
 import MembersPage from "@/pages/customers/MembersPage";
 import WalkInCustomersPage from "@/pages/customers/WalkInCustomersPage";
@@ -74,6 +76,14 @@ function App() {
 								<Route
 									path="customers/walk-in"
 									element={<WalkInCustomersPage />}
+								/>
+								<Route
+									path="customers/walk-in/new"
+									element={<CreateWalkInCustomerPage />}
+								/>
+								<Route
+									path="customers/walk-in/:id/edit"
+									element={<EditWalkInCustomerPage />}
 								/>
 								<Route path="customers/members" element={<MembersPage />} />
 								<Route

@@ -202,6 +202,9 @@ const en = {
 		status_approved: "Approved",
 		status_rejected: "Rejected",
 		link_no_data: "No link requests found",
+		create_walkin_title: "New Walk-in Customer",
+		edit_walkin_title: "Edit Walk-in Customer",
+		customer_info: "Customer Information",
 	},
 	materials: {
 		title: "Materials",
