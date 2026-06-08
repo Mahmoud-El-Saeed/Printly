@@ -1,4 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Loader2 } from "lucide-react";
+import { lazy, Suspense } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Toaster } from "sonner";
 // Layouts
@@ -24,8 +26,14 @@ import MemberDetailPage from "@/pages/customers/MemberDetailPage";
 import MembersPage from "@/pages/customers/MembersPage";
 import WalkInCustomerDetailPage from "@/pages/customers/WalkInCustomerDetailPage";
 import WalkInCustomersPage from "@/pages/customers/WalkInCustomersPage";
-// Dashboard Pages
-import DashboardPage from "@/pages/dashboard/DashboardPage";
+
+// Lazy-loaded Dashboard Pages
+const DashboardPage = lazy(() =>
+	import("@/pages/dashboard/DashboardPage").then((m) => ({
+		default: m.default,
+	})),
+);
+
 import CreateExpensePage from "@/pages/expenses/CreateExpensePage";
 import EditExpensePage from "@/pages/expenses/EditExpensePage";
 import ExpenseDetailPage from "@/pages/expenses/ExpenseDetailPage";
@@ -35,24 +43,64 @@ import EditMaterialPage from "@/pages/materials/EditMaterialPage";
 import MaterialDetailPage from "@/pages/materials/MaterialDetailPage";
 import MaterialsPage from "@/pages/materials/MaterialsPage";
 import NotificationsPage from "@/pages/notifications/NotificationsPage";
-import EditOrderPage from "@/pages/orders/EditOrderPage";
-import NewOrderPage from "@/pages/orders/NewOrderPage";
-import OrderDetailPage from "@/pages/orders/OrderDetailPage";
-// Orders Pages
-import OrdersListPage from "@/pages/orders/OrdersListPage";
+
+// Lazy-loaded Orders Pages
+const EditOrderPage = lazy(() =>
+	import("@/pages/orders/EditOrderPage").then((m) => ({
+		default: m.default,
+	})),
+);
+const NewOrderPage = lazy(() =>
+	import("@/pages/orders/NewOrderPage").then((m) => ({
+		default: m.default,
+	})),
+);
+const OrderDetailPage = lazy(() =>
+	import("@/pages/orders/OrderDetailPage").then((m) => ({
+		default: m.default,
+	})),
+);
+const OrdersListPage = lazy(() =>
+	import("@/pages/orders/OrdersListPage").then((m) => ({
+		default: m.default,
+	})),
+);
+
 import CreatePaymentPage from "@/pages/payments/CreatePaymentPage";
 import EditPaymentPage from "@/pages/payments/EditPaymentPage";
 import PaymentDetailPage from "@/pages/payments/PaymentDetailPage";
 import PaymentsPage from "@/pages/payments/PaymentsPage";
-// Portal Pages
-import PortalHomePage from "@/pages/portal/PortalHomePage";
-import PortalOrderDetailPage from "@/pages/portal/PortalOrderDetailPage";
-import ShopPortalPage from "@/pages/portal/ShopPortalPage";
+
+// Lazy-loaded Portal Pages
+const PortalHomePage = lazy(() =>
+	import("@/pages/portal/PortalHomePage").then((m) => ({
+		default: m.default,
+	})),
+);
+const PortalOrderDetailPage = lazy(() =>
+	import("@/pages/portal/PortalOrderDetailPage").then((m) => ({
+		default: m.default,
+	})),
+);
+const ShopPortalPage = lazy(() =>
+	import("@/pages/portal/ShopPortalPage").then((m) => ({
+		default: m.default,
+	})),
+);
+
 import CreatePricingRulePage from "@/pages/pricing/CreatePricingRulePage";
 import EditPricingRulePage from "@/pages/pricing/EditPricingRulePage";
 import PricingPage from "@/pages/pricing/PricingPage";
 import PricingRuleDetailPage from "@/pages/pricing/PricingRuleDetailPage";
 import SettingsPage from "@/pages/settings/SettingsPage";
+
+function PageLoader() {
+	return (
+		<div className="flex items-center justify-center h-64">
+			<Loader2 className="h-8 w-8 animate-spin text-primary" />
+		</div>
+	);
+}
 
 const queryClient = new QueryClient({
 	defaultOptions: {
@@ -84,11 +132,46 @@ function App() {
 
 							{/* Dashboard Routes (Protected) */}
 							<Route element={<DashboardLayout />}>
-								<Route index element={<DashboardPage />} />
-								<Route path="orders" element={<OrdersListPage />} />
-								<Route path="orders/new" element={<NewOrderPage />} />
-								<Route path="orders/:id" element={<OrderDetailPage />} />
-								<Route path="orders/:id/edit" element={<EditOrderPage />} />
+								<Route
+									index
+									element={
+										<Suspense fallback={<PageLoader />}>
+											<DashboardPage />
+										</Suspense>
+									}
+								/>
+								<Route
+									path="orders"
+									element={
+										<Suspense fallback={<PageLoader />}>
+											<OrdersListPage />
+										</Suspense>
+									}
+								/>
+								<Route
+									path="orders/new"
+									element={
+										<Suspense fallback={<PageLoader />}>
+											<NewOrderPage />
+										</Suspense>
+									}
+								/>
+								<Route
+									path="orders/:id"
+									element={
+										<Suspense fallback={<PageLoader />}>
+											<OrderDetailPage />
+										</Suspense>
+									}
+								/>
+								<Route
+									path="orders/:id/edit"
+									element={
+										<Suspense fallback={<PageLoader />}>
+											<EditOrderPage />
+										</Suspense>
+									}
+								/>
 								<Route path="books" element={<BooksListPage />} />
 								<Route path="books/new" element={<CreateBookPage />} />
 								<Route path="books/:id" element={<BookDetailPage />} />
@@ -154,11 +237,29 @@ function App() {
 
 							{/* Customer Portal Routes (Protected - Customer Only) */}
 							<Route element={<PortalLayout />}>
-								<Route path="/portal" element={<PortalHomePage />} />
-								<Route path="/portal/:tenantId" element={<ShopPortalPage />} />
+								<Route
+									path="/portal"
+									element={
+										<Suspense fallback={<PageLoader />}>
+											<PortalHomePage />
+										</Suspense>
+									}
+								/>
+								<Route
+									path="/portal/:tenantId"
+									element={
+										<Suspense fallback={<PageLoader />}>
+											<ShopPortalPage />
+										</Suspense>
+									}
+								/>
 								<Route
 									path="/portal/:tenantId/orders/:orderId"
-									element={<PortalOrderDetailPage />}
+									element={
+										<Suspense fallback={<PageLoader />}>
+											<PortalOrderDetailPage />
+										</Suspense>
+									}
 								/>
 							</Route>
 

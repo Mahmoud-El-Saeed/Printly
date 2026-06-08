@@ -10,3 +10,4 @@ export { ordersApi } from "./orders";
 export { paymentsApi } from "./payments";
 export { portalApi } from "./portal";
 export { pricingApi } from "./pricing";
+export { tenantApi } from "./tenant";

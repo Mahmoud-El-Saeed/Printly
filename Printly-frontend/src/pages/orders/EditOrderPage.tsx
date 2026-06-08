@@ -70,17 +70,12 @@ export default function EditOrderPage() {
 	});
 
 	const handleSave = () => {
-		const promises: Promise<unknown>[] = [];
-
-		promises.push(
-			updateMutation.mutateAsync({
-				due_date: dueDate || undefined,
-				notes: notes || undefined,
-			}),
-		);
-
+		updateMutation.mutate({
+			due_date: dueDate || undefined,
+			notes: notes || undefined,
+		});
 		if (status !== originalStatus) {
-			promises.push(statusMutation.mutateAsync(status));
+			statusMutation.mutate(status);
 		}
 	};
 

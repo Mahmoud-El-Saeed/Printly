@@ -26,7 +26,7 @@ export default function SettingsPage() {
 	const [phone, setPhone] = useState("");
 	const [address, setAddress] = useState("");
 
-	// TODO: Wire to shop settings API when backend endpoint is available
+	// NOTE: Shop profile requires backend endpoint. Fields are display-only until /tenants/me is available.
 
 	return (
 		<div className="space-y-6">
