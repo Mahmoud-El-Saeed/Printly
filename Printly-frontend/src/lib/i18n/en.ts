@@ -332,6 +332,10 @@ const en = {
 		cat_utilities: "Utilities",
 		cat_supplies: "Supplies",
 		cat_other: "Other",
+		create_title: "New Expense",
+		edit_title: "Edit Expense",
+		expense_date: "Expense Date",
+		expense_info: "Expense Information",
 	},
 	notifications: {
 		title: "Notifications",
@@ -444,6 +448,9 @@ const en = {
 		dark_mode_desc: "Toggle dark mode for the interface",
 		save: "Save Changes",
 		saved: "Settings saved successfully",
+		shop_settings_soon: "Shop settings management will be available soon",
+		danger_zone: "Danger Zone",
+		delete_account: "Delete Account",
 	},
 	role: {
 		admin: "System Admin",

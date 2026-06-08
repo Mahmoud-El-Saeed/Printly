@@ -332,6 +332,10 @@ const ar = {
 		cat_utilities: "مرافق",
 		cat_supplies: "مستلزمات",
 		cat_other: "أخرى",
+		create_title: "مصروف جديد",
+		edit_title: "تعديل المصروف",
+		expense_date: "تاريخ المصروف",
+		expense_info: "بيانات المصروف",
 	},
 	notifications: {
 		title: "الإشعارات",
@@ -443,6 +447,9 @@ const ar = {
 		dark_mode_desc: "تفعيل الوضع الداكن للواجهة",
 		save: "حفظ التغييرات",
 		saved: "تم حفظ الإعدادات بنجاح",
+		shop_settings_soon: "إدارة إعدادات المحل ستكون متاحة قريباً",
+		danger_zone: "منطقة الخطر",
+		delete_account: "حذف الحساب",
 	},
 	role: {
 		admin: "مدير النظام",

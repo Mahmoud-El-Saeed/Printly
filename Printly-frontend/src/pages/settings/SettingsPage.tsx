@@ -1,4 +1,4 @@
-import { Globe, Palette, Save, Store } from "lucide-react";
+import { AlertTriangle, Globe, Palette, Save, Store } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/shared/PageHeader";
@@ -6,14 +6,28 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function SettingsPage() {
 	const { t, language, setLanguage, isRTL } = useLanguage();
-	const [darkMode, setDarkMode] = useState(false);
+	const { user } = useAuth();
+
+	const [darkMode, setDarkMode] = useState(() => {
+		return localStorage.getItem("printly-dark-mode") === "true";
+	});
+
+	const handleDarkModeChange = (val: boolean) => {
+		setDarkMode(val);
+		localStorage.setItem("printly-dark-mode", String(val));
+		document.documentElement.classList.toggle("dark", val);
+	};
+
 	const [shopName, setShopName] = useState("");
 	const [phone, setPhone] = useState("");
 	const [address, setAddress] = useState("");
+
+	// TODO: Wire to shop settings API when backend endpoint is available
 
 	return (
 		<div className="space-y-6">
@@ -29,6 +43,9 @@ export default function SettingsPage() {
 						{t("settings.shop_profile")}
 					</h3>
 				</div>
+				<p className="text-sm text-muted-foreground mb-4">
+					{t("settings.shop_settings_soon")}
+				</p>
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 					<div className="space-y-2">
 						<Label>{t("settings.shop_name")}</Label>
@@ -36,6 +53,7 @@ export default function SettingsPage() {
 							value={shopName}
 							onChange={(e) => setShopName(e.target.value)}
 							placeholder={language === "ar" ? "مطبعة النور" : "My Print Shop"}
+							disabled
 						/>
 					</div>
 					<div className="space-y-2">
@@ -44,6 +62,7 @@ export default function SettingsPage() {
 							value={phone}
 							onChange={(e) => setPhone(e.target.value)}
 							placeholder="+20 xxx xxx xxxx"
+							disabled
 						/>
 					</div>
 					<div className="space-y-2 md:col-span-2">
@@ -52,9 +71,15 @@ export default function SettingsPage() {
 							value={address}
 							onChange={(e) => setAddress(e.target.value)}
 							placeholder={language === "ar" ? "القاهرة، مصر" : "Cairo, Egypt"}
+							disabled
 						/>
 					</div>
 				</div>
+				{user && (
+					<p className="text-xs text-muted-foreground mt-3">
+						{t(`role.${user.role}`)} — ID: {user.user_id}
+					</p>
+				)}
 			</div>
 
 			<div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-6">
@@ -100,8 +125,20 @@ export default function SettingsPage() {
 							{t("settings.dark_mode_desc")}
 						</p>
 					</div>
-					<Switch checked={darkMode} onCheckedChange={setDarkMode} />
+					<Switch checked={darkMode} onCheckedChange={handleDarkModeChange} />
 				</div>
+			</div>
+
+			<div className="bg-surface-container-lowest border border-error rounded-xl p-6">
+				<div className="flex items-center gap-2 mb-4">
+					<AlertTriangle className="h-5 w-5 text-error" />
+					<h3 className="font-semibold text-lg text-error">
+						{t("settings.danger_zone")}
+					</h3>
+				</div>
+				<Button variant="destructive" disabled>
+					{t("settings.delete_account")}
+				</Button>
 			</div>
 
 			<div className="flex justify-end">

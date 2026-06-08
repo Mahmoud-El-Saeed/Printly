@@ -25,6 +25,8 @@ import WalkInCustomersPage from "@/pages/customers/WalkInCustomersPage";
 // Dashboard Pages
 import DashboardPage from "@/pages/dashboard/DashboardPage";
 import ExpensesPage from "@/pages/expenses/ExpensesPage";
+import CreateExpensePage from "@/pages/expenses/CreateExpensePage";
+import EditExpensePage from "@/pages/expenses/EditExpensePage";
 import MaterialsPage from "@/pages/materials/MaterialsPage";
 import CreateMaterialPage from "@/pages/materials/CreateMaterialPage";
 import MaterialDetailPage from "@/pages/materials/MaterialDetailPage";
@@ -118,6 +120,8 @@ function App() {
 								<Route path="payments/new" element={<CreatePaymentPage />} />
 								<Route path="payments/:id/edit" element={<EditPaymentPage />} />
 								<Route path="expenses" element={<ExpensesPage />} />
+								<Route path="expenses/new" element={<CreateExpensePage />} />
+								<Route path="expenses/:id/edit" element={<EditExpensePage />} />
 								<Route path="notifications" element={<NotificationsPage />} />
 								<Route path="settings" element={<SettingsPage />} />
 							</Route>
