@@ -132,6 +132,7 @@ export default function NotificationsPage() {
 				<div className="flex justify-end gap-1">
 					<button
 						type="button"
+						aria-label="Mark as read"
 						className="p-1.5 rounded-md hover:bg-surface-container text-on-surface-variant transition-colors disabled:opacity-50"
 						disabled={row.is_read || markReadMutation.isPending}
 						onClick={(e) => {

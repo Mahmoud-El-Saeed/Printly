@@ -101,6 +101,7 @@ export default function PaymentsPage() {
 				<div className="flex justify-end gap-1">
 					<button
 						type="button"
+						aria-label="View"
 						className="p-1.5 rounded-md hover:bg-surface-container text-on-surface-variant transition-colors"
 						onClick={(e) => {
 							e.stopPropagation();
@@ -111,6 +112,7 @@ export default function PaymentsPage() {
 					</button>
 					<button
 						type="button"
+						aria-label="Edit"
 						className="p-1.5 rounded-md hover:bg-surface-container text-on-surface-variant transition-colors"
 						onClick={(e) => {
 							e.stopPropagation();
@@ -121,6 +123,7 @@ export default function PaymentsPage() {
 					</button>
 					<button
 						type="button"
+						aria-label="Delete"
 						className="p-1.5 rounded-md hover:bg-error-container text-error transition-colors"
 						onClick={(e) => {
 							e.stopPropagation();

@@ -143,6 +143,7 @@ export default function RegisterShopOwnerPage() {
 											/>
 											<Button
 												type="button"
+												aria-label="Toggle password visibility"
 												variant="ghost"
 												size="icon"
 												className="absolute end-3 top-1/2 -translate-y-1/2"
@@ -174,6 +175,7 @@ export default function RegisterShopOwnerPage() {
 											/>
 											<Button
 												type="button"
+												aria-label="Toggle confirm password visibility"
 												variant="ghost"
 												size="icon"
 												className="absolute end-3 top-1/2 -translate-y-1/2"

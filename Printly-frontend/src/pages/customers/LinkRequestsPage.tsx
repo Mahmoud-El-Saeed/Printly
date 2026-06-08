@@ -104,6 +104,7 @@ export default function LinkRequestsPage() {
 				<div className="flex justify-end gap-1">
 					<button
 						type="button"
+						aria-label="Approve"
 						className="p-1.5 rounded-md hover:bg-green-100 text-green-700 transition-colors disabled:opacity-50"
 						disabled={approveMutation.isPending}
 						onClick={(e) => {
@@ -119,6 +120,7 @@ export default function LinkRequestsPage() {
 					</button>
 					<button
 						type="button"
+						aria-label="Reject"
 						className="p-1.5 rounded-md hover:bg-red-100 text-red-700 transition-colors disabled:opacity-50"
 						disabled={approveMutation.isPending}
 						onClick={(e) => {

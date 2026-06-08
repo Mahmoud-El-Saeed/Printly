@@ -26,11 +26,12 @@ export default function TopBar() {
 					size="icon"
 					onClick={() => navigate("/notifications")}
 					className="relative"
+					aria-label={t("nav.notifications")}
 				>
 					<Bell className="h-4 w-4" />
 				</Button>
 
-				<Button variant="ghost" size="icon">
+				<Button variant="ghost" size="icon" aria-label={t("settings.title")}>
 					<User className="h-4 w-4" />
 				</Button>
 			</div>

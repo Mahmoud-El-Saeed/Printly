@@ -12,8 +12,13 @@ function PortalProtectedRoute({ children }: { children: ReactNode }) {
 
 	if (isLoading) {
 		return (
-			<div className="min-h-screen flex items-center justify-center">
+			<div
+				className="min-h-screen flex items-center justify-center"
+				role="status"
+				aria-label="Loading"
+			>
 				<Loader2 className="h-8 w-8 animate-spin text-primary" />
+				<span className="sr-only">Loading...</span>
 			</div>
 		);
 	}

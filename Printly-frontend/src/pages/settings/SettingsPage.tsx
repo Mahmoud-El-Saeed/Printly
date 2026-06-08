@@ -1,5 +1,7 @@
-import { AlertTriangle, Globe, Palette, Store } from "lucide-react";
-import { useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { AlertTriangle, Globe, Palette, Save, Store } from "lucide-react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,11 +9,28 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
-// import { tenantApi } from "@/lib/api"; // TODO: Uncomment when /tenants/me endpoint is ready
+import { tenantApi } from "@/lib/api";
 
 export default function SettingsPage() {
 	const { t, language, setLanguage, isRTL } = useLanguage();
 	const { user } = useAuth();
+	const queryClient = useQueryClient();
+
+	const { data: profile, isLoading: profileLoading } = useQuery({
+		queryKey: ["tenant-profile"],
+		queryFn: tenantApi.getProfile,
+	});
+
+	const updateMutation = useMutation({
+		mutationFn: tenantApi.updateProfile,
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ["tenant-profile"] });
+			toast.success(t("settings.saved"));
+		},
+		onError: () => {
+			toast.error(t("common.error"));
+		},
+	});
 
 	const [darkMode, setDarkMode] = useState(() => {
 		return localStorage.getItem("printly-dark-mode") === "true";
@@ -27,7 +46,13 @@ export default function SettingsPage() {
 	const [phone, setPhone] = useState("");
 	const [address, setAddress] = useState("");
 
-	// NOTE: Shop profile requires backend endpoint. Fields are display-only until /tenants/me is available.
+	useEffect(() => {
+		if (profile) {
+			setShopName(profile.name || "");
+			setPhone(profile.phone || "");
+			setAddress(profile.address || "");
+		}
+	}, [profile]);
 
 	return (
 		<div className="space-y-6">
@@ -43,9 +68,6 @@ export default function SettingsPage() {
 						{t("settings.shop_profile")}
 					</h3>
 				</div>
-				<p className="text-sm text-muted-foreground mb-4">
-					{t("settings.shop_settings_soon")}
-				</p>
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 					<div className="space-y-2">
 						<Label>{t("settings.shop_name")}</Label>
@@ -53,7 +75,7 @@ export default function SettingsPage() {
 							value={shopName}
 							onChange={(e) => setShopName(e.target.value)}
 							placeholder={language === "ar" ? "مطبعة النور" : "My Print Shop"}
-							disabled
+							disabled={profileLoading}
 						/>
 					</div>
 					<div className="space-y-2">
@@ -62,7 +84,7 @@ export default function SettingsPage() {
 							value={phone}
 							onChange={(e) => setPhone(e.target.value)}
 							placeholder="+20 xxx xxx xxxx"
-							disabled
+							disabled={profileLoading}
 						/>
 					</div>
 					<div className="space-y-2 md:col-span-2">
@@ -71,7 +93,7 @@ export default function SettingsPage() {
 							value={address}
 							onChange={(e) => setAddress(e.target.value)}
 							placeholder={language === "ar" ? "القاهرة، مصر" : "Cairo, Egypt"}
-							disabled
+							disabled={profileLoading}
 						/>
 					</div>
 				</div>
@@ -141,16 +163,22 @@ export default function SettingsPage() {
 				</Button>
 			</div>
 
-			{/* TODO: wire to API */}
-			{/* <div className="flex justify-end">
+			<div className="flex justify-end">
 				<Button
-					onClick={() => toast.success(t("settings.saved"))}
+					onClick={() =>
+						updateMutation.mutate({
+							name: shopName,
+							phone: phone || undefined,
+							address: address || undefined,
+						})
+					}
+					disabled={updateMutation.isPending || profileLoading}
 					className="gap-2"
 				>
 					<Save className="h-4 w-4" />
 					{t("settings.save")}
 				</Button>
-			</div> */}
+			</div>
 		</div>
 	);
 }

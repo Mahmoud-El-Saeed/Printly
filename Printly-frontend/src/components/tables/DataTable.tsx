@@ -105,6 +105,7 @@ export function DataTable<T>({
 							size="icon"
 							disabled={!hasPrev}
 							onClick={() => onPageChange(page - 1)}
+							aria-label="Previous page"
 						>
 							<ChevronLeft className="h-4 w-4" />
 						</Button>
@@ -113,6 +114,7 @@ export function DataTable<T>({
 							size="icon"
 							disabled={!hasNext}
 							onClick={() => onPageChange(page + 1)}
+							aria-label="Next page"
 						>
 							<ChevronRight className="h-4 w-4" />
 						</Button>

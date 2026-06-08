@@ -3,102 +3,110 @@ import { Loader2 } from "lucide-react";
 import { lazy, Suspense } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Toaster } from "sonner";
-// Layouts
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import PortalLayout from "@/components/layout/PortalLayout";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 
-// Auth Pages
 import LoginPage from "@/pages/auth/LoginPage";
 import RegisterCustomerPage from "@/pages/auth/RegisterCustomerPage";
 import RegisterShopOwnerPage from "@/pages/auth/RegisterShopOwnerPage";
-import BookDetailPage from "@/pages/books/BookDetailPage";
-import BooksListPage from "@/pages/books/BooksListPage";
-import CreateBookPage from "@/pages/books/CreateBookPage";
-import EditBookPage from "@/pages/books/EditBookPage";
-import CreateMemberPage from "@/pages/customers/CreateMemberPage";
-import CreateWalkInCustomerPage from "@/pages/customers/CreateWalkInCustomerPage";
-import EditMemberPage from "@/pages/customers/EditMemberPage";
-import EditWalkInCustomerPage from "@/pages/customers/EditWalkInCustomerPage";
-import LinkRequestsPage from "@/pages/customers/LinkRequestsPage";
-import MemberDetailPage from "@/pages/customers/MemberDetailPage";
-import MembersPage from "@/pages/customers/MembersPage";
-import WalkInCustomerDetailPage from "@/pages/customers/WalkInCustomerDetailPage";
-import WalkInCustomersPage from "@/pages/customers/WalkInCustomersPage";
 
-// Lazy-loaded Dashboard Pages
-const DashboardPage = lazy(() =>
-	import("@/pages/dashboard/DashboardPage").then((m) => ({
-		default: m.default,
-	})),
+const DashboardPage = lazy(() => import("@/pages/dashboard/DashboardPage"));
+const EditOrderPage = lazy(() => import("@/pages/orders/EditOrderPage"));
+const NewOrderPage = lazy(() => import("@/pages/orders/NewOrderPage"));
+const OrderDetailPage = lazy(() => import("@/pages/orders/OrderDetailPage"));
+const OrdersListPage = lazy(() => import("@/pages/orders/OrdersListPage"));
+const PortalHomePage = lazy(() => import("@/pages/portal/PortalHomePage"));
+const PortalOrderDetailPage = lazy(
+	() => import("@/pages/portal/PortalOrderDetailPage"),
 );
+const ShopPortalPage = lazy(() => import("@/pages/portal/ShopPortalPage"));
 
-import CreateExpensePage from "@/pages/expenses/CreateExpensePage";
-import EditExpensePage from "@/pages/expenses/EditExpensePage";
-import ExpenseDetailPage from "@/pages/expenses/ExpenseDetailPage";
-import ExpensesPage from "@/pages/expenses/ExpensesPage";
-import CreateMaterialPage from "@/pages/materials/CreateMaterialPage";
-import EditMaterialPage from "@/pages/materials/EditMaterialPage";
-import MaterialDetailPage from "@/pages/materials/MaterialDetailPage";
-import MaterialsPage from "@/pages/materials/MaterialsPage";
-import NotificationsPage from "@/pages/notifications/NotificationsPage";
+const BooksListPage = lazy(() => import("@/pages/books/BooksListPage"));
+const BookDetailPage = lazy(() => import("@/pages/books/BookDetailPage"));
+const CreateBookPage = lazy(() => import("@/pages/books/CreateBookPage"));
+const EditBookPage = lazy(() => import("@/pages/books/EditBookPage"));
 
-// Lazy-loaded Orders Pages
-const EditOrderPage = lazy(() =>
-	import("@/pages/orders/EditOrderPage").then((m) => ({
-		default: m.default,
-	})),
+const WalkInCustomersPage = lazy(
+	() => import("@/pages/customers/WalkInCustomersPage"),
 );
-const NewOrderPage = lazy(() =>
-	import("@/pages/orders/NewOrderPage").then((m) => ({
-		default: m.default,
-	})),
+const WalkInCustomerDetailPage = lazy(
+	() => import("@/pages/customers/WalkInCustomerDetailPage"),
 );
-const OrderDetailPage = lazy(() =>
-	import("@/pages/orders/OrderDetailPage").then((m) => ({
-		default: m.default,
-	})),
+const CreateWalkInCustomerPage = lazy(
+	() => import("@/pages/customers/CreateWalkInCustomerPage"),
 );
-const OrdersListPage = lazy(() =>
-	import("@/pages/orders/OrdersListPage").then((m) => ({
-		default: m.default,
-	})),
+const EditWalkInCustomerPage = lazy(
+	() => import("@/pages/customers/EditWalkInCustomerPage"),
+);
+const MembersPage = lazy(() => import("@/pages/customers/MembersPage"));
+const MemberDetailPage = lazy(
+	() => import("@/pages/customers/MemberDetailPage"),
+);
+const CreateMemberPage = lazy(
+	() => import("@/pages/customers/CreateMemberPage"),
+);
+const EditMemberPage = lazy(() => import("@/pages/customers/EditMemberPage"));
+const LinkRequestsPage = lazy(
+	() => import("@/pages/customers/LinkRequestsPage"),
 );
 
-import CreatePaymentPage from "@/pages/payments/CreatePaymentPage";
-import EditPaymentPage from "@/pages/payments/EditPaymentPage";
-import PaymentDetailPage from "@/pages/payments/PaymentDetailPage";
-import PaymentsPage from "@/pages/payments/PaymentsPage";
+const ExpensesPage = lazy(() => import("@/pages/expenses/ExpensesPage"));
+const ExpenseDetailPage = lazy(
+	() => import("@/pages/expenses/ExpenseDetailPage"),
+);
+const CreateExpensePage = lazy(
+	() => import("@/pages/expenses/CreateExpensePage"),
+);
+const EditExpensePage = lazy(() => import("@/pages/expenses/EditExpensePage"));
 
-// Lazy-loaded Portal Pages
-const PortalHomePage = lazy(() =>
-	import("@/pages/portal/PortalHomePage").then((m) => ({
-		default: m.default,
-	})),
+const MaterialsPage = lazy(() => import("@/pages/materials/MaterialsPage"));
+const MaterialDetailPage = lazy(
+	() => import("@/pages/materials/MaterialDetailPage"),
 );
-const PortalOrderDetailPage = lazy(() =>
-	import("@/pages/portal/PortalOrderDetailPage").then((m) => ({
-		default: m.default,
-	})),
+const CreateMaterialPage = lazy(
+	() => import("@/pages/materials/CreateMaterialPage"),
 );
-const ShopPortalPage = lazy(() =>
-	import("@/pages/portal/ShopPortalPage").then((m) => ({
-		default: m.default,
-	})),
+const EditMaterialPage = lazy(
+	() => import("@/pages/materials/EditMaterialPage"),
 );
 
-import CreatePricingRulePage from "@/pages/pricing/CreatePricingRulePage";
-import EditPricingRulePage from "@/pages/pricing/EditPricingRulePage";
-import PricingPage from "@/pages/pricing/PricingPage";
-import PricingRuleDetailPage from "@/pages/pricing/PricingRuleDetailPage";
-import SettingsPage from "@/pages/settings/SettingsPage";
+const PaymentsPage = lazy(() => import("@/pages/payments/PaymentsPage"));
+const PaymentDetailPage = lazy(
+	() => import("@/pages/payments/PaymentDetailPage"),
+);
+const CreatePaymentPage = lazy(
+	() => import("@/pages/payments/CreatePaymentPage"),
+);
+const EditPaymentPage = lazy(() => import("@/pages/payments/EditPaymentPage"));
+
+const PricingPage = lazy(() => import("@/pages/pricing/PricingPage"));
+const PricingRuleDetailPage = lazy(
+	() => import("@/pages/pricing/PricingRuleDetailPage"),
+);
+const CreatePricingRulePage = lazy(
+	() => import("@/pages/pricing/CreatePricingRulePage"),
+);
+const EditPricingRulePage = lazy(
+	() => import("@/pages/pricing/EditPricingRulePage"),
+);
+
+const NotificationsPage = lazy(
+	() => import("@/pages/notifications/NotificationsPage"),
+);
+const SettingsPage = lazy(() => import("@/pages/settings/SettingsPage"));
 
 function PageLoader() {
 	return (
-		<div className="flex items-center justify-center h-64">
+		<div
+			className="flex items-center justify-center h-64"
+			role="status"
+			aria-label="Loading"
+		>
 			<Loader2 className="h-8 w-8 animate-spin text-primary" />
+			<span className="sr-only">Loading...</span>
 		</div>
 	);
 }
@@ -106,7 +114,7 @@ function PageLoader() {
 const queryClient = new QueryClient({
 	defaultOptions: {
 		queries: {
-			staleTime: 5 * 60 * 1000, // 5 minutes
+			staleTime: 5 * 60 * 1000,
 			retry: 1,
 			refetchOnWindowFocus: false,
 		},
@@ -174,85 +182,254 @@ function App() {
 											</Suspense>
 										}
 									/>
-									<Route path="books" element={<BooksListPage />} />
-									<Route path="books/new" element={<CreateBookPage />} />
-									<Route path="books/:id" element={<BookDetailPage />} />
-									<Route path="books/:id/edit" element={<EditBookPage />} />
+									<Route
+										path="books"
+										element={
+											<Suspense fallback={<PageLoader />}>
+												<BooksListPage />
+											</Suspense>
+										}
+									/>
+									<Route
+										path="books/new"
+										element={
+											<Suspense fallback={<PageLoader />}>
+												<CreateBookPage />
+											</Suspense>
+										}
+									/>
+									<Route
+										path="books/:id"
+										element={
+											<Suspense fallback={<PageLoader />}>
+												<BookDetailPage />
+											</Suspense>
+										}
+									/>
+									<Route
+										path="books/:id/edit"
+										element={
+											<Suspense fallback={<PageLoader />}>
+												<EditBookPage />
+											</Suspense>
+										}
+									/>
 									<Route
 										path="customers/walk-in"
-										element={<WalkInCustomersPage />}
+										element={
+											<Suspense fallback={<PageLoader />}>
+												<WalkInCustomersPage />
+											</Suspense>
+										}
 									/>
 									<Route
 										path="customers/walk-in/:id"
-										element={<WalkInCustomerDetailPage />}
+										element={
+											<Suspense fallback={<PageLoader />}>
+												<WalkInCustomerDetailPage />
+											</Suspense>
+										}
 									/>
 									<Route
 										path="customers/walk-in/new"
-										element={<CreateWalkInCustomerPage />}
+										element={
+											<Suspense fallback={<PageLoader />}>
+												<CreateWalkInCustomerPage />
+											</Suspense>
+										}
 									/>
 									<Route
 										path="customers/walk-in/:id/edit"
-										element={<EditWalkInCustomerPage />}
+										element={
+											<Suspense fallback={<PageLoader />}>
+												<EditWalkInCustomerPage />
+											</Suspense>
+										}
 									/>
-									<Route path="customers/members" element={<MembersPage />} />
+									<Route
+										path="customers/members"
+										element={
+											<Suspense fallback={<PageLoader />}>
+												<MembersPage />
+											</Suspense>
+										}
+									/>
 									<Route
 										path="customers/members/:id"
-										element={<MemberDetailPage />}
+										element={
+											<Suspense fallback={<PageLoader />}>
+												<MemberDetailPage />
+											</Suspense>
+										}
 									/>
 									<Route
 										path="customers/members/new"
-										element={<CreateMemberPage />}
+										element={
+											<Suspense fallback={<PageLoader />}>
+												<CreateMemberPage />
+											</Suspense>
+										}
 									/>
 									<Route
 										path="customers/members/:id/edit"
-										element={<EditMemberPage />}
+										element={
+											<Suspense fallback={<PageLoader />}>
+												<EditMemberPage />
+											</Suspense>
+										}
 									/>
 									<Route
 										path="customers/link-requests"
-										element={<LinkRequestsPage />}
+										element={
+											<Suspense fallback={<PageLoader />}>
+												<LinkRequestsPage />
+											</Suspense>
+										}
 									/>
-									<Route path="materials" element={<MaterialsPage />} />
+									<Route
+										path="materials"
+										element={
+											<Suspense fallback={<PageLoader />}>
+												<MaterialsPage />
+											</Suspense>
+										}
+									/>
 									<Route
 										path="materials/new"
-										element={<CreateMaterialPage />}
+										element={
+											<Suspense fallback={<PageLoader />}>
+												<CreateMaterialPage />
+											</Suspense>
+										}
 									/>
 									<Route
 										path="materials/:id"
-										element={<MaterialDetailPage />}
+										element={
+											<Suspense fallback={<PageLoader />}>
+												<MaterialDetailPage />
+											</Suspense>
+										}
 									/>
 									<Route
 										path="materials/:id/edit"
-										element={<EditMaterialPage />}
+										element={
+											<Suspense fallback={<PageLoader />}>
+												<EditMaterialPage />
+											</Suspense>
+										}
 									/>
-									<Route path="pricing" element={<PricingPage />} />
+									<Route
+										path="pricing"
+										element={
+											<Suspense fallback={<PageLoader />}>
+												<PricingPage />
+											</Suspense>
+										}
+									/>
 									<Route
 										path="pricing/new"
-										element={<CreatePricingRulePage />}
+										element={
+											<Suspense fallback={<PageLoader />}>
+												<CreatePricingRulePage />
+											</Suspense>
+										}
 									/>
 									<Route
 										path="pricing/:id"
-										element={<PricingRuleDetailPage />}
+										element={
+											<Suspense fallback={<PageLoader />}>
+												<PricingRuleDetailPage />
+											</Suspense>
+										}
 									/>
 									<Route
 										path="pricing/:id/edit"
-										element={<EditPricingRulePage />}
+										element={
+											<Suspense fallback={<PageLoader />}>
+												<EditPricingRulePage />
+											</Suspense>
+										}
 									/>
-									<Route path="payments" element={<PaymentsPage />} />
-									<Route path="payments/new" element={<CreatePaymentPage />} />
-									<Route path="payments/:id" element={<PaymentDetailPage />} />
+									<Route
+										path="payments"
+										element={
+											<Suspense fallback={<PageLoader />}>
+												<PaymentsPage />
+											</Suspense>
+										}
+									/>
+									<Route
+										path="payments/new"
+										element={
+											<Suspense fallback={<PageLoader />}>
+												<CreatePaymentPage />
+											</Suspense>
+										}
+									/>
+									<Route
+										path="payments/:id"
+										element={
+											<Suspense fallback={<PageLoader />}>
+												<PaymentDetailPage />
+											</Suspense>
+										}
+									/>
 									<Route
 										path="payments/:id/edit"
-										element={<EditPaymentPage />}
+										element={
+											<Suspense fallback={<PageLoader />}>
+												<EditPaymentPage />
+											</Suspense>
+										}
 									/>
-									<Route path="expenses" element={<ExpensesPage />} />
-									<Route path="expenses/new" element={<CreateExpensePage />} />
-									<Route path="expenses/:id" element={<ExpenseDetailPage />} />
+									<Route
+										path="expenses"
+										element={
+											<Suspense fallback={<PageLoader />}>
+												<ExpensesPage />
+											</Suspense>
+										}
+									/>
+									<Route
+										path="expenses/new"
+										element={
+											<Suspense fallback={<PageLoader />}>
+												<CreateExpensePage />
+											</Suspense>
+										}
+									/>
+									<Route
+										path="expenses/:id"
+										element={
+											<Suspense fallback={<PageLoader />}>
+												<ExpenseDetailPage />
+											</Suspense>
+										}
+									/>
 									<Route
 										path="expenses/:id/edit"
-										element={<EditExpensePage />}
+										element={
+											<Suspense fallback={<PageLoader />}>
+												<EditExpensePage />
+											</Suspense>
+										}
 									/>
-									<Route path="notifications" element={<NotificationsPage />} />
-									<Route path="settings" element={<SettingsPage />} />
+									<Route
+										path="notifications"
+										element={
+											<Suspense fallback={<PageLoader />}>
+												<NotificationsPage />
+											</Suspense>
+										}
+									/>
+									<Route
+										path="settings"
+										element={
+											<Suspense fallback={<PageLoader />}>
+												<SettingsPage />
+											</Suspense>
+										}
+									/>
 								</Route>
 
 								{/* Customer Portal Routes (Protected - Customer Only) */}

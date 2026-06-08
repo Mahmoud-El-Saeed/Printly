@@ -37,8 +37,13 @@ export function PageFormLayout({
 			<PageHeader title={title} subtitle={subtitle} />
 			<div className="border-t" />
 			{isLoading ? (
-				<div className="flex items-center justify-center py-12">
+				<div
+					className="flex items-center justify-center py-12"
+					role="status"
+					aria-label="Loading"
+				>
 					<Loader2 className="h-8 w-8 animate-spin text-primary" />
+					<span className="sr-only">Loading...</span>
 				</div>
 			) : (
 				children

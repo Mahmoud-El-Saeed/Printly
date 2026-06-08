@@ -70,6 +70,9 @@ export default function Sidebar() {
 					size="icon"
 					onClick={() => setCollapsed(!collapsed)}
 					className="shrink-0"
+					aria-label={
+						collapsed ? t("nav.expand_sidebar") : t("nav.collapse_sidebar")
+					}
 				>
 					{collapsed ? (
 						isRTL ? (

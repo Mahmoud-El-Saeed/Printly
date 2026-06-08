@@ -9,6 +9,7 @@ import { PageHeader } from "@/components/shared/PageHeader";
 import { StatsCard } from "@/components/shared/StatsCard";
 import { DataTable } from "@/components/tables/DataTable";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { customersApi } from "@/lib/api/customers";
 import { formatCurrency } from "@/lib/utils/formatCurrency";
@@ -107,6 +108,7 @@ export default function MembersPage() {
 				<div className="flex justify-end gap-1">
 					<button
 						type="button"
+						aria-label="View"
 						className="p-1.5 rounded-md hover:bg-surface-container text-on-surface-variant transition-colors"
 						onClick={(e) => {
 							e.stopPropagation();
@@ -117,6 +119,7 @@ export default function MembersPage() {
 					</button>
 					<button
 						type="button"
+						aria-label="Edit"
 						className="p-1.5 rounded-md hover:bg-surface-container text-on-surface-variant transition-colors"
 						onClick={(e) => {
 							e.stopPropagation();
@@ -127,6 +130,7 @@ export default function MembersPage() {
 					</button>
 					<button
 						type="button"
+						aria-label="Delete"
 						className="p-1.5 rounded-md hover:bg-error-container text-error transition-colors"
 						onClick={(e) => {
 							e.stopPropagation();
@@ -144,6 +148,20 @@ export default function MembersPage() {
 		(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value),
 		[],
 	);
+
+	if (isLoading) {
+		return (
+			<div className="space-y-4" role="status" aria-label="Loading members">
+				<Skeleton className="h-8 w-48" />
+				<div className="space-y-3">
+					{Array.from({ length: 5 }, (_, i) => `skel-${i}`).map((key) => (
+						<Skeleton key={key} className="h-16 w-full rounded-lg" />
+					))}
+				</div>
+				<span className="sr-only">Loading...</span>
+			</div>
+		);
+	}
 
 	return (
 		<div className="space-y-6">

@@ -13,7 +13,9 @@ import {
 	YAxis,
 } from "recharts";
 import { PageHeader } from "@/components/shared/PageHeader";
+import { SkeletonStatsCards } from "@/components/shared/SkeletonCard";
 import { StatsCard } from "@/components/shared/StatsCard";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { dashboardApi } from "@/lib/api/dashboard";
 import { formatCurrency, formatNumber } from "@/lib/utils/formatCurrency";
@@ -98,6 +100,34 @@ export default function DashboardPage() {
 				color: STATUS_COLORS[status] || "#6b7280",
 			}))
 		: [];
+
+	if (overviewLoading) {
+		return (
+			<div className="space-y-6" role="status" aria-label="Loading dashboard">
+				<PageHeader
+					title={t("dashboard.title")}
+					subtitle={t("dashboard.welcome")}
+				/>
+				<SkeletonStatsCards />
+				<div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+					{[1, 2].map((i) => (
+						<div
+							key={i}
+							className="bg-background border border-border rounded-xl overflow-hidden"
+						>
+							<div className="p-5 border-b border-border bg-muted/30">
+								<Skeleton className="h-4 w-32" />
+							</div>
+							<div className="p-6 flex items-center justify-center h-[300px]">
+								<Skeleton className="h-48 w-48 rounded-full" />
+							</div>
+						</div>
+					))}
+				</div>
+				<span className="sr-only">Loading...</span>
+			</div>
+		);
+	}
 
 	if (overviewError) {
 		return (
