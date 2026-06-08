@@ -1,12 +1,12 @@
 import { useMutation } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
 import { Upload } from "lucide-react";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { FormField } from "@/components/shared/FormField";
 import { PageFormLayout } from "@/components/shared/PageFormLayout";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { booksApi } from "@/lib/api/books";
 import type { BookCreate } from "@/types/book";
@@ -93,7 +93,10 @@ export default function CreateBookPage() {
 								className="h-11"
 							/>
 						</FormField>
-						<FormField label={t("books.subject")} error={errors.subject?.message}>
+						<FormField
+							label={t("books.subject")}
+							error={errors.subject?.message}
+						>
 							<Input
 								{...register("subject", {
 									maxLength: { value: 200, message: "Max 200 characters" },
@@ -134,10 +137,7 @@ export default function CreateBookPage() {
 					</div>
 				</div>
 				<div className="flex justify-end gap-3">
-					<Button
-						variant="outline"
-						onClick={() => navigate("/books")}
-					>
+					<Button variant="outline" onClick={() => navigate("/books")}>
 						{t("common.cancel")}
 					</Button>
 					<Button

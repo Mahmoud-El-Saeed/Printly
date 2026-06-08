@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { ShoppingCart, TrendingDown, TrendingUp, Wallet } from "lucide-react";
 import {
 	Bar,
 	BarChart,
@@ -11,7 +12,6 @@ import {
 	XAxis,
 	YAxis,
 } from "recharts";
-import { ShoppingCart, TrendingDown, TrendingUp, Wallet } from "lucide-react";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { StatsCard } from "@/components/shared/StatsCard";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -163,7 +163,7 @@ export default function DashboardPage() {
 											}
 										/>
 										<Tooltip
-										 formatter={(v) =>
+											formatter={(v) =>
 												formatCurrency(Number(v ?? 0), language)
 											}
 										/>
@@ -212,9 +212,7 @@ export default function DashboardPage() {
 											))}
 										</Pie>
 										<Tooltip
-										 formatter={(v) =>
-												formatNumber(Number(v ?? 0), language)
-											}
+											formatter={(v) => formatNumber(Number(v ?? 0), language)}
 										/>
 										<Legend
 											verticalAlign="bottom"

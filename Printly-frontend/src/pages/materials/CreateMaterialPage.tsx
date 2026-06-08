@@ -1,10 +1,10 @@
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { FormField } from "@/components/shared/FormField";
 import { PageFormLayout } from "@/components/shared/PageFormLayout";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { materialsApi } from "@/lib/api/materials";
 import type { MaterialCreate } from "@/types/material";
@@ -57,12 +57,8 @@ export default function CreateMaterialPage() {
 			backHref="/materials"
 		>
 			<form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-				<div
-					className="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden"
-				>
-					<div
-						className="bg-surface-container px-6 py-3 border-b border-outline-variant"
-					>
+				<div className="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden">
+					<div className="bg-surface-container px-6 py-3 border-b border-outline-variant">
 						<span className="text-sm font-bold text-on-surface">
 							{t("materials.material_info")}
 						</span>
@@ -153,10 +149,7 @@ export default function CreateMaterialPage() {
 				</div>
 
 				<div className="flex justify-end gap-3">
-					<Button
-						variant="outline"
-						onClick={() => navigate("/materials")}
-					>
+					<Button variant="outline" onClick={() => navigate("/materials")}>
 						{t("common.cancel")}
 					</Button>
 					<Button type="submit" disabled={mutation.isPending}>

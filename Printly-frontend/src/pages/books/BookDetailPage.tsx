@@ -1,5 +1,12 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { ArrowLeft, CheckCircle, ExternalLink, Pencil, Trash2, XCircle } from "lucide-react";
+import {
+	ArrowLeft,
+	CheckCircle,
+	ExternalLink,
+	Pencil,
+	Trash2,
+	XCircle,
+} from "lucide-react";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ConfirmDeleteDialog } from "@/components/shared/ConfirmDeleteDialog";

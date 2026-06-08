@@ -1,4 +1,5 @@
 import { Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
 	Dialog,
 	DialogContent,
@@ -7,7 +8,6 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface ConfirmDeleteDialogProps {
@@ -44,7 +44,11 @@ export function ConfirmDeleteDialog({
 					>
 						{t("common.cancel")}
 					</Button>
-					<Button variant="destructive" onClick={onConfirm} disabled={isLoading}>
+					<Button
+						variant="destructive"
+						onClick={onConfirm}
+						disabled={isLoading}
+					>
 						{isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
 						{isLoading ? t("common.deleting") : t("common.delete")}
 					</Button>

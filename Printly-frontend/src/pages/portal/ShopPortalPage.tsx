@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Link, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Loader2 } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { StatusBadge } from "@/components/shared/StatusBadge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { portalApi } from "@/lib/api/portal";
 import { formatCurrency } from "@/lib/utils/formatCurrency";
@@ -99,13 +99,19 @@ export default function ShopPortalPage() {
 								<tbody className="divide-y divide-border">
 									{ordersLoading ? (
 										<tr>
-											<td colSpan={4} className="px-6 py-8 text-center text-muted-foreground">
+											<td
+												colSpan={4}
+												className="px-6 py-8 text-center text-muted-foreground"
+											>
 												<Loader2 className="h-4 w-4 animate-spin mx-auto" />
 											</td>
 										</tr>
 									) : !orders?.orders?.length ? (
 										<tr>
-											<td colSpan={4} className="px-6 py-8 text-center text-muted-foreground">
+											<td
+												colSpan={4}
+												className="px-6 py-8 text-center text-muted-foreground"
+											>
 												{t("common.no_data")}
 											</td>
 										</tr>
@@ -114,7 +120,9 @@ export default function ShopPortalPage() {
 											<tr
 												key={order.id}
 												className="hover:bg-muted/30 transition-colors cursor-pointer"
-												onClick={() => navigate(`/portal/${tenantId}/orders/${order.id}`)}
+												onClick={() =>
+													navigate(`/portal/${tenantId}/orders/${order.id}`)
+												}
 											>
 												<td className="px-6 py-4 text-sm font-bold tabular-nums">
 													#{order.order_number}
@@ -163,13 +171,19 @@ export default function ShopPortalPage() {
 								<tbody className="divide-y divide-border">
 									{booksLoading ? (
 										<tr>
-											<td colSpan={5} className="px-6 py-8 text-center text-muted-foreground">
+											<td
+												colSpan={5}
+												className="px-6 py-8 text-center text-muted-foreground"
+											>
 												<Loader2 className="h-4 w-4 animate-spin mx-auto" />
 											</td>
 										</tr>
 									) : !books?.books?.length ? (
 										<tr>
-											<td colSpan={5} className="px-6 py-8 text-center text-muted-foreground">
+											<td
+												colSpan={5}
+												className="px-6 py-8 text-center text-muted-foreground"
+											>
 												{t("common.no_data")}
 											</td>
 										</tr>
@@ -282,13 +296,19 @@ export default function ShopPortalPage() {
 									<tbody className="divide-y divide-border">
 										{notificationsLoading ? (
 											<tr>
-												<td colSpan={4} className="px-6 py-8 text-center text-muted-foreground">
+												<td
+													colSpan={4}
+													className="px-6 py-8 text-center text-muted-foreground"
+												>
 													<Loader2 className="h-4 w-4 animate-spin mx-auto" />
 												</td>
 											</tr>
 										) : !notifications?.notifications?.length ? (
 											<tr>
-												<td colSpan={4} className="px-6 py-8 text-center text-muted-foreground">
+												<td
+													colSpan={4}
+													className="px-6 py-8 text-center text-muted-foreground"
+												>
 													{t("notifications.no_data")}
 												</td>
 											</tr>

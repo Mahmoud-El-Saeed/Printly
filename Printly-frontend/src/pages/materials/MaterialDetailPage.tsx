@@ -2,10 +2,10 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AlertTriangle, ArrowLeft, Pencil, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { ConfirmDeleteDialog } from "@/components/shared/ConfirmDeleteDialog";
 import { AddTransactionDialog } from "@/components/materials/AddTransactionDialog";
+import { ConfirmDeleteDialog } from "@/components/shared/ConfirmDeleteDialog";
 import { DataTable } from "@/components/tables/DataTable";
+import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { materialsApi } from "@/lib/api/materials";
 import { formatCurrency } from "@/lib/utils/formatCurrency";
@@ -50,9 +50,7 @@ export default function MaterialDetailPage() {
 					</Button>
 				</Link>
 				<div className="flex items-center justify-center py-12">
-					<div className="text-on-surface-variant">
-						{t("common.loading")}
-					</div>
+					<div className="text-on-surface-variant">{t("common.loading")}</div>
 				</div>
 			</div>
 		);
@@ -91,9 +89,7 @@ export default function MaterialDetailPage() {
 			key: "notes",
 			header: t("materials.transaction_notes"),
 			render: (row: TransactionResponse) => (
-				<span className="text-on-surface-variant">
-					{row.notes ?? "—"}
-				</span>
+				<span className="text-on-surface-variant">{row.notes ?? "—"}</span>
 			),
 		},
 		{
@@ -124,12 +120,8 @@ export default function MaterialDetailPage() {
 				{t("materials.detail_title")}
 			</div>
 
-			<div
-				className="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden"
-			>
-				<div
-					className="bg-surface-container px-6 py-3 border-b border-outline-variant flex items-center justify-between"
-				>
+			<div className="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden">
+				<div className="bg-surface-container px-6 py-3 border-b border-outline-variant flex items-center justify-between">
 					<span className="text-sm font-bold text-on-surface">
 						{t("materials.material_info")}
 					</span>
@@ -159,17 +151,13 @@ export default function MaterialDetailPage() {
 						<span className="text-xs font-medium text-on-surface-variant">
 							{t("materials.name")}
 						</span>
-						<span className="text-sm text-on-surface">
-							{material.name}
-						</span>
+						<span className="text-sm text-on-surface">{material.name}</span>
 					</div>
 					<div className="flex flex-col gap-1">
 						<span className="text-xs font-medium text-on-surface-variant">
 							{t("materials.unit")}
 						</span>
-						<span className="text-sm text-on-surface">
-							{material.unit}
-						</span>
+						<span className="text-sm text-on-surface">{material.unit}</span>
 					</div>
 					<div className="flex flex-col gap-1">
 						<span className="text-xs font-medium text-on-surface-variant">
@@ -234,12 +222,8 @@ export default function MaterialDetailPage() {
 				</div>
 			</div>
 
-			<div
-				className="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden"
-			>
-				<div
-					className="bg-surface-container px-6 py-3 border-b border-outline-variant flex items-center justify-between"
-				>
+			<div className="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden">
+				<div className="bg-surface-container px-6 py-3 border-b border-outline-variant flex items-center justify-between">
 					<span className="text-sm font-bold text-on-surface">
 						{t("materials.transactions")}
 					</span>

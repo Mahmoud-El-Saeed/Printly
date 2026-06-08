@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
 import { CheckCircle, Clock, Loader2, Store } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { portalApi } from "@/lib/api/portal";
 import { formatCurrency } from "@/lib/utils/formatCurrency";
@@ -40,7 +40,7 @@ export default function PortalHomePage() {
 					</div>
 					<div className="mt-2">
 						<span className="font-semibold text-xl tabular-nums text-on-surface">
-							{tenantsLoading ? "—" : tenants?.total ?? 0}
+							{tenantsLoading ? "—" : (tenants?.total ?? 0)}
 						</span>
 					</div>
 				</div>
@@ -54,9 +54,7 @@ export default function PortalHomePage() {
 					</div>
 					<div className="mt-2">
 						<span className="font-semibold text-xl tabular-nums text-on-surface">
-							{tenantsLoading
-								? "—"
-								: formatCurrency(totalBalance, language)}
+							{tenantsLoading ? "—" : formatCurrency(totalBalance, language)}
 						</span>
 					</div>
 				</div>
@@ -82,9 +80,7 @@ export default function PortalHomePage() {
 						>
 							<div className="flex items-start justify-between mb-3">
 								<div>
-									<h3 className="font-bold text-sm">
-										{tenant.tenant_name}
-									</h3>
+									<h3 className="font-bold text-sm">{tenant.tenant_name}</h3>
 									{tenant.display_name && (
 										<p className="text-xs text-muted-foreground">
 											{tenant.display_name}

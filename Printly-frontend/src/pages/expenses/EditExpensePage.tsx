@@ -1,6 +1,8 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useForm, Controller } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
+import { FormField } from "@/components/shared/FormField";
+import { PageFormLayout } from "@/components/shared/PageFormLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -11,8 +13,6 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { FormField } from "@/components/shared/FormField";
-import { PageFormLayout } from "@/components/shared/PageFormLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { expensesApi } from "@/lib/api/expenses";
 import type { ExpenseCategory, ExpenseUpdate } from "@/types/expense";
@@ -62,8 +62,7 @@ export default function EditExpensePage() {
 	});
 
 	const mutation = useMutation({
-		mutationFn: (data: ExpenseUpdate) =>
-			expensesApi.update(expenseId, data),
+		mutationFn: (data: ExpenseUpdate) => expensesApi.update(expenseId, data),
 		onSuccess: () => navigate("/expenses"),
 	});
 
@@ -101,14 +100,9 @@ export default function EditExpensePage() {
 								control={control}
 								rules={{ required: t("common.required") }}
 								render={({ field }) => (
-									<Select
-										value={field.value}
-										onValueChange={field.onChange}
-									>
+									<Select value={field.value} onValueChange={field.onChange}>
 										<SelectTrigger>
-											<SelectValue
-												placeholder={t("expenses.all_categories")}
-											/>
+											<SelectValue placeholder={t("expenses.all_categories")} />
 										</SelectTrigger>
 										<SelectContent>
 											{EXPENSE_CATEGORIES.map((cat) => (

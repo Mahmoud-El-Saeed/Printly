@@ -23,7 +23,9 @@ export default function RegisterShopOwnerPage() {
 		.object({
 			email: z.string().email(t("auth.validation.email_invalid")),
 			password: z.string().min(8, t("auth.validation.password_min")),
-			confirm_password: z.string().min(1, t("auth.validation.password_required")),
+			confirm_password: z
+				.string()
+				.min(1, t("auth.validation.password_required")),
 			full_name: z.string().min(3, t("auth.validation.name_min")),
 			shop_name: z.string().min(3, t("auth.validation.shop_name_min")),
 			shop_phone: z.string().optional(),

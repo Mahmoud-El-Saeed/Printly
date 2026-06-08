@@ -1,11 +1,11 @@
 import { useMutation } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
 import { UserPlus } from "lucide-react";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { FormField } from "@/components/shared/FormField";
 import { PageFormLayout } from "@/components/shared/PageFormLayout";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { customersApi } from "@/lib/api/customers";
 import type { CustomerMemberCreate } from "@/types/customer";
@@ -83,7 +83,10 @@ export default function CreateMemberPage() {
 								className="h-11"
 							/>
 						</FormField>
-						<FormField label={t("customers.email")} error={errors.email?.message}>
+						<FormField
+							label={t("customers.email")}
+							error={errors.email?.message}
+						>
 							<Input
 								{...register("email", {
 									pattern: {
@@ -137,9 +140,7 @@ export default function CreateMemberPage() {
 						disabled={createMutation.isPending}
 						className="gap-2"
 					>
-						{createMutation.isPending
-							? t("common.saving")
-							: t("common.create")}
+						{createMutation.isPending ? t("common.saving") : t("common.create")}
 						<UserPlus className="h-4 w-4" />
 					</Button>
 				</div>

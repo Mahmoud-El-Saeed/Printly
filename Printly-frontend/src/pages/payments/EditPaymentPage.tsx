@@ -1,6 +1,8 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
+import { FormField } from "@/components/shared/FormField";
+import { PageFormLayout } from "@/components/shared/PageFormLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -12,8 +14,6 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { FormField } from "@/components/shared/FormField";
-import { PageFormLayout } from "@/components/shared/PageFormLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { paymentsApi } from "@/lib/api/payments";
 import type { PaymentMethod, PaymentUpdate } from "@/types/payment";
@@ -67,8 +67,7 @@ export default function EditPaymentPage() {
 	const addToBalance = watch("add_to_balance");
 
 	const mutation = useMutation({
-		mutationFn: (data: PaymentUpdate) =>
-			paymentsApi.update(paymentId, data),
+		mutationFn: (data: PaymentUpdate) => paymentsApi.update(paymentId, data),
 		onSuccess: () => navigate("/payments"),
 	});
 

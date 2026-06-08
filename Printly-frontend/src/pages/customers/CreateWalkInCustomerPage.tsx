@@ -1,12 +1,12 @@
 import { useMutation } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
 import { UserPlus } from "lucide-react";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { FormField } from "@/components/shared/FormField";
 import { PageFormLayout } from "@/components/shared/PageFormLayout";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { customersApi } from "@/lib/api/customers";
 import type { WalkInCustomerCreate } from "@/types/customer";
@@ -81,7 +81,10 @@ export default function CreateWalkInCustomerPage() {
 								className="h-11"
 							/>
 						</FormField>
-						<FormField label={t("customers.phone")} error={errors.phone?.message}>
+						<FormField
+							label={t("customers.phone")}
+							error={errors.phone?.message}
+						>
 							<Input {...register("phone")} className="h-11" />
 						</FormField>
 						<FormField
@@ -104,9 +107,7 @@ export default function CreateWalkInCustomerPage() {
 						disabled={createMutation.isPending}
 						className="gap-2"
 					>
-						{createMutation.isPending
-							? t("common.saving")
-							: t("common.create")}
+						{createMutation.isPending ? t("common.saving") : t("common.create")}
 						<UserPlus className="h-4 w-4" />
 					</Button>
 				</div>

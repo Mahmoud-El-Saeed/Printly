@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { Link, useParams } from "react-router-dom";
 import { ArrowLeft, Loader2 } from "lucide-react";
+import { Link, useParams } from "react-router-dom";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { portalApi } from "@/lib/api/portal";
@@ -8,7 +8,10 @@ import { formatCurrency } from "@/lib/utils/formatCurrency";
 import { formatDate } from "@/lib/utils/formatDate";
 
 export default function PortalOrderDetailPage() {
-	const { tenantId, orderId } = useParams<{ tenantId: string; orderId: string }>();
+	const { tenantId, orderId } = useParams<{
+		tenantId: string;
+		orderId: string;
+	}>();
 	const { t, language } = useLanguage();
 	const tid = tenantId ?? "";
 	const oid = orderId ?? "";
@@ -58,9 +61,7 @@ export default function PortalOrderDetailPage() {
 				<div className="p-5 border-b border-border bg-muted/30">
 					<div className="flex items-center justify-between">
 						<div className="flex items-center gap-3">
-							<h2 className="font-bold text-lg">
-								#{order.order_number}
-							</h2>
+							<h2 className="font-bold text-lg">#{order.order_number}</h2>
 							<StatusBadge status={order.status} />
 						</div>
 						<span className="text-xs text-muted-foreground">
@@ -75,26 +76,37 @@ export default function PortalOrderDetailPage() {
 							<h3 className="font-bold text-sm">{t("orders.order_info")}</h3>
 							<div className="space-y-2">
 								<div className="flex items-center justify-between text-sm">
-									<span className="text-muted-foreground">{t("orders.total")}</span>
+									<span className="text-muted-foreground">
+										{t("orders.total")}
+									</span>
 									<span className="font-semibold tabular-nums">
 										{formatCurrency(order.total_amount, language)}
 									</span>
 								</div>
 								<div className="flex items-center justify-between text-sm">
-									<span className="text-muted-foreground">{t("orders.paid")}</span>
+									<span className="text-muted-foreground">
+										{t("orders.paid")}
+									</span>
 									<span className="font-semibold tabular-nums">
 										{formatCurrency(order.paid_amount, language)}
 									</span>
 								</div>
 								<div className="flex items-center justify-between text-sm">
-									<span className="text-muted-foreground">{t("orders.balance_due")}</span>
+									<span className="text-muted-foreground">
+										{t("orders.balance_due")}
+									</span>
 									<span className="font-semibold tabular-nums">
-										{formatCurrency(order.total_amount - order.paid_amount, language)}
+										{formatCurrency(
+											order.total_amount - order.paid_amount,
+											language,
+										)}
 									</span>
 								</div>
 								{order.due_date && (
 									<div className="flex items-center justify-between text-sm">
-										<span className="text-muted-foreground">{t("orders.due_date")}</span>
+										<span className="text-muted-foreground">
+											{t("orders.due_date")}
+										</span>
 										<span>{formatDate(order.due_date, language)}</span>
 									</div>
 								)}
@@ -136,8 +148,12 @@ export default function PortalOrderDetailPage() {
 										{order.items.map((item) => (
 											<tr key={item.id}>
 												<td className="px-4 py-3 text-sm">{item.book_title}</td>
-												<td className="px-4 py-3 text-sm tabular-nums">{item.copies}</td>
-												<td className="px-4 py-3 text-sm tabular-nums">{item.pages_per_copy}</td>
+												<td className="px-4 py-3 text-sm tabular-nums">
+													{item.copies}
+												</td>
+												<td className="px-4 py-3 text-sm tabular-nums">
+													{item.pages_per_copy}
+												</td>
 												<td className="px-4 py-3 text-sm tabular-nums">
 													{formatCurrency(item.subtotal, language)}
 												</td>

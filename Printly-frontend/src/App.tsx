@@ -24,13 +24,13 @@ import MembersPage from "@/pages/customers/MembersPage";
 import WalkInCustomersPage from "@/pages/customers/WalkInCustomersPage";
 // Dashboard Pages
 import DashboardPage from "@/pages/dashboard/DashboardPage";
-import ExpensesPage from "@/pages/expenses/ExpensesPage";
 import CreateExpensePage from "@/pages/expenses/CreateExpensePage";
 import EditExpensePage from "@/pages/expenses/EditExpensePage";
-import MaterialsPage from "@/pages/materials/MaterialsPage";
+import ExpensesPage from "@/pages/expenses/ExpensesPage";
 import CreateMaterialPage from "@/pages/materials/CreateMaterialPage";
-import MaterialDetailPage from "@/pages/materials/MaterialDetailPage";
 import EditMaterialPage from "@/pages/materials/EditMaterialPage";
+import MaterialDetailPage from "@/pages/materials/MaterialDetailPage";
+import MaterialsPage from "@/pages/materials/MaterialsPage";
 import NotificationsPage from "@/pages/notifications/NotificationsPage";
 import NewOrderPage from "@/pages/orders/NewOrderPage";
 import OrderDetailPage from "@/pages/orders/OrderDetailPage";
@@ -41,11 +41,11 @@ import EditPaymentPage from "@/pages/payments/EditPaymentPage";
 import PaymentsPage from "@/pages/payments/PaymentsPage";
 // Portal Pages
 import PortalHomePage from "@/pages/portal/PortalHomePage";
-import ShopPortalPage from "@/pages/portal/ShopPortalPage";
 import PortalOrderDetailPage from "@/pages/portal/PortalOrderDetailPage";
-import PricingPage from "@/pages/pricing/PricingPage";
+import ShopPortalPage from "@/pages/portal/ShopPortalPage";
 import CreatePricingRulePage from "@/pages/pricing/CreatePricingRulePage";
 import EditPricingRulePage from "@/pages/pricing/EditPricingRulePage";
+import PricingPage from "@/pages/pricing/PricingPage";
 import SettingsPage from "@/pages/settings/SettingsPage";
 
 const queryClient = new QueryClient({
@@ -114,10 +114,16 @@ function App() {
 								<Route path="materials" element={<MaterialsPage />} />
 								<Route path="materials/new" element={<CreateMaterialPage />} />
 								<Route path="materials/:id" element={<MaterialDetailPage />} />
-								<Route path="materials/:id/edit" element={<EditMaterialPage />} />
+								<Route
+									path="materials/:id/edit"
+									element={<EditMaterialPage />}
+								/>
 								<Route path="pricing" element={<PricingPage />} />
 								<Route path="pricing/new" element={<CreatePricingRulePage />} />
-								<Route path="pricing/:id/edit" element={<EditPricingRulePage />} />
+								<Route
+									path="pricing/:id/edit"
+									element={<EditPricingRulePage />}
+								/>
 								<Route path="payments" element={<PaymentsPage />} />
 								<Route path="payments/new" element={<CreatePaymentPage />} />
 								<Route path="payments/:id/edit" element={<EditPaymentPage />} />
@@ -132,7 +138,10 @@ function App() {
 							<Route element={<PortalLayout />}>
 								<Route path="/portal" element={<PortalHomePage />} />
 								<Route path="/portal/:tenantId" element={<ShopPortalPage />} />
-								<Route path="/portal/:tenantId/orders/:orderId" element={<PortalOrderDetailPage />} />
+								<Route
+									path="/portal/:tenantId/orders/:orderId"
+									element={<PortalOrderDetailPage />}
+								/>
 							</Route>
 
 							{/* Catch all */}
