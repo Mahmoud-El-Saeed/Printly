@@ -103,6 +103,7 @@ export default function LoginPage() {
 									id="password"
 									type="password"
 									placeholder="••••••••"
+									dir="ltr"
 									className="ps-10"
 									{...register("password")}
 								/>

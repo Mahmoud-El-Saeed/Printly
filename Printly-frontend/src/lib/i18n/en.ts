@@ -46,6 +46,11 @@ const en = {
 			password_mismatch: "Passwords do not match",
 			password_hint:
 				"Must be at least 8 characters with a mix of letters and numbers.",
+			password_english_only: "Password must be in English only (letters, numbers, symbols)",
+			weak: "Weak",
+			fair: "Fair",
+			good: "Good",
+			strong: "Strong",
 			max_chars: "Maximum {max} characters",
 			min_value: "Must be at least {min}",
 			positive_value: "Must be greater than 0",

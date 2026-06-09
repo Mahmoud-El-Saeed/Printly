@@ -23,6 +23,7 @@ export function SearchInput({
 				onChange={onChange}
 				placeholder={placeholder}
 				className="ps-10 pe-4"
+				dir="auto"
 			/>
 		</div>
 	);

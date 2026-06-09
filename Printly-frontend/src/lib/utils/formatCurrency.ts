@@ -5,7 +5,7 @@ export function formatCurrency(
 	language: Language = "ar",
 ): string {
 	const num = typeof amount === "string" ? parseFloat(amount) : amount;
-	const locale = language === "ar" ? "ar-EG" : "en-US";
+	const locale = language === "ar" ? "ar-EG-u-nu-latn" : "en-US";
 	return new Intl.NumberFormat(locale, {
 		style: "currency",
 		currency: "EGP",
@@ -15,7 +15,7 @@ export function formatCurrency(
 }
 
 export function formatNumber(num: number, language: Language = "ar"): string {
-	const locale = language === "ar" ? "ar-EG" : "en-US";
+	const locale = language === "ar" ? "ar-EG-u-nu-latn" : "en-US";
 	return new Intl.NumberFormat(locale).format(num);
 }
 

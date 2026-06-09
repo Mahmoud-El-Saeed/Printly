@@ -9,7 +9,7 @@ import {
 	Printer,
 	User,
 } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -21,6 +21,24 @@ import { Label } from "@/components/ui/label";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { authApi } from "@/lib/api/auth";
 
+function getPasswordStrength(
+	pw: string,
+	t: (key: string) => string,
+): { label: string; color: string; width: string } {
+	if (!pw) return { label: "", color: "", width: "0%" };
+	let score = 0;
+	if (pw.length >= 8) score++;
+	if (pw.length >= 12) score++;
+	if (/[a-z]/.test(pw) && /[A-Z]/.test(pw)) score++;
+	if (/\d/.test(pw)) score++;
+	if (/[^a-zA-Z0-9]/.test(pw)) score++;
+
+	if (score <= 1) return { label: t("auth.validation.weak"), color: "bg-red-500", width: "25%" };
+	if (score <= 2) return { label: t("auth.validation.fair"), color: "bg-amber-500", width: "50%" };
+	if (score <= 3) return { label: t("auth.validation.good"), color: "bg-blue-500", width: "75%" };
+	return { label: t("auth.validation.strong"), color: "bg-emerald-500", width: "100%" };
+}
+
 export default function RegisterCustomerPage() {
 	const { t } = useLanguage();
 	const navigate = useNavigate();
@@ -29,7 +47,13 @@ export default function RegisterCustomerPage() {
 
 	const registerSchema = z.object({
 		email: z.string().email(t("auth.validation.email_invalid")),
-		password: z.string().min(8, t("auth.validation.password_min")),
+		password: z
+			.string()
+			.min(8, t("auth.validation.password_min"))
+			.regex(
+				/^[\x20-\x7E]+$/,
+				t("auth.validation.password_english_only"),
+			),
 		full_name: z.string().min(3, t("auth.validation.name_min")),
 	});
 
@@ -38,10 +62,15 @@ export default function RegisterCustomerPage() {
 	const {
 		register,
 		handleSubmit,
+		watch,
 		formState: { errors },
 	} = useForm<RegisterFormData>({
 		resolver: zodResolver(registerSchema),
+		mode: "onChange",
 	});
+
+	const passwordValue = watch("password");
+	const strength = useMemo(() => getPasswordStrength(passwordValue || "", t), [passwordValue, t]);
 
 	const onSubmit = async (data: RegisterFormData) => {
 		setIsLoading(true);
@@ -122,6 +151,7 @@ export default function RegisterCustomerPage() {
 									id="password"
 									type={showPassword ? "text" : "password"}
 									placeholder="••••••••"
+									dir="ltr"
 									className="ps-10 pe-12"
 									{...register("password")}
 								/>
@@ -140,9 +170,24 @@ export default function RegisterCustomerPage() {
 									)}
 								</Button>
 							</div>
-							<p className="text-xs text-muted-foreground">
-								{t("auth.validation.password_hint")}
-							</p>
+							{passwordValue && (
+								<div className="space-y-1">
+									<div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+										<div
+											className={`h-full rounded-full transition-all duration-300 ${strength.color}`}
+											style={{ width: strength.width }}
+										/>
+									</div>
+									<p className="text-xs text-muted-foreground text-end" dir="ltr">
+										{strength.label}
+									</p>
+								</div>
+							)}
+							{!passwordValue && (
+								<p className="text-xs text-muted-foreground">
+									{t("auth.validation.password_hint")}
+								</p>
+							)}
 							{errors.password && (
 								<p className="text-sm text-destructive">
 									{errors.password.message}
