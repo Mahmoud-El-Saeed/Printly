@@ -381,6 +381,7 @@ async def request_customer_link(
                 existing_link.requested_at = func.now()
                 existing_link.approved_at = None
                 await db.commit()
+                await db.refresh(existing_link, ["customer_user"])
                 return CustomerLinkResponse(
                     id=existing_link.id,
                     tenant_id=tenant.id,
@@ -398,6 +399,7 @@ async def request_customer_link(
             status=LinkStatus.PENDING,
         )
         await db.commit()
+        await db.refresh(link, ["customer_user"])
         return CustomerLinkResponse(
             id=link.id,
             tenant_id=tenant.id,
@@ -504,6 +506,7 @@ async def approve_or_reject_link_request(
                 is_approved=True,
             )
         await db.commit()
+        await db.refresh(link, ["customer_user"])
         return CustomerLinkResponse(
             id=link.id,
             tenant_id=link.tenant_id,
