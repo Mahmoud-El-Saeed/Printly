@@ -491,6 +491,10 @@ async def approve_or_reject_link_request(
         raise ValueError("Link request not found")
     if link.status != LinkStatus.PENDING:
         raise ValueError("Link request is not pending")
+    
+    customer_name = link.customer_user.full_name if link.customer_user else "Customer Member"
+    customer_email = link.customer_user.email
+    
     try:
         link.status = LinkStatus.APPROVED if request.approve else LinkStatus.REJECTED
         link.approved_at = func.now() if request.approve else None
@@ -501,7 +505,7 @@ async def approve_or_reject_link_request(
                 db=db,
                 tenant_id=tenant_id,
                 customer_user_id=request.customer_user_id,
-                display_name=link.customer_user.full_name or "Customer Member",
+                display_name=customer_name,
                 balance=Decimal("0"),
                 is_approved=True,
             )
@@ -511,8 +515,8 @@ async def approve_or_reject_link_request(
             id=link.id,
             tenant_id=link.tenant_id,
             customer_user_id=link.customer_user_id,
-            customer_name=link.customer_user.full_name,
-            customer_email=link.customer_user.email,
+            customer_name=customer_name,
+            customer_email=customer_email,
             status=link.status,
             requested_at=link.requested_at,
             approved_at=link.approved_at,

@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func
+from sqlalchemy import asc, desc, select, func
 from sqlalchemy.orm import joinedload
 from uuid import UUID
 
@@ -23,7 +23,7 @@ class CustomerTenantLinkCRUD(BaseCRUD[CustomerTenantLinks]):
 
     @classmethod
     async def get_pending_by_tenant(
-        cls, 
+        cls,
         db: AsyncSession,
         tenant_id: UUID,
         offset: int = 0,
@@ -46,7 +46,7 @@ class CustomerTenantLinkCRUD(BaseCRUD[CustomerTenantLinks]):
         result = await db.execute(stmt)
         return result.scalars().all(), total
 
-    @classmethod    
+    @classmethod
     async def get_by_customer_and_tenant(
         cls,
         db: AsyncSession,
@@ -61,3 +61,42 @@ class CustomerTenantLinkCRUD(BaseCRUD[CustomerTenantLinks]):
         )
         result = await db.execute(stmt)
         return result.scalars().first()
+
+    @classmethod
+    async def get_list(
+        cls,
+        db,
+        *,
+        filters=None,
+        offset=0,
+        limit=20,
+        order_by="created_at",
+        order_dir="desc",
+    ) -> tuple[list[CustomerTenantLinks], int]:
+        query = select(cls.model)
+        query = query.options(joinedload(cls.model.customer_user))
+
+        count_stmt = select(func.count()).select_from(cls.model)
+
+        if filters:
+            for field, value in filters.items():
+                col = getattr(cls.model, field, None)
+                if col is not None:
+                    query = query.where(col == value)
+                    count_stmt = count_stmt.where(col == value)
+
+        # Get total count
+        count_result = await db.execute(count_stmt)
+        total = count_result.scalar() or 0
+
+        # Apply ordering
+        col = getattr(cls.model, order_by, None)
+        if col is not None:
+            query = query.order_by(desc(col) if order_dir == "desc" else asc(col))
+
+        # Apply pagination
+        query = query.offset(offset).limit(limit)
+        result = await db.execute(query)
+        records = result.scalars().all()
+
+        return records, total

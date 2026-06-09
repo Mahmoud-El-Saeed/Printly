@@ -44,6 +44,7 @@ class CustomerTenantLinks(Base, TimestampMixin,TenantMixin):
     customer_user: Mapped["Users"] = relationship(
         "Users",
         back_populates="customer_tenant_links",
+        lazy="selectin",
     )
     tenant: Mapped["Tenants"] = relationship(
         "Tenants",
