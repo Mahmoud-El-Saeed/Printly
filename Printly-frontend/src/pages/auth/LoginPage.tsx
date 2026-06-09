@@ -146,7 +146,7 @@ export default function LoginPage() {
 						</Link>
 						<Link
 							to="/register/customer"
-							className="flex-1 text-center py-2.5 px-4 border border-border rounded-lg text-secondary font-medium text-sm bg-muted hover:bg-secondary transition-colors"
+							className="flex-1 text-center py-2.5 px-4 border border-border rounded-lg text-primary font-medium text-sm bg-muted hover:bg-secondary transition-colors"
 						>
 							{t("auth.create_customer")}
 						</Link>
