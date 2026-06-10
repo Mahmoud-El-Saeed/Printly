@@ -492,31 +492,32 @@ async def approve_or_reject_link_request(
     if link.status != LinkStatus.PENDING:
         raise ValueError("Link request is not pending")
     
-    customer_name = link.customer_user.full_name if link.customer_user else "Customer Member"
-    customer_email = link.customer_user.email
-    
+    user = await UserCRUD.get_by_id(db=db, id=request.customer_user_id)
+
     try:
         link.status = LinkStatus.APPROVED if request.approve else LinkStatus.REJECTED
         link.approved_at = func.now() if request.approve else None
 
         if request.approve:
             # Create tenant member if approved
-            await TenantMemberCRUD.create(
+            _ = await TenantMemberCRUD.create(
                 db=db,
                 tenant_id=tenant_id,
                 customer_user_id=request.customer_user_id,
-                display_name=customer_name,
+                display_name=user.full_name,
                 balance=Decimal("0"),
                 is_approved=True,
             )
         await db.commit()
-        await db.refresh(link, ["customer_user"])
+        await db.refresh(link)
+        await db.refresh(user)
+        
         return CustomerLinkResponse(
             id=link.id,
             tenant_id=link.tenant_id,
             customer_user_id=link.customer_user_id,
-            customer_name=customer_name,
-            customer_email=customer_email,
+            customer_name=user.full_name,
+            customer_email=user.email,
             status=link.status,
             requested_at=link.requested_at,
             approved_at=link.approved_at,
