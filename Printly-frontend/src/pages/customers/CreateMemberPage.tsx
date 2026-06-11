@@ -111,6 +111,7 @@ export default function CreateMemberPage() {
 								{...register("phone", {
 									required: t("common.required"),
 								})}
+								dir="ltr"
 								className="h-11"
 							/>
 						</FormField>

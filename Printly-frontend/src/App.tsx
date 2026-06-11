@@ -13,6 +13,8 @@ import LoginPage from "@/pages/auth/LoginPage";
 import RegisterCustomerPage from "@/pages/auth/RegisterCustomerPage";
 import RegisterShopOwnerPage from "@/pages/auth/RegisterShopOwnerPage";
 
+const LandingPage = lazy(() => import("@/pages/LandingPage"));
+
 const DashboardPage = lazy(() => import("@/pages/dashboard/DashboardPage"));
 const EditOrderPage = lazy(() => import("@/pages/orders/EditOrderPage"));
 const NewOrderPage = lazy(() => import("@/pages/orders/NewOrderPage"));
@@ -130,6 +132,14 @@ function App() {
 						<ErrorBoundary>
 							<Routes>
 								{/* Auth Routes */}
+								<Route
+									path="/landing"
+									element={
+										<Suspense fallback={<PageLoader />}>
+											<LandingPage />
+										</Suspense>
+									}
+								/>
 								<Route path="/login" element={<LoginPage />} />
 								<Route
 									path="/register/shop-owner"
@@ -461,7 +471,7 @@ function App() {
 								</Route>
 
 								{/* Catch all */}
-								<Route path="*" element={<Navigate to="/" replace />} />
+								<Route path="*" element={<Navigate to="/landing" replace />} />
 							</Routes>
 						</ErrorBoundary>
 						<Toaster position="top-center" richColors closeButton />

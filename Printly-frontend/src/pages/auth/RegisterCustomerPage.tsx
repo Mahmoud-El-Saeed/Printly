@@ -18,6 +18,7 @@ import { LanguageSwitcher } from "@/components/shared/LanguageSwitcher";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { authApi } from "@/lib/api/auth";
 
@@ -33,15 +34,35 @@ function getPasswordStrength(
 	if (/\d/.test(pw)) score++;
 	if (/[^a-zA-Z0-9]/.test(pw)) score++;
 
-	if (score <= 1) return { label: t("auth.validation.weak"), color: "bg-red-500", width: "25%" };
-	if (score <= 2) return { label: t("auth.validation.fair"), color: "bg-amber-500", width: "50%" };
-	if (score <= 3) return { label: t("auth.validation.good"), color: "bg-blue-500", width: "75%" };
-	return { label: t("auth.validation.strong"), color: "bg-emerald-500", width: "100%" };
+	if (score <= 1)
+		return {
+			label: t("auth.validation.weak"),
+			color: "bg-red-500",
+			width: "25%",
+		};
+	if (score <= 2)
+		return {
+			label: t("auth.validation.fair"),
+			color: "bg-amber-500",
+			width: "50%",
+		};
+	if (score <= 3)
+		return {
+			label: t("auth.validation.good"),
+			color: "bg-blue-500",
+			width: "75%",
+		};
+	return {
+		label: t("auth.validation.strong"),
+		color: "bg-emerald-500",
+		width: "100%",
+	};
 }
 
 export default function RegisterCustomerPage() {
 	const { t } = useLanguage();
 	const navigate = useNavigate();
+	const { login } = useAuth();
 	const [isLoading, setIsLoading] = useState(false);
 	const [showPassword, setShowPassword] = useState(false);
 
@@ -50,10 +71,7 @@ export default function RegisterCustomerPage() {
 		password: z
 			.string()
 			.min(8, t("auth.validation.password_min"))
-			.regex(
-				/^[\x20-\x7E]+$/,
-				t("auth.validation.password_english_only"),
-			),
+			.regex(/^[\x20-\x7E]+$/, t("auth.validation.password_english_only")),
 		full_name: z.string().min(3, t("auth.validation.name_min")),
 	});
 
@@ -70,14 +88,18 @@ export default function RegisterCustomerPage() {
 	});
 
 	const passwordValue = watch("password");
-	const strength = useMemo(() => getPasswordStrength(passwordValue || "", t), [passwordValue, t]);
+	const strength = useMemo(
+		() => getPasswordStrength(passwordValue || "", t),
+		[passwordValue, t],
+	);
 
 	const onSubmit = async (data: RegisterFormData) => {
 		setIsLoading(true);
 		try {
 			await authApi.registerCustomer(data);
+			await login(data.email, data.password);
 			toast.success(t("auth.register_success"));
-			navigate("/login");
+			navigate("/portal");
 		} catch (error: unknown) {
 			const err = error as { response?: { data?: { detail?: string } } };
 			toast.error(err.response?.data?.detail || t("auth.register_failed"));
@@ -178,7 +200,10 @@ export default function RegisterCustomerPage() {
 											style={{ width: strength.width }}
 										/>
 									</div>
-									<p className="text-xs text-muted-foreground text-end" dir="ltr">
+									<p
+										className="text-xs text-muted-foreground text-end"
+										dir="ltr"
+									>
 										{strength.label}
 									</p>
 								</div>

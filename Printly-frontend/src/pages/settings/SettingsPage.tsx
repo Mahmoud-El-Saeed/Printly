@@ -84,6 +84,7 @@ export default function SettingsPage() {
 							value={phone}
 							onChange={(e) => setPhone(e.target.value)}
 							placeholder="+20 xxx xxx xxxx"
+							dir="ltr"
 							disabled={profileLoading}
 						/>
 					</div>

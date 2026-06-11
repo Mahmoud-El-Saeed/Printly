@@ -49,7 +49,7 @@ export default function DashboardLayout() {
 	}
 
 	if (!isAuthenticated) {
-		return <Navigate to="/login" replace />;
+		return <Navigate to="/landing" replace />;
 	}
 
 	if (
@@ -57,7 +57,7 @@ export default function DashboardLayout() {
 		role !== ROLES.STAFF &&
 		role !== ROLES.ADMIN
 	) {
-		return <Navigate to="/login" replace />;
+		return <Navigate to="/landing" replace />;
 	}
 
 	return (

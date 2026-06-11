@@ -3,6 +3,14 @@ const en = {
 		name: "Printly",
 		description: "Print Shop Management System",
 	},
+	landing: {
+		hero_title: "Manage Your Print Shop with Printly",
+		hero_subtitle:
+			"The all-in-one platform for print shops to manage orders, customers, materials, and payments — effortlessly.",
+		login: "Sign In",
+		register_customer: "Register as Customer",
+		footer: "© 2026 Printly. Print Shop Management System.",
+	},
 	auth: {
 		login: "Login",
 		register: "Register",
@@ -46,7 +54,8 @@ const en = {
 			password_mismatch: "Passwords do not match",
 			password_hint:
 				"Must be at least 8 characters with a mix of letters and numbers.",
-			password_english_only: "Password must be in English only (letters, numbers, symbols)",
+			password_english_only:
+				"Password must be in English only (letters, numbers, symbols)",
 			weak: "Weak",
 			fair: "Fair",
 			good: "Good",

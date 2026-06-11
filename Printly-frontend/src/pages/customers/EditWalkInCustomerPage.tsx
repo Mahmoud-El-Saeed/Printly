@@ -99,7 +99,7 @@ export default function EditWalkInCustomerPage() {
 							label={t("customers.phone")}
 							error={errors.phone?.message}
 						>
-							<Input {...register("phone")} className="h-11" />
+							<Input {...register("phone")} dir="ltr" className="h-11" />
 						</FormField>
 						<FormField
 							label={t("customers.notes")}

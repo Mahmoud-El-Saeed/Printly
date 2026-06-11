@@ -24,7 +24,7 @@ function PortalProtectedRoute({ children }: { children: ReactNode }) {
 	}
 
 	if (!isAuthenticated) {
-		return <Navigate to="/login" replace />;
+		return <Navigate to="/landing" replace />;
 	}
 
 	if (role !== ROLES.CUSTOMER) {
