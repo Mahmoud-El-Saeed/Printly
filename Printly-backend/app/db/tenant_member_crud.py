@@ -130,3 +130,43 @@ class TenantMemberCRUD(BaseCRUD[TenantMembers]):
         )
         result = await db.execute(stmt)
         return result.scalar_one() or 0
+
+    @classmethod
+    async def get_all_memberships(
+        cls,
+        db: AsyncSession,
+        customer_user_id: UUID,
+        offset: int = 0,
+        limit: int = 20,
+        order_by: str = "linked_at",
+        order_dir: str = "desc",
+    ) -> list[TenantMembers]:
+        """Get all tenant memberships (pending, approved, rejected) for a customer user, with tenant info loaded."""
+        stmt = (
+            select(cls.model)
+            .where(cls.model.customer_user_id == customer_user_id)
+            .options(joinedload(cls.model.tenant))
+        )
+        order_column = getattr(cls.model, order_by, cls.model.linked_at)
+        if order_dir == "desc":
+            stmt = stmt.order_by(order_column.desc())
+        else:
+            stmt = stmt.order_by(order_column.asc())
+        stmt = stmt.offset(offset).limit(limit)
+        result = await db.execute(stmt)
+        return result.scalars().all()
+
+    @classmethod
+    async def count_all_memberships(
+        cls,
+        db: AsyncSession,
+        customer_user_id: UUID,
+    ) -> int:
+        """Count all memberships (pending, approved, rejected) for a customer user."""
+        stmt = (
+            select(func.count())
+            .select_from(cls.model)
+            .where(cls.model.customer_user_id == customer_user_id)
+        )
+        result = await db.execute(stmt)
+        return result.scalar_one() or 0

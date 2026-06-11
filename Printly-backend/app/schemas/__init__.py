@@ -129,6 +129,10 @@ from .customer_portal import (
     PortalProfileResponse,
     PortalTenantInfo,
     PortalTenantsResponse,
+    PortalProfileUpdateRequest,
+    PortalPaymentCreate,
+    PortalPricingItem,
+    PortalPricingResponse,
 )
 
 
@@ -220,8 +224,12 @@ __all__ = [
     "TopMaterialItem",
     "TopMaterialsResponse",
     "PortalProfileResponse",
+    "PortalProfileUpdateRequest",
     "PortalTenantInfo",
     "PortalTenantsResponse",
+    "PortalPaymentCreate",
+    "PortalPricingItem",
+    "PortalPricingResponse",
     "OrdersCustomerRequest",
     "TenantProfileResponse",
     "TenantUpdateRequest",

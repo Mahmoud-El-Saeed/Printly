@@ -119,6 +119,11 @@ from .customer_portal import (
     get_my_order,
     get_my_tenants,
     mark_all_my_notifications_read,
+    update_my_profile,
+    portal_create_order,
+    portal_create_book,
+    portal_create_payment,
+    portal_get_pricing,
 )
 
 __all__ = [
@@ -209,6 +214,11 @@ __all__ = [
     "get_my_order",
     "get_my_tenants",
     "mark_all_my_notifications_read",
+    "update_my_profile",
+    "portal_create_order",
+    "portal_create_book",
+    "portal_create_payment",
+    "portal_get_pricing",
     "get_my_tenant",
     "update_my_tenant",
 ]

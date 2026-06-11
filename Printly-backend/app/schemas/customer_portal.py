@@ -1,11 +1,11 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 from uuid import UUID
 from datetime import datetime
 from decimal import Decimal
+from typing import Literal
 
 
 class PortalProfileResponse(BaseModel):
-    """Customer's own profile data."""
     user_id: UUID
     email: str
     full_name: str
@@ -16,8 +16,12 @@ class PortalProfileResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class PortalProfileUpdateRequest(BaseModel):
+    full_name: str | None = Field(None, min_length=3, max_length=200)
+    phone: str | None = Field(None, max_length=20)
+
+
 class PortalTenantInfo(BaseModel):
-    """A single tenant the customer is linked to, with membership details."""
     tenant_id: UUID
     tenant_name: str
     tenant_slug: str | None
@@ -30,6 +34,24 @@ class PortalTenantInfo(BaseModel):
 
 
 class PortalTenantsResponse(BaseModel):
-    """List of tenants the customer is linked to."""
     tenants: list[PortalTenantInfo]
     total: int
+
+
+class PortalPaymentCreate(BaseModel):
+    order_id: UUID
+    amount: Decimal = Field(..., gt=0)
+    payment_method: Literal["cash", "mobile_wallet"]
+    reference: str | None = Field(None, max_length=100)
+    notes: str | None = None
+
+
+class PortalPricingItem(BaseModel):
+    component_name: str
+    component_type: str
+    price: Decimal
+    unit_type: str
+
+
+class PortalPricingResponse(BaseModel):
+    rules: list[PortalPricingItem]

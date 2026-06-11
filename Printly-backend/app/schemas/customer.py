@@ -50,7 +50,7 @@ class CustomerMemberResponse(BaseModel):
     id: UUID
     name: str
     email: EmailStr
-    phone: str
+    phone: str | None
     tenant_id: UUID
     is_approved: bool
     balance: Decimal
