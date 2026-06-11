@@ -273,7 +273,7 @@ class DashboardDB:
                 FROM materials m
                 JOIN material_transactions mt ON mt.material_id = m.id
                 WHERE m.tenant_id = :tenant_id
-                  AND mt.transaction_type = 'consumption'
+                  AND mt.transaction_type = 'CONSUMPTION'
                   AND m.is_active = true
                 GROUP BY m.id, m.name
                 ORDER BY SUM(mt.quantity) DESC
