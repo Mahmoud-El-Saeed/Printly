@@ -1,3 +1,5 @@
+from datetime import date
+
 from pydantic import BaseModel
 
 
@@ -74,3 +76,7 @@ class DashboardOverviewResponse(BaseModel):
     orders: OrdersStatsResponse
     top_materials: TopMaterialsResponse
     top_customers: TopCustomersResponse
+
+class DashboardRequest(BaseModel):
+    from_date: date | None = None
+    to_date: date | None = None

@@ -1,3 +1,4 @@
+from datetime import date
 from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -31,8 +32,11 @@ def _calc_margin(profit: float, revenue: float) -> float:
     return round((profit / revenue) * 100, 1)
 
 
-async def get_revenue_stats(db: AsyncSession, tenant_id: UUID) -> RevenueStatsResponse:
-    data = await DashboardDB.get_revenue_stats(db, tenant_id)
+async def get_revenue_stats(
+    db: AsyncSession, tenant_id: UUID,
+    from_date: date | None = None, to_date: date | None = None,
+) -> RevenueStatsResponse:
+    data = await DashboardDB.get_revenue_stats(db, tenant_id, from_date, to_date)
     return RevenueStatsResponse(
         today=data["today"],
         this_month=data["this_month"],
@@ -44,9 +48,12 @@ async def get_revenue_stats(db: AsyncSession, tenant_id: UUID) -> RevenueStatsRe
     )
 
 
-async def get_expenses_stats(db: AsyncSession, tenant_id: UUID) -> ExpenseStatsResponse:
-    amounts = await DashboardDB.get_expense_stats(db, tenant_id)
-    categories = await DashboardDB.get_expenses_by_category(db, tenant_id)
+async def get_expenses_stats(
+    db: AsyncSession, tenant_id: UUID,
+    from_date: date | None = None, to_date: date | None = None,
+) -> ExpenseStatsResponse:
+    amounts = await DashboardDB.get_expense_stats(db, tenant_id, from_date, to_date)
+    categories = await DashboardDB.get_expenses_by_category(db, tenant_id, from_date, to_date)
 
     return ExpenseStatsResponse(
         today=amounts["today"],
@@ -56,9 +63,12 @@ async def get_expenses_stats(db: AsyncSession, tenant_id: UUID) -> ExpenseStatsR
     )
 
 
-async def get_profit_stats(db: AsyncSession, tenant_id: UUID) -> ProfitStatsResponse:
-    revenue = await DashboardDB.get_revenue_stats(db, tenant_id)
-    expenses = await DashboardDB.get_expense_stats(db, tenant_id)
+async def get_profit_stats(
+    db: AsyncSession, tenant_id: UUID,
+    from_date: date | None = None, to_date: date | None = None,
+) -> ProfitStatsResponse:
+    revenue = await DashboardDB.get_revenue_stats(db, tenant_id, from_date, to_date)
+    expenses = await DashboardDB.get_expense_stats(db, tenant_id, from_date, to_date)
 
     p_today = revenue["today"] - expenses["today"]
     p_month = revenue["this_month"] - expenses["this_month"]
@@ -76,8 +86,11 @@ async def get_profit_stats(db: AsyncSession, tenant_id: UUID) -> ProfitStatsResp
     )
 
 
-async def get_orders_stats(db: AsyncSession, tenant_id: UUID) -> OrdersStatsResponse:
-    data = await DashboardDB.get_orders_stats(db, tenant_id)
+async def get_orders_stats(
+    db: AsyncSession, tenant_id: UUID,
+    from_date: date | None = None, to_date: date | None = None,
+) -> OrdersStatsResponse:
+    data = await DashboardDB.get_orders_stats(db, tenant_id, from_date, to_date)
     return OrdersStatsResponse(**data)
 
 

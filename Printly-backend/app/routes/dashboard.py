@@ -23,6 +23,7 @@ from app.schemas import (
     TopCustomersResponse,
     TopMaterialsResponse,
     TokenData,
+    DashboardRequest,
 )
 
 router = APIRouter(prefix="/dashboard", tags=["Dashboard"])
@@ -46,11 +47,12 @@ async def get_dashboard_overview(
 
 @router.get("/revenue", response_model=RevenueStatsResponse)
 async def get_revenue_stats_endpoint(
-    db: Annotated[AsyncSession, Depends(get_db)],
-    user: Annotated[TokenData, Depends(require_tenant_staff)],
+    request: Annotated[DashboardRequest, Depends()],
+    db: Annotated[AsyncSession, Depends(get_db)] = None,
+    user: Annotated[TokenData, Depends(require_tenant_staff)] = None,
 ):
     try:
-        return await get_revenue_stats(db, user.tenant_id)
+        return await get_revenue_stats(db, user.tenant_id, request.from_date, request.to_date)
     except Exception as e:
         logger.error(f"Error fetching revenue stats: {e}")
         raise HTTPException(
@@ -61,11 +63,12 @@ async def get_revenue_stats_endpoint(
 
 @router.get("/expenses", response_model=ExpenseStatsResponse)
 async def get_expenses_stats_endpoint(
-    db: Annotated[AsyncSession, Depends(get_db)],
-    user: Annotated[TokenData, Depends(require_tenant_staff)],
+    request: Annotated[DashboardRequest, Depends()],
+    db: Annotated[AsyncSession, Depends(get_db)] = None,
+    user: Annotated[TokenData, Depends(require_tenant_staff)] = None,
 ):
     try:
-        return await get_expenses_stats(db, user.tenant_id)
+        return await get_expenses_stats(db, user.tenant_id, request.from_date, request.to_date)
     except Exception as e:
         logger.error(f"Error fetching expenses stats: {e}")
         raise HTTPException(
@@ -76,11 +79,12 @@ async def get_expenses_stats_endpoint(
 
 @router.get("/profit", response_model=ProfitStatsResponse)
 async def get_profit_stats_endpoint(
-    db: Annotated[AsyncSession, Depends(get_db)],
-    user: Annotated[TokenData, Depends(require_tenant_staff)],
+    request: Annotated[DashboardRequest, Depends()],
+    db: Annotated[AsyncSession, Depends(get_db)] = None,
+    user: Annotated[TokenData, Depends(require_tenant_staff)] = None,
 ):
     try:
-        return await get_profit_stats(db, user.tenant_id)
+        return await get_profit_stats(db, user.tenant_id, request.from_date, request.to_date)
     except Exception as e:
         logger.error(f"Error fetching profit stats: {e}")
         raise HTTPException(
@@ -91,11 +95,12 @@ async def get_profit_stats_endpoint(
 
 @router.get("/orders", response_model=OrdersStatsResponse)
 async def get_orders_stats_endpoint(
-    db: Annotated[AsyncSession, Depends(get_db)],
-    user: Annotated[TokenData, Depends(require_tenant_staff)],
+    request: Annotated[DashboardRequest, Depends()],
+    db: Annotated[AsyncSession, Depends(get_db)] = None,
+    user: Annotated[TokenData, Depends(require_tenant_staff)] = None,
 ):
     try:
-        return await get_orders_stats(db, user.tenant_id)
+        return await get_orders_stats(db, user.tenant_id, request.from_date, request.to_date)
     except Exception as e:
         logger.error(f"Error fetching orders stats: {e}")
         raise HTTPException(
