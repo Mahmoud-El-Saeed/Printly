@@ -38,7 +38,17 @@ export default function LoginPage() {
 		try {
 			await login(data.email, data.password);
 			toast.success(t("auth.login_success"));
-			navigate("/", { replace: true });
+			const token = localStorage.getItem("printly_access_token");
+			let redirectPath = "/";
+			if (token) {
+				try {
+					const payload = JSON.parse(atob(token.split(".")[1]));
+					if (payload.role === "customer") {
+						redirectPath = "/portal";
+					}
+				} catch {}
+			}
+			navigate(redirectPath, { replace: true });
 		} catch (error: unknown) {
 			const err = error as { response?: { data?: { detail?: string } } };
 			toast.error(err.response?.data?.detail || t("auth.login_failed"));
