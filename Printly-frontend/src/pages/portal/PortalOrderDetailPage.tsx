@@ -1,7 +1,17 @@
-import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, CheckCircle, Clock, Loader2, Package } from "lucide-react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+	ArrowLeft,
+	CheckCircle,
+	Clock,
+	Loader2,
+	Package,
+	Wallet,
+} from "lucide-react";
+import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { PortalPaymentDialog } from "@/components/portal/PortalPaymentDialog";
 import { StatusBadge } from "@/components/shared/StatusBadge";
+import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { portalApi } from "@/lib/api/portal";
 import { formatCurrency } from "@/lib/utils/formatCurrency";
@@ -27,6 +37,8 @@ export default function PortalOrderDetailPage() {
 	const { t, language, isRTL } = useLanguage();
 	const tid = tenantId ?? "";
 	const oid = orderId ?? "";
+	const queryClient = useQueryClient();
+	const [paymentOpen, setPaymentOpen] = useState(false);
 
 	const { data: order, isLoading } = useQuery({
 		queryKey: ["portal-order", tid, oid],
@@ -209,13 +221,27 @@ export default function PortalOrderDetailPage() {
 							{t("portal.remaining")}
 						</span>
 					</div>
-					<p
-						className={`text-xl font-bold tabular-nums ${
-							balanceDue > 0 ? "text-red-600" : "text-green-600"
-						}`}
+					<div
+						className={`flex items-center gap-3 ${isRTL ? "flex-row-reverse" : ""}`}
 					>
-						{formatCurrency(balanceDue, language)}
-					</p>
+						<p
+							className={`text-xl font-bold tabular-nums ${
+								balanceDue > 0 ? "text-red-600" : "text-green-600"
+							}`}
+						>
+							{formatCurrency(balanceDue, language)}
+						</p>
+						{balanceDue > 0 && (
+							<Button
+								size="sm"
+								onClick={() => setPaymentOpen(true)}
+								className="gap-1"
+							>
+								<Wallet className="h-3 w-3" />
+								{t("portal.pay_now")}
+							</Button>
+						)}
+					</div>
 				</div>
 				{order.due_date && (
 					<div
@@ -312,6 +338,24 @@ export default function PortalOrderDetailPage() {
 					<p className="text-sm text-muted-foreground italic">{order.notes}</p>
 				</div>
 			)}
+
+			<PortalPaymentDialog
+				tenantId={tid}
+				orderId={oid}
+				orderNumber={order.order_number}
+				totalAmount={order.total_amount}
+				paidAmount={order.paid_amount}
+				remainingAmount={balanceDue}
+				open={paymentOpen}
+				onOpenChange={(open) => {
+					setPaymentOpen(open);
+					if (!open) {
+						queryClient.invalidateQueries({
+							queryKey: ["portal-order", tid, oid],
+						});
+					}
+				}}
+			/>
 		</div>
 	);
 }

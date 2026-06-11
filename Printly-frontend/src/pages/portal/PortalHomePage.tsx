@@ -7,6 +7,7 @@ import {
 	Printer,
 	Store,
 	Wallet,
+	XCircle,
 } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -107,7 +108,9 @@ export default function PortalHomePage() {
 	}
 
 	const totalBalance =
-		tenants?.tenants?.reduce((sum, tenant) => sum + tenant.balance, 0) ?? 0;
+		tenants?.tenants
+			?.filter((t) => t.is_approved)
+			.reduce((sum, tenant) => sum + tenant.balance, 0) ?? 0;
 
 	const today = new Date();
 	const formattedDate = formatDate(today, language);
@@ -231,49 +234,79 @@ export default function PortalHomePage() {
 					</div>
 				) : (
 					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-						{tenants?.tenants?.map((tenant) => (
-							<button
-								key={tenant.tenant_id}
-								type="button"
-								onClick={() => navigate(`/portal/${tenant.tenant_id}`)}
-								className={`bg-card border border-border rounded-xl p-5 text-start hover:border-primary/50 transition-colors ${
-									isRTL ? "text-end" : ""
-								}`}
-							>
-								<div
-									className={`flex items-start justify-between mb-3 ${isRTL ? "flex-row-reverse" : ""}`}
+						{tenants?.tenants?.map((tenant) => {
+							const isClickable = tenant.is_approved;
+							return (
+								<button
+									key={tenant.tenant_id}
+									type="button"
+									onClick={() =>
+										isClickable
+											? navigate(`/portal/${tenant.tenant_id}`)
+											: undefined
+									}
+									disabled={!isClickable}
+									className={`bg-card border border-border rounded-xl p-5 text-start transition-colors ${
+										isClickable
+											? "hover:border-primary/50"
+											: "opacity-70 cursor-default"
+									} ${isRTL ? "text-end" : ""}`}
 								>
-									<div>
-										<h3 className="font-bold text-sm">{tenant.tenant_name}</h3>
-										{tenant.display_name && (
-											<p className="text-xs text-muted-foreground">
-												{tenant.display_name}
-											</p>
+									<div
+										className={`flex items-start justify-between mb-3 ${isRTL ? "flex-row-reverse" : ""}`}
+									>
+										<div>
+											<h3 className="font-bold text-sm">
+												{tenant.tenant_name}
+											</h3>
+											{tenant.display_name && (
+												<p className="text-xs text-muted-foreground">
+													{tenant.display_name}
+												</p>
+											)}
+										</div>
+										{tenant.is_approved ? (
+											<span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium bg-green-100 text-green-800">
+												<CheckCircle className="h-3 w-3" />
+												{t("portal.link_approved")}
+											</span>
+										) : tenant.is_approved === false &&
+											tenants?.tenants?.find(
+												(t) => t.tenant_id === tenant.tenant_id,
+											)?.is_approved === false ? (
+											<span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium bg-red-100 text-red-800">
+												<XCircle className="h-3 w-3" />
+												{t("portal.link_rejected")}
+											</span>
+										) : (
+											<span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium bg-yellow-100 text-yellow-800">
+												<Clock className="h-3 w-3" />
+												{t("portal.link_pending")}
+											</span>
 										)}
 									</div>
-									{tenant.is_approved ? (
-										<CheckCircle className="h-4 w-4 text-green-500" />
-									) : (
-										<Clock className="h-4 w-4 text-yellow-500" />
+									{tenant.is_approved && (
+										<div
+											className={`flex items-center justify-between ${isRTL ? "flex-row-reverse" : ""}`}
+										>
+											<span className="text-xs text-muted-foreground">
+												{t("customers.balance")}
+											</span>
+											<span className="text-sm font-semibold tabular-nums">
+												{formatCurrency(tenant.balance, language)}
+											</span>
+										</div>
 									)}
-								</div>
-								<div
-									className={`flex items-center justify-between ${isRTL ? "flex-row-reverse" : ""}`}
-								>
-									<span className="text-xs text-muted-foreground">
-										{t("customers.balance")}
-									</span>
-									<span className="text-sm font-semibold tabular-nums">
-										{formatCurrency(tenant.balance, language)}
-									</span>
-								</div>
-								<div className="mt-3 pt-3 border-t border-border">
-									<span className="text-xs text-primary font-medium hover:underline">
-										{t("portal.view")} →
-									</span>
-								</div>
-							</button>
-						))}
+									{isClickable && (
+										<div className="mt-3 pt-3 border-t border-border">
+											<span className="text-xs text-primary font-medium hover:underline">
+												{t("portal.view")} →
+											</span>
+										</div>
+									)}
+								</button>
+							);
+						})}
 					</div>
 				)}
 			</div>

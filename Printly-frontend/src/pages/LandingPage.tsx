@@ -4,12 +4,13 @@ import {
 	Moon,
 	PackageCheck,
 	Printer,
+	Quote,
 	Settings2,
 	ShoppingCart,
 	Sun,
 	Users,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { LanguageSwitcher } from "@/components/shared/LanguageSwitcher";
 import { Button } from "@/components/ui/button";
@@ -33,6 +34,47 @@ const steps = [
 
 const statKeys = ["shops", "orders", "satisfaction", "access"] as const;
 
+const testimonialKeys = [1, 2, 3] as const;
+
+function useScrollReveal() {
+	const ref = useRef<HTMLDivElement>(null);
+	const [visible, setVisible] = useState(false);
+
+	useEffect(() => {
+		const observer = new IntersectionObserver(
+			([entry]) => {
+				if (entry.isIntersecting) {
+					setVisible(true);
+					observer.disconnect();
+				}
+			},
+			{ threshold: 0.1 },
+		);
+		if (ref.current) observer.observe(ref.current);
+		return () => observer.disconnect();
+	}, []);
+
+	return { ref, visible };
+}
+
+function RevealSection({
+	children,
+	className,
+}: {
+	children: React.ReactNode;
+	className?: string;
+}) {
+	const { ref, visible } = useScrollReveal();
+	return (
+		<div
+			ref={ref}
+			className={`transition-all duration-700 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"} ${className || ""}`}
+		>
+			{children}
+		</div>
+	);
+}
+
 export default function LandingPage() {
 	const { t, isRTL } = useLanguage();
 
@@ -41,6 +83,7 @@ export default function LandingPage() {
 	});
 
 	const [scrolled, setScrolled] = useState(false);
+	const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
 	useEffect(() => {
 		const onScroll = () => setScrolled(window.scrollY > 10);
@@ -70,7 +113,7 @@ export default function LandingPage() {
 							{t("app.name")}
 						</span>
 					</div>
-					<div className="flex items-center gap-3">
+					<div className="hidden md:flex items-center gap-3">
 						<LanguageSwitcher />
 						<div className="flex items-center gap-2">
 							{darkMode ? (
@@ -87,7 +130,41 @@ export default function LandingPage() {
 							<Button variant="outline">{t("landing.login")}</Button>
 						</Link>
 					</div>
+					<button
+						type="button"
+						onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+						className="md:hidden p-2 rounded-lg hover:bg-muted transition-colors"
+					>
+						<Printer className="h-5 w-5 text-primary" />
+					</button>
 				</div>
+
+				{mobileMenuOpen && (
+					<div className="md:hidden border-t border-border bg-background p-4 space-y-3">
+						<LanguageSwitcher />
+						<div className="flex items-center gap-2">
+							{darkMode ? (
+								<Moon className="h-4 w-4" />
+							) : (
+								<Sun className="h-4 w-4" />
+							)}
+							<Switch
+								checked={darkMode}
+								onCheckedChange={handleDarkModeChange}
+							/>
+						</div>
+						<Link to="/login" className="block">
+							<Button variant="outline" className="w-full">
+								{t("landing.login")}
+							</Button>
+						</Link>
+						<Link to="/register/customer" className="block">
+							<Button className="w-full">
+								{t("landing.register_customer")}
+							</Button>
+						</Link>
+					</div>
+				)}
 			</header>
 
 			<main className="flex-1">
@@ -132,6 +209,135 @@ export default function LandingPage() {
 									<Button
 										variant="outline"
 										size="lg"
+										className="bg-white/10 text-primary-foreground border-white/20 hover:bg-white/20 h-12 px-10 text-base"
+									>
+										{t("landing.register_customer")}
+									</Button>
+								</Link>
+							</div>
+						</div>
+					</div>
+				</section>
+
+				<RevealSection>
+					<section className="py-12 md:py-16 bg-muted">
+						<div className="max-w-6xl mx-auto px-6">
+							<div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+								{statKeys.map((key) => (
+									<div key={key}>
+										<p className="text-2xl md:text-3xl font-bold text-primary tabular-nums">
+											{t(`landing.stats.${key}`)}
+										</p>
+									</div>
+								))}
+							</div>
+						</div>
+					</section>
+				</RevealSection>
+
+				<RevealSection>
+					<section className="py-20 md:py-28">
+						<div className="max-w-6xl mx-auto px-6">
+							<h2 className="text-2xl md:text-3xl font-bold text-center text-foreground mb-12">
+								{t("landing.features.title")}
+							</h2>
+							<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+								{features.map(({ icon: Icon, key }) => (
+									<div
+										key={key}
+										className="bg-card border border-border rounded-2xl p-6 hover:-translate-y-0.5 hover:border-primary/50 transition-all duration-300"
+									>
+										<div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+											<Icon className="h-5 w-5 text-primary" />
+										</div>
+										<h3 className="font-semibold text-foreground mb-2">
+											{t(`landing.features.${key}.title`)}
+										</h3>
+										<p className="text-sm text-muted-foreground">
+											{t(`landing.features.${key}.description`)}
+										</p>
+									</div>
+								))}
+							</div>
+						</div>
+					</section>
+				</RevealSection>
+
+				<RevealSection>
+					<section className="py-20 md:py-28 bg-muted">
+						<div className="max-w-6xl mx-auto px-6">
+							<h2 className="text-2xl md:text-3xl font-bold text-center text-foreground mb-12">
+								{t("landing.how_it_works.title")}
+							</h2>
+							<div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+								{steps.map(({ num, key }, idx) => (
+									<div key={key} className="text-center">
+										<div className="flex items-center justify-center gap-2 mb-4">
+											<div className="w-12 h-12 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xl font-bold">
+												{num}
+											</div>
+											{idx < steps.length - 1 && (
+												<div className="hidden md:block flex-1 h-0.5 bg-primary/30" />
+											)}
+										</div>
+										<h3 className="font-semibold text-foreground mb-2">
+											{t(`landing.how_it_works.${key}.title`)}
+										</h3>
+										<p className="text-sm text-muted-foreground">
+											{t(`landing.how_it_works.${key}.description`)}
+										</p>
+									</div>
+								))}
+							</div>
+						</div>
+					</section>
+				</RevealSection>
+
+				<RevealSection>
+					<section className="py-20 md:py-28">
+						<div className="max-w-6xl mx-auto px-6">
+							<h2 className="text-2xl md:text-3xl font-bold text-center text-foreground mb-12">
+								{t("landing.testimonials.title")}
+							</h2>
+							<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+								{testimonialKeys.map((num) => (
+									<div
+										key={num}
+										className="bg-card border border-border rounded-2xl p-6 space-y-4"
+									>
+										<Quote className="h-6 w-6 text-primary/30" />
+										<p className="text-sm text-muted-foreground italic">
+											{t(`landing.testimonials.${num}.quote`)}
+										</p>
+										<div>
+											<p className="font-semibold text-foreground text-sm">
+												{t(`landing.testimonials.${num}.name`)}
+											</p>
+											<p className="text-xs text-muted-foreground">
+												{t(`landing.testimonials.${num}.role`)}
+											</p>
+										</div>
+									</div>
+								))}
+							</div>
+						</div>
+					</section>
+				</RevealSection>
+
+				<RevealSection>
+					<section className="py-20 md:py-28 bg-gradient-to-r from-primary to-primary/80">
+						<div className="max-w-6xl mx-auto px-6 text-center">
+							<h2 className="text-3xl md:text-4xl font-bold text-primary-foreground mb-4">
+								{t("landing.hero_title") || "Get Started for Free"}
+							</h2>
+							<p className="text-lg text-primary-foreground/80 mb-8 max-w-lg mx-auto">
+								{t("landing.hero_subtitle") ||
+									"Join 150+ print shops already using Printly to manage their business."}
+							</p>
+							<div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+								<Link to="/register/customer">
+									<Button
+										size="lg"
 										className="bg-white text-primary hover:bg-white/90 h-12 px-10 text-base"
 									>
 										{t("landing.register_customer")}
@@ -141,78 +347,15 @@ export default function LandingPage() {
 									<Button
 										variant="outline"
 										size="lg"
-										className="bg-white text-primary hover:bg-white/90 h-12 px-10 text-base"
+										className="bg-white/10 text-primary-foreground border-white/20 hover:bg-white/20 h-12 px-10 text-base"
 									>
 										{t("landing.register_shop")}
 									</Button>
 								</Link>
 							</div>
 						</div>
-					</div>
-				</section>
-
-				<section className="py-16 md:py-20">
-					<div className="max-w-6xl mx-auto px-6">
-						<h2 className="text-2xl md:text-3xl font-bold text-center text-foreground mb-12">
-							{t("landing.features.title")}
-						</h2>
-						<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-							{features.map(({ icon: Icon, key }) => (
-								<div
-									key={key}
-									className="bg-card border border-border rounded-xl p-6 hover:border-primary/50 transition-colors duration-200"
-								>
-									<div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-										<Icon className="h-5 w-5 text-primary" />
-									</div>
-									<h3 className="font-semibold text-foreground mb-2">
-										{t(`landing.features.${key}.title`)}
-									</h3>
-									<p className="text-sm text-muted-foreground">
-										{t(`landing.features.${key}.description`)}
-									</p>
-								</div>
-							))}
-						</div>
-					</div>
-				</section>
-
-				<section className="py-16 md:py-20 bg-muted">
-					<div className="max-w-6xl mx-auto px-6">
-						<h2 className="text-2xl md:text-3xl font-bold text-center text-foreground mb-12">
-							{t("landing.how_it_works.title")}
-						</h2>
-						<div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-							{steps.map(({ num, key }) => (
-								<div key={key} className="text-center">
-									<div className="w-12 h-12 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">
-										{num}
-									</div>
-									<h3 className="font-semibold text-foreground mb-2">
-										{t(`landing.how_it_works.${key}.title`)}
-									</h3>
-									<p className="text-sm text-muted-foreground">
-										{t(`landing.how_it_works.${key}.description`)}
-									</p>
-								</div>
-							))}
-						</div>
-					</div>
-				</section>
-
-				<section className="py-12 md:py-16 bg-secondary">
-					<div className="max-w-6xl mx-auto px-6">
-						<div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-							{statKeys.map((key) => (
-								<div key={key}>
-									<p className="text-2xl md:text-3xl font-bold text-primary tabular-nums">
-										{t(`landing.stats.${key}`)}
-									</p>
-								</div>
-							))}
-						</div>
-					</div>
-				</section>
+					</section>
+				</RevealSection>
 			</main>
 
 			<footer className="border-t border-border py-8">
@@ -223,9 +366,7 @@ export default function LandingPage() {
 						}`}
 					>
 						<div
-							className={`flex items-start gap-3 ${
-								isRTL ? "flex-row-reverse" : ""
-							}`}
+							className={`flex items-start gap-3 ${isRTL ? "flex-row-reverse" : ""}`}
 						>
 							<div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-primary-foreground mt-1">
 								<Printer className="h-4 w-4" />

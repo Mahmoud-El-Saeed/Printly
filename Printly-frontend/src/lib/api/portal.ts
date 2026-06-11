@@ -6,12 +6,19 @@ import type {
 	PortalProfileResponse,
 	PortalTenantsResponse,
 } from "@/types";
+import type { OrderCreate } from "@/types/order";
+import type { PaymentResponse } from "@/types/payment";
+import type { PortalPaymentCreate, PortalPricingItem } from "@/types/portal";
 import apiClient from "./client";
 
 export const portalApi = {
 	getProfile: async (): Promise<PortalProfileResponse> => {
 		const response =
 			await apiClient.get<PortalProfileResponse>("/portal/me/profile");
+		return response.data;
+	},
+	updateProfile: async (data: { full_name?: string; phone?: string }) => {
+		const response = await apiClient.put("/portal/me/profile", data);
 		return response.data;
 	},
 	getTenants: async (): Promise<PortalTenantsResponse> => {
@@ -34,6 +41,13 @@ export const portalApi = {
 		});
 		return response.data;
 	},
+	createOrder: async (tenantId: string, data: OrderCreate) => {
+		const response = await apiClient.post(
+			`/portal/tenants/${tenantId}/orders`,
+			data,
+		);
+		return response.data as OrderResponse;
+	},
 	getOrder: async (
 		tenantId: string,
 		orderId: string,
@@ -46,15 +60,36 @@ export const portalApi = {
 	getBooks: async (
 		tenantId: string,
 		params?: { offset?: number; limit?: number },
-	): Promise<{ total: number; books: BookResponse[] }> => {
+	): Promise<{ total: number; items: BookResponse[] }> => {
 		const response = await apiClient.get(`/portal/tenants/${tenantId}/books`, {
 			params,
 		});
 		return response.data;
 	},
+	createBook: async (tenantId: string, formData: FormData) => {
+		const response = await apiClient.post(
+			`/portal/tenants/${tenantId}/books`,
+			formData,
+			{
+				headers: { "Content-Type": "multipart/form-data" },
+			},
+		);
+		return response.data as BookResponse;
+	},
 	getBalance: async (tenantId: string): Promise<CustomerBalanceResponse> => {
 		const response = await apiClient.get(`/portal/tenants/${tenantId}/balance`);
 		return response.data;
+	},
+	createPayment: async (tenantId: string, data: PortalPaymentCreate) => {
+		const response = await apiClient.post(
+			`/portal/tenants/${tenantId}/payments`,
+			data,
+		);
+		return response.data as PaymentResponse;
+	},
+	getPricing: async (tenantId: string) => {
+		const response = await apiClient.get(`/portal/tenants/${tenantId}/pricing`);
+		return response.data as { rules: PortalPricingItem[] };
 	},
 	getNotifications: async (
 		tenantId: string,

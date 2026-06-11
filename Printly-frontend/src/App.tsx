@@ -25,6 +25,12 @@ const PortalOrderDetailPage = lazy(
 	() => import("@/pages/portal/PortalOrderDetailPage"),
 );
 const ShopPortalPage = lazy(() => import("@/pages/portal/ShopPortalPage"));
+const PortalProfilePage = lazy(
+	() => import("@/pages/portal/PortalProfilePage"),
+);
+const PortalNewOrderPage = lazy(
+	() => import("@/pages/portal/PortalNewOrderPage"),
+);
 
 const BooksListPage = lazy(() => import("@/pages/books/BooksListPage"));
 const BookDetailPage = lazy(() => import("@/pages/books/BookDetailPage"));
@@ -453,10 +459,26 @@ function App() {
 										}
 									/>
 									<Route
+										path="/portal/profile"
+										element={
+											<Suspense fallback={<PageLoader />}>
+												<PortalProfilePage />
+											</Suspense>
+										}
+									/>
+									<Route
 										path="/portal/:tenantId"
 										element={
 											<Suspense fallback={<PageLoader />}>
 												<ShopPortalPage />
+											</Suspense>
+										}
+									/>
+									<Route
+										path="/portal/:tenantId/orders/new"
+										element={
+											<Suspense fallback={<PageLoader />}>
+												<PortalNewOrderPage />
 											</Suspense>
 										}
 									/>

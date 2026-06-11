@@ -3,16 +3,22 @@ import {
 	ArrowLeft,
 	CheckCircle,
 	Clock,
+	DollarSign,
 	FileText,
 	Loader2,
 	Moon,
 	Package,
+	Plus,
 	Sun,
+	Upload,
 	Wallet,
 } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
+import { PortalPaymentDialog } from "@/components/portal/PortalPaymentDialog";
+import { PortalPricingDialog } from "@/components/portal/PortalPricingDialog";
+import { UploadBookDialog } from "@/components/portal/UploadBookDialog";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -36,6 +42,16 @@ export default function ShopPortalPage() {
 	const queryClient = useQueryClient();
 	const tid = tenantId ?? "";
 	const [statusFilter, setStatusFilter] = useState<string>("all");
+	const [uploadBookOpen, setUploadBookOpen] = useState(false);
+	const [pricingOpen, setPricingOpen] = useState(false);
+	const [paymentOpen, setPaymentOpen] = useState(false);
+	const [paymentOrder, setPaymentOrder] = useState<{
+		id: string;
+		number: string;
+		total: number;
+		paid: number;
+		remaining: number;
+	} | null>(null);
 
 	const { data: tenants } = useQuery({
 		queryKey: ["portal-tenants"],
@@ -111,6 +127,22 @@ export default function ShopPortalPage() {
 	const totalSpent =
 		orders?.orders?.reduce((sum, o) => sum + o.total_amount, 0) ?? 0;
 
+	const openPaymentDialog = (order: {
+		id: string;
+		order_number: string;
+		total_amount: number;
+		paid_amount: number;
+	}) => {
+		setPaymentOrder({
+			id: order.id,
+			number: order.order_number,
+			total: order.total_amount,
+			paid: order.paid_amount,
+			remaining: order.total_amount - order.paid_amount,
+		});
+		setPaymentOpen(true);
+	};
+
 	return (
 		<div className="space-y-6">
 			<div
@@ -126,22 +158,47 @@ export default function ShopPortalPage() {
 			</div>
 
 			<div
-				className={`flex items-center gap-3 mb-2 ${isRTL ? "flex-row-reverse" : ""}`}
+				className={`flex items-center justify-between gap-3 mb-2 ${isRTL ? "flex-row-reverse" : ""}`}
 			>
-				<h1 className="text-xl font-bold">
-					{currentTenant?.tenant_name || t("portal.my_orders")}
-				</h1>
-				{currentTenant?.is_approved ? (
-					<span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium bg-green-100 text-green-800">
-						<CheckCircle className="h-3 w-3" />
-						{t("customers.approved")}
-					</span>
-				) : (
-					<span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium bg-yellow-100 text-yellow-800">
-						<Clock className="h-3 w-3" />
-						{t("customers.pending")}
-					</span>
-				)}
+				<div
+					className={`flex items-center gap-3 ${isRTL ? "flex-row-reverse" : ""}`}
+				>
+					<h1 className="text-xl font-bold">
+						{currentTenant?.tenant_name || t("portal.my_orders")}
+					</h1>
+					{currentTenant?.is_approved ? (
+						<span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium bg-green-100 text-green-800">
+							<CheckCircle className="h-3 w-3" />
+							{t("portal.link_approved")}
+						</span>
+					) : (
+						<span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium bg-yellow-100 text-yellow-800">
+							<Clock className="h-3 w-3" />
+							{t("portal.link_pending")}
+						</span>
+					)}
+				</div>
+				<div
+					className={`flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}
+				>
+					<Button
+						variant="outline"
+						size="sm"
+						onClick={() => setPricingOpen(true)}
+						className="gap-2"
+					>
+						<DollarSign className="h-4 w-4" />
+						{t("portal.view_pricing")}
+					</Button>
+					<Button
+						size="sm"
+						onClick={() => navigate(`/portal/${tid}/orders/new`)}
+						className="gap-2"
+					>
+						<Plus className="h-4 w-4" />
+						{t("portal.new_order")}
+					</Button>
+				</div>
 			</div>
 
 			<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -233,41 +290,77 @@ export default function ShopPortalPage() {
 							</div>
 						) : (
 							<div className="space-y-3">
-								{filteredOrders.map((order) => (
-									<button
-										key={order.id}
-										type="button"
-										onClick={() =>
-											navigate(`/portal/${tid}/orders/${order.id}`)
-										}
-										className="w-full bg-card border border-border rounded-xl p-4 hover:border-primary/50 transition-colors text-start"
-									>
+								{filteredOrders.map((order) => {
+									const balanceDue = order.total_amount - order.paid_amount;
+									return (
 										<div
-											className={`flex items-center justify-between ${isRTL ? "flex-row-reverse" : ""}`}
+											key={order.id}
+											className="w-full bg-card border border-border rounded-xl p-4"
 										>
 											<div
-												className={`flex items-center gap-3 ${isRTL ? "flex-row-reverse" : ""}`}
+												className={`flex items-center justify-between ${isRTL ? "flex-row-reverse" : ""}`}
 											>
-												<span className="font-bold text-sm tabular-nums">
-													#{order.order_number}
-												</span>
-												<StatusBadge status={order.status} />
+												<div
+													className={`flex items-center gap-3 ${isRTL ? "flex-row-reverse" : ""}`}
+												>
+													<button
+														type="button"
+														onClick={() =>
+															navigate(`/portal/${tid}/orders/${order.id}`)
+														}
+														className="font-bold text-sm tabular-nums hover:text-primary transition-colors"
+													>
+														#{order.order_number}
+													</button>
+													<StatusBadge status={order.status} />
+												</div>
+												<div
+													className={`flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}
+												>
+													<span className="text-sm font-semibold tabular-nums">
+														{formatCurrency(order.total_amount, language)}
+													</span>
+													{balanceDue > 0 && (
+														<Button
+															variant="outline"
+															size="sm"
+															onClick={() => openPaymentDialog(order)}
+															className="gap-1 text-xs"
+														>
+															<Wallet className="h-3 w-3" />
+															{t("portal.pay_now")}
+														</Button>
+													)}
+												</div>
 											</div>
-											<span className="text-sm font-semibold tabular-nums">
-												{formatCurrency(order.total_amount, language)}
-											</span>
+											<div className="mt-2 text-xs text-muted-foreground">
+												{formatDate(order.created_at, language)}
+											</div>
 										</div>
-										<div className="mt-2 text-xs text-muted-foreground">
-											{formatDate(order.created_at, language)}
-										</div>
-									</button>
-								))}
+									);
+								})}
 							</div>
 						)}
 					</div>
 				</TabsContent>
 
 				<TabsContent value="books">
+					<div
+						className={`flex items-center justify-between mb-3 ${isRTL ? "flex-row-reverse" : ""}`}
+					>
+						<span className="text-sm font-medium text-muted-foreground">
+							{t("portal.my_books")}
+						</span>
+						<Button
+							variant="outline"
+							size="sm"
+							onClick={() => setUploadBookOpen(true)}
+							className="gap-2"
+						>
+							<Upload className="h-4 w-4" />
+							{t("portal.upload_book")}
+						</Button>
+					</div>
 					{booksLoading ? (
 						<div className="flex items-center justify-center py-8">
 							<Loader2 className="h-6 w-6 animate-spin text-primary" />
@@ -276,7 +369,7 @@ export default function ShopPortalPage() {
 						<div className="bg-card border border-border rounded-xl p-8 text-center text-error">
 							{t("common.error")}
 						</div>
-					) : !books?.books?.length ? (
+					) : !books?.items?.length ? (
 						<div className="bg-card border border-border rounded-xl p-8 text-center">
 							<FileText className="h-10 w-10 mx-auto text-muted-foreground/30 mb-3" />
 							<p className="text-sm text-muted-foreground">
@@ -285,7 +378,7 @@ export default function ShopPortalPage() {
 						</div>
 					) : (
 						<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-							{books.books.map((book) => (
+							{books.items.map((book) => (
 								<div
 									key={book.id}
 									className="bg-card border border-border rounded-xl p-4"
@@ -493,6 +586,29 @@ export default function ShopPortalPage() {
 					</div>
 				</TabsContent>
 			</Tabs>
+
+			<UploadBookDialog
+				tenantId={tid}
+				open={uploadBookOpen}
+				onOpenChange={setUploadBookOpen}
+			/>
+			<PortalPricingDialog
+				tenantId={tid}
+				open={pricingOpen}
+				onOpenChange={setPricingOpen}
+			/>
+			{paymentOrder && (
+				<PortalPaymentDialog
+					tenantId={tid}
+					orderId={paymentOrder.id}
+					orderNumber={paymentOrder.number}
+					totalAmount={paymentOrder.total}
+					paidAmount={paymentOrder.paid}
+					remainingAmount={paymentOrder.remaining}
+					open={paymentOpen}
+					onOpenChange={setPaymentOpen}
+				/>
+			)}
 		</div>
 	);
 }
