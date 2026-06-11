@@ -102,6 +102,13 @@ from .dashboard import (
     get_overview_stats,
     get_revenue_stats,
 )
+from .report import (
+    get_debts,
+)
+from .tenant import (
+    get_my_tenant,
+    update_my_tenant,
+)
 from .customer_portal import (
     get_my_profile,
     get_my_balance,
@@ -192,6 +199,7 @@ __all__ = [
     "get_top_materials",
     "get_top_customers",
     "get_overview_stats",
+    "get_debts",
     "get_my_profile",
     "get_my_balance",
     "get_my_notifications",
@@ -201,4 +209,6 @@ __all__ = [
     "get_my_order",
     "get_my_tenants",
     "mark_all_my_notifications_read",
+    "get_my_tenant",
+    "update_my_tenant",
 ]

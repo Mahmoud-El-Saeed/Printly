@@ -19,7 +19,6 @@ export interface TenantUpdateRequest {
 	email?: string;
 }
 
-// TODO: Backend endpoint /tenants/me GET and PUT needed
 export const tenantApi = {
 	getProfile: async (): Promise<TenantProfileResponse> => {
 		const response = await apiClient.get<TenantProfileResponse>("/tenants/me");

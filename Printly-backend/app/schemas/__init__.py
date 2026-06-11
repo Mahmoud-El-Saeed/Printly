@@ -112,6 +112,17 @@ from .dashboard import (
     TopCustomersResponse,
     TopMaterialItem,
     TopMaterialsResponse,
+    DashboardRequest,
+)
+
+from .report import (
+    DebtorItem,
+    DebtsResponse,
+)
+
+from .tenant import (
+    TenantProfileResponse,
+    TenantUpdateRequest,
 )
 
 from .customer_portal import (
@@ -212,4 +223,9 @@ __all__ = [
     "PortalTenantInfo",
     "PortalTenantsResponse",
     "OrdersCustomerRequest",
+    "TenantProfileResponse",
+    "TenantUpdateRequest",
+    "DebtorItem",
+    "DebtsResponse",
+    "DashboardRequest",
 ]

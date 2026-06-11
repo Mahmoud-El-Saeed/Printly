@@ -10,6 +10,8 @@ from .activation_code import router as activation_code_router
 from .notification import router as notification_router
 from .dashboard import router as dashboard_router
 from .customer_portal import router as customer_portal_router
+from .tenant import router as tenant_router
+from .report import router as report_router
 __all__ = [
     "auth_router",
     "customer_router",
@@ -23,4 +25,6 @@ __all__ = [
     "notification_router",
     "dashboard_router",
     "customer_portal_router",
+    "tenant_router",
+    "report_router",
 ]

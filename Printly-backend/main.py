@@ -16,6 +16,8 @@ from app.routes import (
     notification_router,
     dashboard_router,
     customer_portal_router,
+    tenant_router,
+    report_router,
 )
 
 
@@ -48,6 +50,8 @@ app.include_router(activation_code_router)
 app.include_router(notification_router)
 app.include_router(dashboard_router)
 app.include_router(customer_portal_router)
+app.include_router(tenant_router)
+app.include_router(report_router)
 
 app.add_middleware(
     CORSMiddleware,
