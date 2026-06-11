@@ -9,7 +9,69 @@ const en = {
 			"The all-in-one platform for print shops to manage orders, customers, materials, and payments — effortlessly.",
 		login: "Sign In",
 		register_customer: "Register as Customer",
-		footer: "© 2026 Printly. Print Shop Management System.",
+		register_shop: "Register as Shop Owner",
+		dark_mode: "Dark Mode",
+		features: {
+			title: "Everything You Need to Run Your Print Shop",
+			orders: {
+				title: "Orders Management",
+				description:
+					"Track print jobs from start to delivery with full visibility.",
+			},
+			customers: {
+				title: "Customer Management",
+				description: "Members, walk-ins, link requests, and balance tracking.",
+			},
+			inventory: {
+				title: "Inventory Tracking",
+				description:
+					"Materials, stock levels, and cost tracking at your fingertips.",
+			},
+			financials: {
+				title: "Financial Reports",
+				description:
+					"Revenue, expenses, profits, and debts — all in one place.",
+			},
+			pricing: {
+				title: "Pricing Rules",
+				description:
+					"Flexible component-based pricing for every print service.",
+			},
+			portal: {
+				title: "Customer Portal",
+				description:
+					"Let customers track their own orders and manage balances.",
+			},
+		},
+		how_it_works: {
+			title: "How It Works",
+			step1: {
+				title: "Register",
+				description: "Create your shop account in seconds and get started.",
+			},
+			step2: {
+				title: "Setup",
+				description: "Add materials, pricing rules, and staff to your shop.",
+			},
+			step3: {
+				title: "Manage",
+				description:
+					"Handle orders, payments, and track everything effortlessly.",
+			},
+		},
+		stats: {
+			shops: "150+ Print Shops",
+			orders: "50K+ Orders Managed",
+			satisfaction: "99% Satisfaction",
+			access: "24/7 Access",
+		},
+		footer: {
+			branding: "The all-in-one platform for print shop management.",
+			copyright: "© 2026 Printly. Print Shop Management System.",
+			login: "Sign In",
+			register: "Register",
+			shop_owner: "Shop Owner Registration",
+		},
 	},
 	auth: {
 		login: "Login",
