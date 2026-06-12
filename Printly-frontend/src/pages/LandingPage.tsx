@@ -1,6 +1,7 @@
 import {
 	ClipboardList,
 	DollarSign,
+	Menu,
 	Moon,
 	PackageCheck,
 	Printer,
@@ -135,7 +136,7 @@ export default function LandingPage() {
 						onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
 						className="md:hidden p-2 rounded-lg hover:bg-muted transition-colors"
 					>
-						<Printer className="h-5 w-5 text-primary" />
+						<Menu className="h-5 w-5 text-foreground" />
 					</button>
 				</div>
 

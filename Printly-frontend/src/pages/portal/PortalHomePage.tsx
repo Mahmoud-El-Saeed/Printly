@@ -28,6 +28,12 @@ import { customersApi } from "@/lib/api/customers";
 import { portalApi } from "@/lib/api/portal";
 import { formatCurrency } from "@/lib/utils/formatCurrency";
 import { formatDate } from "@/lib/utils/formatDate";
+import type { OrderResponse } from "@/types/order";
+
+interface ExtendedOrder extends OrderResponse {
+	tenantId: string;
+	tenantName: string;
+}
 
 export default function PortalHomePage() {
 	const { t, language, isRTL } = useLanguage();
@@ -49,7 +55,7 @@ export default function PortalHomePage() {
 		queryFn: portalApi.getTenants,
 	});
 
-	const allOrdersQueries = useQuery({
+	const allOrdersQueries = useQuery<ExtendedOrder[]>({
 		queryKey: [
 			"portal-recent-orders",
 			tenants?.tenants?.map((t) => t.tenant_id),
@@ -57,7 +63,7 @@ export default function PortalHomePage() {
 		queryFn: async () => {
 			if (!tenants?.tenants?.length) return [];
 			const approvedTenants = tenants.tenants.filter((t) => t.is_approved);
-			const results = await Promise.all(
+			const results = await Promise.allSettled(
 				approvedTenants.map(async (tenant) => {
 					const orders = await portalApi.getOrders(tenant.tenant_id, {
 						limit: 10,
@@ -66,26 +72,26 @@ export default function PortalHomePage() {
 						...o,
 						tenantId: tenant.tenant_id,
 						tenantName: tenant.tenant_name,
-					}));
+					})) as ExtendedOrder[];
 				}),
 			);
-			return results
-				.flat()
+			const orders = results
+				.filter((r) => r.status === "fulfilled")
+				.flatMap((r) => (r as PromiseFulfilledResult<ExtendedOrder[]>).value)
 				.sort(
 					(a, b) =>
 						new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
 				)
 				.slice(0, 5);
+			return orders;
 		},
 		enabled: !!tenants?.tenants?.length,
 	});
 
 	const pendingCount =
-		tenants?.tenants?.filter((t) => t.is_approved).length === 0
-			? 0
-			: (allOrdersQueries.data?.filter(
-					(o) => o.status === "new" || o.status === "printing",
-				).length ?? 0);
+		allOrdersQueries.data?.filter(
+			(o) => o.status === "new" || o.status === "printing",
+		).length ?? 0;
 
 	const linkMutation = useMutation({
 		mutationFn: () => customersApi.requestLink({ slug: slugValue }),
@@ -270,10 +276,7 @@ export default function PortalHomePage() {
 												<CheckCircle className="h-3 w-3" />
 												{t("portal.link_approved")}
 											</span>
-										) : tenant.is_approved === false &&
-											tenants?.tenants?.find(
-												(t) => t.tenant_id === tenant.tenant_id,
-											)?.is_approved === false ? (
+										) : tenant.is_approved === false ? (
 											<span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium bg-red-100 text-red-800">
 												<XCircle className="h-3 w-3" />
 												{t("portal.link_rejected")}

@@ -70,8 +70,8 @@ function PortalLayout() {
 		document.documentElement.classList.toggle("dark", val);
 	};
 
-	const userInitial = user?.user_id
-		? user.user_id.charAt(0).toUpperCase()
+	const userInitial = user?.full_name
+		? user.full_name.charAt(0).toUpperCase()
 		: "C";
 
 	return (

@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2, Mail, Phone, User } from "lucide-react";
-import { useState } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -19,12 +20,16 @@ type ProfileFormData = z.infer<typeof profileSchema>;
 
 export default function PortalProfilePage() {
 	const { t, isRTL } = useLanguage();
-	const [profile, setProfile] = useState<{
-		email: string;
-		full_name: string;
-		phone: string | null;
-	} | null>(null);
-	const [isLoading, setIsLoading] = useState(true);
+	const queryClient = useQueryClient();
+
+	const {
+		data: profile,
+		isLoading,
+		isError,
+	} = useQuery({
+		queryKey: ["portal-profile"],
+		queryFn: portalApi.getProfile,
+	});
 
 	const {
 		register,
@@ -35,34 +40,42 @@ export default function PortalProfilePage() {
 		resolver: zodResolver(profileSchema),
 	});
 
-	useState(() => {
-		portalApi
-			.getProfile()
-			.then((data) => {
-				setProfile(data);
-				reset({ full_name: data.full_name, phone: data.phone ?? "" });
-				setIsLoading(false);
-			})
-			.catch(() => setIsLoading(false));
+	useEffect(() => {
+		if (profile) {
+			reset({ full_name: profile.full_name, phone: profile.phone ?? "" });
+		}
+	}, [profile, reset]);
+
+	const updateMutation = useMutation({
+		mutationFn: portalApi.updateProfile,
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ["portal-profile"] });
+			toast.success(t("portal.profile_updated"));
+		},
+		onError: () => {
+			toast.error(t("common.error"));
+		},
 	});
 
-	const onSubmit = async (data: ProfileFormData) => {
-		try {
-			const updated = await portalApi.updateProfile({
-				full_name: data.full_name,
-				phone: data.phone || undefined,
-			});
-			setProfile(updated);
-			toast.success(t("portal.profile_updated"));
-		} catch {
-			toast.error(t("common.error"));
-		}
+	const onSubmit = (data: ProfileFormData) => {
+		updateMutation.mutate({
+			full_name: data.full_name,
+			phone: data.phone || undefined,
+		});
 	};
 
 	if (isLoading) {
 		return (
 			<div className="flex items-center justify-center py-12">
 				<Loader2 className="h-8 w-8 animate-spin text-primary" />
+			</div>
+		);
+	}
+
+	if (isError) {
+		return (
+			<div className="flex items-center justify-center py-12 text-red-500">
+				{t("common.error")}
 			</div>
 		);
 	}
@@ -120,8 +133,12 @@ export default function PortalProfilePage() {
 						</div>
 					</div>
 
-					<Button type="submit" disabled={isSubmitting} className="w-full">
-						{isSubmitting ? (
+					<Button
+						type="submit"
+						disabled={isSubmitting || updateMutation.isPending}
+						className="w-full"
+					>
+						{isSubmitting || updateMutation.isPending ? (
 							<Loader2 className="h-4 w-4 animate-spin" />
 						) : (
 							t("portal.save_profile")
