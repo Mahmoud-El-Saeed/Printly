@@ -240,6 +240,7 @@ async def verify_current_user(db: AsyncSession, token: str) -> TokenData:
             user_id=UUID(user_id),
             tenant_id=user.tenant_id if user.tenant_id else None,
             role=user.role.value,
+            full_name=user.full_name,
         )
     except Exception as e:
         raise ValueError("Invalid or expired access token") from e
