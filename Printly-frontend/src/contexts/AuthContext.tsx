@@ -37,6 +37,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 				user_id: payload.user_id,
 				tenant_id: payload.tenant_id || null,
 				role: payload.role,
+				full_name: payload.full_name,
 			};
 		} catch {
 			return null;

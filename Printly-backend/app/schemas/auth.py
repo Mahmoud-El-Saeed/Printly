@@ -13,6 +13,7 @@ class TokenData(BaseModel):
     user_id: UUID
     tenant_id: UUID | None
     role: str
+    full_name: str | None = None
 
 
 class ShopOwnerRegister(BaseModel):

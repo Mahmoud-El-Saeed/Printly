@@ -4,6 +4,7 @@ export interface TokenData {
 	user_id: string;
 	tenant_id: string | null;
 	role: string;
+	full_name?: string;
 }
 
 export interface TokenResponse {

@@ -127,6 +127,7 @@ async def login(db: AsyncSession, data: LoginRequest) -> TokenResponse:
             "user_id": str(user.id),
             "tenant_id": str(user.tenant_id) if user.tenant_id else None,
             "role": user.role.value,
+            "full_name": user.full_name,
         },
         expires_delta=timedelta(minutes=settings.JWT_ACCESS_TOKEN_EXPIRE_MINUTES),
     )
@@ -182,6 +183,7 @@ async def refresh_tokens(db: AsyncSession, data: RefreshRequest) -> TokenRespons
             "user_id": str(user.id),
             "tenant_id": str(user.tenant_id) if user.tenant_id else None,
             "role": user.role.value,
+            "full_name": user.full_name,
         },
         expires_delta=timedelta(minutes=settings.JWT_ACCESS_TOKEN_EXPIRE_MINUTES),
     )
