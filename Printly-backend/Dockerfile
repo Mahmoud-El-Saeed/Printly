@@ -2,12 +2,15 @@ FROM python:3.13.14-alpine3.23
 
 WORKDIR /app
 
-COPY pyproject.toml uv.lock ./
-
-RUN pip install uv
-RUN uv pip install --system -r pyproject.toml 
+RUN pip install --no-cache-dir uv
 
 COPY . .
+
+RUN uv sync --frozen --no-dev
+
+RUN chmod +x entrypoint.sh
+
+ENV PATH="/app/.venv/bin:$PATH"
 
 EXPOSE 8000
 
