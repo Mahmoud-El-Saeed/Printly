@@ -7,19 +7,8 @@ from app.enums import OrderStatus
 
 
 class OrderItemCreate(BaseModel):
-    book_id: UUID | None = None
-    book_title: str
+    book_id: UUID
     copies: int = Field(..., gt=0)
-    pages_per_copy: int = Field(..., gt=0)
-    sides_per_page: int = Field(1, ge=1, le=4)
-    printing_price: Decimal
-    cover_type: str | None = None
-    cover_price: Decimal = 0
-    binding_type: str | None = None
-    binding_price: Decimal = 0
-    has_lamination: bool = False
-    lamination_price: Decimal = 0
-    extra_services: list[dict] = Field(default_factory=list)
 
 
 class OrderCreate(BaseModel):
@@ -35,16 +24,13 @@ class OrderItemResponse(BaseModel):
     book_id: UUID | None
     book_title: str
     copies: int
-    pages_per_copy: int
+    unit_price: Decimal
+    total_pages: int
+    color_mode: str
     sides_per_page: int
-    printing_price: Decimal
-    cover_type: str | None
-    cover_price: Decimal
     binding_type: str | None
-    binding_price: Decimal
     has_lamination: bool
-    lamination_price: Decimal
-    extra_services: list[dict]
+    materials_snapshot: list[dict]
     subtotal: Decimal
 
     model_config = ConfigDict(from_attributes=True)
@@ -93,6 +79,7 @@ class OrdersRequest(BaseModel):
 class OrdersListResponse(BaseModel):
     total: int
     orders: list[OrderResponse]
+
 
 class OrdersCustomerRequest(BaseModel):
     status: OrderStatus | None = None

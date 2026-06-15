@@ -1,14 +1,13 @@
-import math
 from sqlalchemy.ext.asyncio import AsyncSession
 from redis.asyncio import Redis
 from uuid import UUID
 from decimal import Decimal
 
 
-from app.enums import OrderStatus
+from app.enums import OrderStatus, MaterialTransactionType
 from app.db import OrderCRUD, OrderItemsCRUD, UserCRUD, WalkInCustomerCRUD, BookCRUD
 
-from app.models import Users, WalkInCustomers, OrderItems
+from app.models import Users, WalkInCustomers, OrderItems, Books, BookMaterials, Materials, MaterialTransactions
 
 from app.schemas import (
     OrderCreate,
@@ -17,7 +16,6 @@ from app.schemas import (
     OrderStatusUpdate,
     OrdersRequest,
     OrdersListResponse,
-
 )
 
 
@@ -35,8 +33,7 @@ async def create_order(
     created_by: UUID,
     order_create: OrderCreate,
 ) -> OrderResponse:
-    """Createing a new Order."""
-
+    """Create a new order with auto-priced items from book configurations."""
 
     # Validate customer information
     if order_create.customer_id is None and order_create.walk_in_customer_id is None:
@@ -48,17 +45,16 @@ async def create_order(
         raise ValueError(
             "Only one of customer_id or walk_in_customer_id can be provided."
         )
-    
+
     customer_id = order_create.customer_id
     walk_in_customer_id = order_create.walk_in_customer_id
-    
-    # Validate and fetch customer or walk-in customer
+
     if order_create.customer_id:
         customer: Users = await UserCRUD.get_by_id(db=db, id=order_create.customer_id)
         if not customer or customer.tenant_id != tenant_id:
             raise ValueError("Customer not found.")
         customer_id = customer.id
-    
+
     if order_create.walk_in_customer_id:
         walk_in_customer: WalkInCustomers = await WalkInCustomerCRUD.get_by_id(
             db=db, id=order_create.walk_in_customer_id
@@ -69,37 +65,66 @@ async def create_order(
 
     order_number = await __generate_order_number(redis_client, tenant_id)
 
-    books_ids = [item.book_id for item in order_create.items if item.book_id]
-    if books_ids:
-        books = await BookCRUD.get_books_by_ids(db, books_ids)
-        books_dict = {book.id: book for book in books if book.tenant_id == tenant_id}
-        for item in order_create.items:
-            if item.book_id and item.book_id not in books_dict:
-                raise ValueError(f"Book with ID {item.book_id} not found.")
-    
-    
-    # Calculate total amount based on order items
-    total_amount = Decimal("0")
-    order_item_data = []
-    
-    for item in order_create.items:
-        sheets = math.ceil(item.pages_per_copy / item.sides_per_page)
-        item_subtotal = (
-            sheets * item.printing_price * item.copies
-            + item.cover_price * item.copies
-            + item.binding_price * item.copies
-            + item.lamination_price * item.copies
-        )
-        for extra_service in item.extra_services:
-            item_subtotal += Decimal(extra_service.get("price", 0)) * item.copies
+    # Fetch all books with their materials in one batch
+    book_ids = [item.book_id for item in order_create.items]
+    books_map: dict[UUID, Books] = {}
+    if book_ids:
+        from sqlalchemy import select
+        from sqlalchemy.orm import selectinload
 
-        order_item_data.append(
-            {
-                **item.model_dump(),
-                "subtotal": item_subtotal,
-            }
+        stmt = (
+            select(Books)
+            .where(Books.id.in_(book_ids))
+            .where(Books.tenant_id == tenant_id)
+            .options(selectinload(Books.book_materials).selectinload(BookMaterials.material))
         )
-        total_amount += item_subtotal
+        result = await db.execute(stmt)
+        for book in result.scalars().all():
+            books_map[book.id] = book
+
+    total_amount = Decimal("0")
+    order_items_to_create = []
+
+    for item in order_create.items:
+        book = books_map.get(item.book_id)
+        if not book:
+            raise ValueError(f"Book with ID {item.book_id} not found in your tenant.")
+
+        # Calculate unit_price from materials
+        materials_snapshot = []
+        unit_price = Decimal("0")
+        for bm in book.book_materials:
+            qty = bm.quantity_per_copy
+            ppu = bm.material.price_per_unit
+            unit_price += qty * ppu
+            materials_snapshot.append({
+                "material_id": str(bm.material_id),
+                "material_name": bm.material.name,
+                "quantity_per_copy": float(qty),
+                "price_per_unit": float(ppu),
+            })
+
+        subtotal = unit_price * item.copies
+
+        order_items_to_create.append(
+            OrderItems(
+                order_id=None,
+                book_id=book.id,
+                book_title=book.title,
+                copies=item.copies,
+                unit_price=unit_price,
+                total_pages=book.total_pages,
+                color_mode=book.color_mode,
+                sides_per_page=book.sides_per_page,
+                binding_type=book.binding_type,
+                has_lamination=book.has_lamination,
+                materials_snapshot=materials_snapshot,
+                subtotal=subtotal,
+            )
+        )
+        total_amount += subtotal
+
+    total_amount = total_amount.quantize(Decimal("0.01"))
 
     try:
         new_order = await OrderCRUD.create(
@@ -116,14 +141,28 @@ async def create_order(
             due_date=order_create.due_date,
         )
 
-        
-        items_to_create = [
-            OrderItems(order_id=new_order.id, **item)
-            for item in order_item_data
-        ]
-        await OrderItemsCRUD.batch_create(db, items_to_create)
-            
-        
+        # Attach order_id and create order items
+        for oi in order_items_to_create:
+            oi.order_id = new_order.id
+        await OrderItemsCRUD.batch_create(db, order_items_to_create)
+
+        # Create MaterialTransactions for consumption and deduct stock
+        for item, oi in zip(order_create.items, order_items_to_create):
+            book = books_map[item.book_id]
+            for bm in book.book_materials:
+                total_qty = bm.quantity_per_copy * item.copies
+                transaction = MaterialTransactions(
+                    material_id=bm.material_id,
+                    quantity=total_qty,
+                    transaction_type=MaterialTransactionType.CONSUMPTION,
+                    order_id=new_order.id,
+                    notes="Auto-consumption from order",
+                    created_by=created_by,
+                    tenant_id=bm.material.tenant_id,
+                )
+                db.add(transaction)
+                bm.material.current_stock -= total_qty
+
         await db.commit()
         await db.refresh(new_order, attribute_names=["items"])
         return OrderResponse.model_validate(new_order)
@@ -181,7 +220,6 @@ VALID_TRANSITIONS = {
     OrderStatus.NEW: {OrderStatus.PRINTING, OrderStatus.CANCELLED},
     OrderStatus.PRINTING: {OrderStatus.READY, OrderStatus.CANCELLED},
     OrderStatus.READY: {OrderStatus.DELIVERED, OrderStatus.CANCELLED},
-    # Cancelled and Delivered are terminal states
 }
 
 
@@ -227,13 +265,13 @@ async def delete_order(
 ) -> None:
     """Delete an existing order."""
     existing_order = await OrderCRUD.get_by_id(db, order_id)
-    
+
     if not existing_order or existing_order.tenant_id != tenant_id:
         raise ValueError("Order not found")
-    
+
     if existing_order.status not in (OrderStatus.NEW, OrderStatus.CANCELLED):
         raise ValueError("Can only delete NEW or CANCELLED orders")
-    
+
     try:
         await OrderCRUD.delete(db, id=order_id)
         await db.commit()
@@ -249,7 +287,7 @@ async def list_orders(
     orders_request: OrdersRequest,
 ) -> OrdersListResponse:
     """List orders with optional filtering and pagination."""
-    
+
     orders, total_count = await OrderCRUD.get_orders(
         db=db,
         tenant_id=tenant_id,
