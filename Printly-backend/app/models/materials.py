@@ -31,6 +31,11 @@ class Materials(Base, TenantMixin, TimestampMixin):
         default=0,
         nullable=False,
     )
+    price_per_unit: Mapped[Decimal] = mapped_column(
+        Numeric(10, 2),
+        default=0,
+        nullable=False,
+    )
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
 
     __table_args__ = (

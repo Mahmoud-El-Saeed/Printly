@@ -12,6 +12,7 @@ class MaterialCreate(BaseModel):
     current_stock: Decimal = Field(0, ge=0)
     min_stock_alert: Decimal = Field(0, ge=0)
     cost_per_unit: Decimal = Field(0, ge=0)
+    price_per_unit: Decimal = Field(0, ge=0)
 
 
 class MaterialUpdate(BaseModel):
@@ -19,6 +20,7 @@ class MaterialUpdate(BaseModel):
     unit: str | None = Field(None, max_length=20)
     min_stock_alert: Decimal | None = Field(None, ge=0)
     cost_per_unit: Decimal | None = Field(None, ge=0)
+    price_per_unit: Decimal | None = Field(None, ge=0)
     is_active: bool | None = None
 
 
@@ -29,6 +31,7 @@ class MaterialResponse(BaseModel):
     current_stock: Decimal
     min_stock_alert: Decimal
     cost_per_unit: Decimal
+    price_per_unit: Decimal
     is_active: bool
     created_at: datetime
     updated_at: datetime
