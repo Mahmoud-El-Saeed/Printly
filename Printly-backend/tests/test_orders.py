@@ -3,15 +3,44 @@ from uuid import uuid4
 from httpx import AsyncClient
 
 
-async def _create_material(async_client: AsyncClient, auth_headers: dict[str, str]) -> str:
+async def _create_material(async_client: AsyncClient, auth_headers: dict[str, str], **overrides) -> str:
     payload = {
         "name": "Order Material",
         "unit": "sheet",
         "current_stock": "50",
         "min_stock_alert": "5",
         "cost_per_unit": "0.20",
+        "price_per_unit": "0.50",
     }
+    payload.update(overrides)
     response = await async_client.post("/materials/", json=payload, headers=auth_headers)
+    return response.json()["id"]
+
+
+async def _create_book(
+    async_client: AsyncClient,
+    auth_headers: dict[str, str],
+    material_id: str,
+    **overrides,
+) -> str:
+    payload = {
+        "title": "Order Book",
+        "total_pages": 10,
+        "color_mode": "bw",
+        "sides_per_page": 1,
+        "copies": 1,
+        "binding_type": None,
+        "has_lamination": False,
+        "materials": [
+            {
+                "material_id": material_id,
+                "quantity_per_copy": "5",
+            }
+        ],
+    }
+    payload.update(overrides)
+    response = await async_client.post("/books/", json=payload, headers=auth_headers)
+    assert response.status_code == 201, f"Book creation failed: {response.text}"
     return response.json()["id"]
 
 
@@ -35,23 +64,14 @@ async def _create_order(
     async_client: AsyncClient,
     auth_headers: dict[str, str],
     walk_in_customer_id: str,
+    book_id: str,
 ) -> dict:
     payload = {
         "walk_in_customer_id": walk_in_customer_id,
         "items": [
             {
-                "book_title": "Order Book",
+                "book_id": book_id,
                 "copies": 1,
-                "pages_per_copy": 12,
-                "sides_per_page": 1,
-                "printing_price": "1.25",
-                "cover_type": None,
-                "cover_price": "0",
-                "binding_type": None,
-                "binding_price": "0",
-                "has_lamination": False,
-                "lamination_price": "0",
-                "extra_services": [],
             }
         ],
     }
@@ -65,29 +85,15 @@ async def _create_order(
 
 class TestCreateOrder:
     async def test_create_order_with_items(self, async_client: AsyncClient, auth_headers: dict[str, str]) -> None:
-        await _create_material(async_client, auth_headers)
+        material_id = await _create_material(async_client, auth_headers)
+        book_id = await _create_book(async_client, auth_headers, material_id)
         walk_in_customer_id = await _create_walk_in_customer(async_client, auth_headers)
 
         response = await async_client.post(
             "/orders/",
             json={
                 "walk_in_customer_id": walk_in_customer_id,
-                "items": [
-                    {
-                        "book_title": "Intro",
-                        "copies": 2,
-                        "pages_per_copy": 10,
-                        "sides_per_page": 1,
-                        "printing_price": "1.50",
-                        "cover_type": None,
-                        "cover_price": "0",
-                        "binding_type": None,
-                        "binding_price": "0",
-                        "has_lamination": False,
-                        "lamination_price": "0",
-                        "extra_services": [],
-                    }
-                ],
+                "items": [{"book_id": book_id, "copies": 2}],
             },
             headers=auth_headers,
         )
@@ -96,11 +102,18 @@ class TestCreateOrder:
         data = response.json()
         assert data["walk_in_customer_id"] == walk_in_customer_id
         assert data["order_number"].startswith("ORD-")
+        assert len(data["items"]) == 1
+        item = data["items"][0]
+        assert item["book_id"] == book_id
+        assert item["copies"] == 2
+        assert float(item["unit_price"]) > 0
+        assert float(item["subtotal"]) == float(item["unit_price"]) * 2
+        assert "materials_snapshot" in item
 
     async def test_create_order_with_no_items_fails(
         self, async_client: AsyncClient, auth_headers: dict[str, str]
     ) -> None:
-        await _create_material(async_client, auth_headers)
+        material_id = await _create_material(async_client, auth_headers)
         walk_in_customer_id = await _create_walk_in_customer(async_client, auth_headers)
 
         response = await async_client.post(
@@ -117,29 +130,15 @@ class TestCreateOrder:
     async def test_create_order_with_walk_in_customer(
         self, async_client: AsyncClient, auth_headers: dict[str, str]
     ) -> None:
-        await _create_material(async_client, auth_headers)
+        material_id = await _create_material(async_client, auth_headers)
+        book_id = await _create_book(async_client, auth_headers, material_id)
         walk_in_customer_id = await _create_walk_in_customer(async_client, auth_headers)
 
         response = await async_client.post(
             "/orders/",
             json={
                 "walk_in_customer_id": walk_in_customer_id,
-                "items": [
-                    {
-                        "book_title": "Walk In",
-                        "copies": 1,
-                        "pages_per_copy": 5,
-                        "sides_per_page": 1,
-                        "printing_price": "2.00",
-                        "cover_type": None,
-                        "cover_price": "0",
-                        "binding_type": None,
-                        "binding_price": "0",
-                        "has_lamination": False,
-                        "lamination_price": "0",
-                        "extra_services": [],
-                    }
-                ],
+                "items": [{"book_id": book_id, "copies": 1}],
             },
             headers=auth_headers,
         )
@@ -152,22 +151,7 @@ class TestCreateOrder:
             "/orders/",
             json={
                 "walk_in_customer_id": str(uuid4()),
-                "items": [
-                    {
-                        "book_title": "Unauthorized",
-                        "copies": 1,
-                        "pages_per_copy": 3,
-                        "sides_per_page": 1,
-                        "printing_price": "1.00",
-                        "cover_type": None,
-                        "cover_price": "0",
-                        "binding_type": None,
-                        "binding_price": "0",
-                        "has_lamination": False,
-                        "lamination_price": "0",
-                        "extra_services": [],
-                    }
-                ],
+                "items": [{"book_id": str(uuid4()), "copies": 1}],
             },
         )
 
@@ -178,29 +162,15 @@ class TestListOrders:
     async def test_list_orders_with_pagination(
         self, async_client: AsyncClient, auth_headers: dict[str, str]
     ) -> None:
-        await _create_material(async_client, auth_headers)
+        material_id = await _create_material(async_client, auth_headers)
+        book_id = await _create_book(async_client, auth_headers, material_id)
         walk_in_customer_id = await _create_walk_in_customer(async_client, auth_headers)
 
         await async_client.post(
             "/orders/",
             json={
                 "walk_in_customer_id": walk_in_customer_id,
-                "items": [
-                    {
-                        "book_title": "List A",
-                        "copies": 1,
-                        "pages_per_copy": 4,
-                        "sides_per_page": 1,
-                        "printing_price": "1.00",
-                        "cover_type": None,
-                        "cover_price": "0",
-                        "binding_type": None,
-                        "binding_price": "0",
-                        "has_lamination": False,
-                        "lamination_price": "0",
-                        "extra_services": [],
-                    }
-                ],
+                "items": [{"book_id": book_id, "copies": 1}],
             },
             headers=auth_headers,
         )
@@ -208,22 +178,7 @@ class TestListOrders:
             "/orders/",
             json={
                 "walk_in_customer_id": walk_in_customer_id,
-                "items": [
-                    {
-                        "book_title": "List B",
-                        "copies": 1,
-                        "pages_per_copy": 4,
-                        "sides_per_page": 1,
-                        "printing_price": "1.10",
-                        "cover_type": None,
-                        "cover_price": "0",
-                        "binding_type": None,
-                        "binding_price": "0",
-                        "has_lamination": False,
-                        "lamination_price": "0",
-                        "extra_services": [],
-                    }
-                ],
+                "items": [{"book_id": book_id, "copies": 1}],
             },
             headers=auth_headers,
         )
@@ -244,9 +199,10 @@ class TestGetOrder:
     async def test_get_order_by_id(
         self, async_client: AsyncClient, auth_headers: dict[str, str]
     ) -> None:
-        await _create_material(async_client, auth_headers)
+        material_id = await _create_material(async_client, auth_headers)
+        book_id = await _create_book(async_client, auth_headers, material_id)
         walk_in_customer_id = await _create_walk_in_customer(async_client, auth_headers)
-        order = await _create_order(async_client, auth_headers, walk_in_customer_id)
+        order = await _create_order(async_client, auth_headers, walk_in_customer_id, book_id)
 
         response = await async_client.get(
             f"/orders/{order['id']}",
@@ -271,9 +227,10 @@ class TestUpdateOrderStatus:
     async def test_update_order_status_flow(
         self, async_client: AsyncClient, auth_headers: dict[str, str]
     ) -> None:
-        await _create_material(async_client, auth_headers)
+        material_id = await _create_material(async_client, auth_headers)
+        book_id = await _create_book(async_client, auth_headers, material_id)
         walk_in_customer_id = await _create_walk_in_customer(async_client, auth_headers)
-        order = await _create_order(async_client, auth_headers, walk_in_customer_id)
+        order = await _create_order(async_client, auth_headers, walk_in_customer_id, book_id)
 
         response = await async_client.patch(
             f"/orders/{order['id']}/status",
@@ -304,9 +261,10 @@ class TestDeleteOrder:
     async def test_delete_order_success(
         self, async_client: AsyncClient, auth_headers: dict[str, str]
     ) -> None:
-        await _create_material(async_client, auth_headers)
+        material_id = await _create_material(async_client, auth_headers)
+        book_id = await _create_book(async_client, auth_headers, material_id)
         walk_in_customer_id = await _create_walk_in_customer(async_client, auth_headers)
-        order = await _create_order(async_client, auth_headers, walk_in_customer_id)
+        order = await _create_order(async_client, auth_headers, walk_in_customer_id, book_id)
 
         response = await async_client.delete(
             f"/orders/{order['id']}",

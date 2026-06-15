@@ -10,9 +10,37 @@ async def _create_material(async_client: AsyncClient, auth_headers: dict[str, st
         "current_stock": "100",
         "min_stock_alert": "10",
         "cost_per_unit": "0.25",
+        "price_per_unit": "0.50",
     }
     payload.update(overrides)
     return await async_client.post("/materials/", json=payload, headers=auth_headers)
+
+
+async def _create_book(
+    async_client: AsyncClient,
+    auth_headers: dict[str, str],
+    material_id: str,
+    **overrides,
+) -> str:
+    payload = {
+        "title": "Test Book",
+        "total_pages": 10,
+        "color_mode": "bw",
+        "sides_per_page": 1,
+        "copies": 1,
+        "binding_type": None,
+        "has_lamination": False,
+        "materials": [
+            {
+                "material_id": material_id,
+                "quantity_per_copy": "5",
+            }
+        ],
+    }
+    payload.update(overrides)
+    response = await async_client.post("/books/", json=payload, headers=auth_headers)
+    assert response.status_code == 201, f"Book creation failed: {response.text}"
+    return response.json()["id"]
 
 
 async def _create_walk_in_customer(
@@ -35,23 +63,14 @@ async def _create_order(
     async_client: AsyncClient,
     auth_headers: dict[str, str],
     walk_in_customer_id: str,
+    book_id: str,
 ) -> str:
     payload = {
         "walk_in_customer_id": walk_in_customer_id,
         "items": [
             {
-                "book_title": "Test Book",
+                "book_id": book_id,
                 "copies": 1,
-                "pages_per_copy": 10,
-                "sides_per_page": 1,
-                "printing_price": "1.50",
-                "cover_type": None,
-                "cover_price": "0",
-                "binding_type": None,
-                "binding_price": "0",
-                "has_lamination": False,
-                "lamination_price": "0",
-                "extra_services": [],
             }
         ],
     }
@@ -189,8 +208,9 @@ class TestDeleteMaterial:
         material_id = material_response.json()["id"]
 
         await _create_material(async_client, auth_headers, name="Order Mat For Order")
+        book_id = await _create_book(async_client, auth_headers, material_id)
         walk_in_customer_id = await _create_walk_in_customer(async_client, auth_headers)
-        order_id = await _create_order(async_client, auth_headers, walk_in_customer_id)
+        order_id = await _create_order(async_client, auth_headers, walk_in_customer_id, book_id)
 
         transaction_response = await _create_material_transaction(
             async_client, auth_headers, material_id, order_id

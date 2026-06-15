@@ -148,16 +148,20 @@ async def portal_book(
     customer_user: tuple[Users, str],
     portal_tenant: Tenants,
 ) -> Books:
-    """Create a book linked to the customer in the portal tenant."""
+    """Create a book in the portal tenant."""
     user, _ = customer_user
     book = await BookCRUD.create(
         db=db_session,
         tenant_id=portal_tenant.id,
-        customer_id=user.id,
         created_by=user.id,
         title="My Test Book",
         subject="Math",
         total_pages=100,
+        color_mode="bw",
+        sides_per_page=1,
+        copies=1,
+        binding_type=None,
+        has_lamination=False,
         file_url=None,
         file_size=None,
     )
@@ -548,11 +552,15 @@ class TestGetMyBooks:
         await BookCRUD.create(
             db=db_session,
             tenant_id=portal_tenant.id,
-            customer_id=user.id,
             created_by=user.id,
             title="Physics Textbook",
             subject="Science",
             total_pages=200,
+            color_mode="bw",
+            sides_per_page=1,
+            copies=1,
+            binding_type=None,
+            has_lamination=False,
             file_url=None,
             file_size=None,
         )
