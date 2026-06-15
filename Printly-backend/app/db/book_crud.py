@@ -3,10 +3,22 @@ from .base_crud import BaseCRUD
 from app.models import Books
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, or_
+from sqlalchemy.orm import selectinload
 
 
 class BookCRUD(BaseCRUD[Books]):
     model = Books
+
+    @classmethod
+    async def get_by_id(cls, db: AsyncSession, id: UUID) -> Books | None:
+        """Get one record by ID with book_materials eagerly loaded."""
+        stmt = (
+            select(cls.model)
+            .where(cls.model.id == id)
+            .options(selectinload(Books.book_materials))
+        )
+        result = await db.execute(stmt)
+        return result.scalar_one_or_none()
 
     @classmethod
     async def search_books(
@@ -16,7 +28,6 @@ class BookCRUD(BaseCRUD[Books]):
         title: str | None = None,
         subject: str | None = None,
         has_file: bool | None = None,
-        customer_id: UUID | None = None,
         offset: int = 0,
         limit: int = 20,
         order_by: str = "created_at",
@@ -24,10 +35,11 @@ class BookCRUD(BaseCRUD[Books]):
     ) -> tuple[list[Books], int]:
         """Search books by title "or" subject with pagination."""
 
-        query = select(Books).where(Books.tenant_id == tenant_id)
-
-        if customer_id is not None:
-            query = query.where(Books.customer_id == customer_id)
+        query = (
+            select(Books)
+            .where(Books.tenant_id == tenant_id)
+            .options(selectinload(Books.book_materials))
+        )
 
         if has_file is True:
             query = query.where(Books.file_url.isnot(None))

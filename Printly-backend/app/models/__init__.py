@@ -11,13 +11,13 @@ from app.models.orders import Orders
 from app.models.order_items import OrderItems
 from app.models.payments import Payments
 from app.models.materials import Materials
+from app.models.book_materials import BookMaterials
 from app.models.material_transactions import MaterialTransactions
-from app.models.pricing_rules import PricingRules
-from app.models.customer_pricing import CustomerPricing
 from app.models.expenses import Expenses
 from app.models.notifications import Notifications
 from app.models.refresh_tokens import RefreshTokens
 from app.models.activation_codes import ActivationCodes
+from app.models.invoices import Invoices
 
 __all__ = [
     "Base",
@@ -36,11 +36,11 @@ __all__ = [
     "OrderItems",
     "Payments",
     "Materials",
+    "BookMaterials",
     "MaterialTransactions",
-    "PricingRules",
-    "CustomerPricing",
     "Expenses",
     "Notifications",
     "RefreshTokens",
-    "ActivationCodes"
+    "ActivationCodes",
+    "Invoices",
 ]

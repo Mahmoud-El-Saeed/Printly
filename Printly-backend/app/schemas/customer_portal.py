@@ -44,14 +44,3 @@ class PortalPaymentCreate(BaseModel):
     payment_method: Literal["cash", "mobile_wallet"]
     reference: str | None = Field(None, max_length=100)
     notes: str | None = None
-
-
-class PortalPricingItem(BaseModel):
-    component_name: str
-    component_type: str
-    price: Decimal
-    unit_type: str
-
-
-class PortalPricingResponse(BaseModel):
-    rules: list[PortalPricingItem]

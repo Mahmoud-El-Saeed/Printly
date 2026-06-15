@@ -21,7 +21,6 @@ from app.services import (
     portal_create_order,
     portal_create_book,
     portal_create_payment,
-    portal_get_pricing,
 )
 from app.schemas import (
     TokenData,
@@ -39,7 +38,6 @@ from app.schemas import (
     PortalProfileUpdateRequest,
     PortalTenantsResponse,
     PortalPaymentCreate,
-    PortalPricingResponse,
     OrdersCustomerRequest,
 )
 
@@ -180,6 +178,12 @@ async def portal_create_book_endpoint(
     title: str = Form(...),
     total_pages: int = Form(..., gt=0),
     subject: str | None = Form(None),
+    color_mode: str = Form("bw"),
+    sides_per_page: int = Form(1, ge=1, le=4),
+    copies: int = Form(1, gt=0),
+    binding_type: str | None = Form(None),
+    has_lamination: bool = Form(False),
+    notes: str | None = Form(None),
     file: UploadFile | None = File(None),
 ) -> BookResponse:
     """Create a new book from the customer portal."""
@@ -188,6 +192,12 @@ async def portal_create_book_endpoint(
             title=title,
             subject=subject,
             total_pages=total_pages,
+            color_mode=color_mode,
+            sides_per_page=sides_per_page,
+            copies=copies,
+            binding_type=binding_type,
+            has_lamination=has_lamination,
+            notes=notes,
             file=file,
         )
         return await portal_create_book(db, tenant_id, current_user.user_id, book_data)
@@ -234,22 +244,6 @@ async def portal_create_payment_endpoint(
     except Exception as e:
         logger.error(f"Error creating portal payment: {e}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create payment") from e
-
-
-@router.get("/tenants/{tenant_id}/pricing", response_model=PortalPricingResponse)
-async def portal_get_pricing_endpoint(
-    tenant_id: UUID,
-    db: Annotated[AsyncSession, Depends(get_db)],
-    current_user: Annotated[TokenData, Depends(require_approved_tenant_member)],
-) -> PortalPricingResponse:
-    """Get pricing rules for a tenant from the customer portal."""
-    try:
-        return await portal_get_pricing(db, tenant_id, current_user.user_id)
-    except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e)) from e
-    except Exception as e:
-        logger.error(f"Error fetching pricing: {e}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to fetch pricing") from e
 
 
 @router.get("/tenants/{tenant_id}/notifications", response_model=NotificationListResponse)
