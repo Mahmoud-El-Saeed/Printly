@@ -4,7 +4,7 @@ from sqlalchemy import select, func, or_
 from sqlalchemy.orm import contains_eager, joinedload
 
 from .base_crud import BaseCRUD
-from app.models import TenantMembers
+from app.models import TenantMembers, Users
 
 
 class TenantMemberCRUD(BaseCRUD[TenantMembers]):
@@ -39,7 +39,7 @@ class TenantMemberCRUD(BaseCRUD[TenantMembers]):
             select(cls.model)
             .join(cls.model.customer_user)
             .where(
-                cls.model.customer_user.phone == phone,
+                Users.phone == phone,
                 cls.model.tenant_id == tenant_id,
             )
             .options(contains_eager(cls.model.customer_user))
@@ -68,8 +68,8 @@ class TenantMemberCRUD(BaseCRUD[TenantMembers]):
             stmt = stmt.where(
                 or_(
                     cls.model.display_name.ilike(f"%{search_query}%"),
-                    cls.model.customer_user.email.ilike(f"%{search_query}%"),
-                    cls.model.customer_user.phone.ilike(f"%{search_query}%"),
+                    Users.email.ilike(f"%{search_query}%"),
+                    Users.phone.ilike(f"%{search_query}%"),
                 )
             )
         total_result = await db.execute(
