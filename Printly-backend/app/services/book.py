@@ -64,7 +64,7 @@ async def create_book(
             subject=book_data.subject,
             total_pages=book_data.total_pages,
             file_url=file_path,
-            file_size=book_data.file.size if book_data.file.size not in [None,-1] else file_size,
+            file_size=book_data.file.size if book_data.file and book_data.file.size not in [None,-1] else (file_size if book_data.file else None),
         )
         await db.commit()
         book_response = BookResponse.model_validate(new_book)
@@ -72,7 +72,7 @@ async def create_book(
 
     except Exception as e:
         await db.rollback()
-        if os.path.exists(file_path) and file_path:
+        if file_path and os.path.exists(file_path):
             file_controller.delete_file(file_path)  # Clean up the file if book creation fails
         raise ValueError("Failed to create book") from e
 
