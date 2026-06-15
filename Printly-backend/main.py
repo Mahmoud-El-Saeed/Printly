@@ -8,7 +8,6 @@ from app.routes import (
     customer_router,
     book_router,
     material_router,
-    pricing_router,
     order_router,
     payment_router,
     expense_router,
@@ -18,6 +17,7 @@ from app.routes import (
     customer_portal_router,
     tenant_router,
     report_router,
+    invoice_router,
 )
 
 
@@ -42,7 +42,6 @@ app.include_router(auth_router)
 app.include_router(customer_router)
 app.include_router(book_router)
 app.include_router(material_router)
-app.include_router(pricing_router)
 app.include_router(order_router)
 app.include_router(payment_router)
 app.include_router(expense_router)
@@ -52,6 +51,7 @@ app.include_router(dashboard_router)
 app.include_router(customer_portal_router)
 app.include_router(tenant_router)
 app.include_router(report_router)
+app.include_router(invoice_router)
 
 app.add_middleware(
     CORSMiddleware,

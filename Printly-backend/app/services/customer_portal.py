@@ -2,7 +2,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from uuid import UUID
 from datetime import date
 from decimal import Decimal
-import math
 from redis.asyncio import Redis
 from fastapi import UploadFile
 
@@ -13,7 +12,6 @@ from app.db import (
     OrderItemsCRUD,
     BookCRUD,
     NotificationCRUD,
-    PricingRuleCRUD,
     PaymentCRUD,
 )
 from app.models import TenantMembers, Users, OrderItems, Orders
@@ -35,8 +33,6 @@ from app.schemas import (
     PortalProfileUpdateRequest,
     PortalTenantInfo,
     PortalTenantsResponse,
-    PortalPricingItem,
-    PortalPricingResponse,
 )
 
 from app.enums import OrderStatus, PaymentMethod
@@ -166,7 +162,7 @@ async def get_my_books(
 ) -> BookListResponse:
     await _verify_membership(db, tenant_id, customer_user_id)
     books, total = await BookCRUD.search_books(
-        db=db, tenant_id=tenant_id, customer_id=customer_user_id,
+        db=db, tenant_id=tenant_id,
         title=title, subject=subject, offset=offset, limit=limit,
         order_by=order_by, order_dir=order_dir,
     )
@@ -319,7 +315,6 @@ async def portal_create_book(
 ) -> BookResponse:
     await _verify_membership(db, tenant_id, customer_user_id)
     from app.services.book import create_book
-    book_data.customer_id = customer_user_id
     return await create_book(db, tenant_id, customer_user_id, book_data)
 
 
@@ -352,23 +347,3 @@ async def portal_create_payment(
     )
     from app.services.payment import create_payment
     return await create_payment(db, tenant_id, customer_user_id, payment_create)
-
-
-async def portal_get_pricing(
-    db: AsyncSession,
-    tenant_id: UUID,
-    customer_user_id: UUID,
-) -> PortalPricingResponse:
-    await _verify_membership(db, tenant_id, customer_user_id)
-    rules, _ = await PricingRuleCRUD.search_pricing_rules(
-        db=db, tenant_id=tenant_id, is_active=True, offset=0, limit=100,
-    )
-    pricing_items = [
-        PortalPricingItem(
-            component_name=r.component_name,
-            component_type=r.component_type.value,
-            price=r.price, unit_type=r.unit_type.value,
-        )
-        for r in rules
-    ]
-    return PortalPricingResponse(rules=pricing_items)

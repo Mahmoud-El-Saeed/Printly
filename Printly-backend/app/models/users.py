@@ -50,11 +50,6 @@ class Users(Base, TimestampMixin):
         foreign_keys="Orders.customer_id",
         back_populates="customer",
     )
-    books: Mapped[list["Books"]] = relationship(
-        "Books",
-        back_populates="customer",
-        foreign_keys="Books.customer_id",
-    )
     tenant_members: Mapped[list["TenantMembers"]] = relationship(
         "TenantMembers",
         back_populates="customer_user",
@@ -62,10 +57,6 @@ class Users(Base, TimestampMixin):
     customer_tenant_links: Mapped[list["CustomerTenantLinks"]] = relationship(
         "CustomerTenantLinks",
         back_populates="customer_user",
-    )
-    custom_pricings: Mapped[list["CustomerPricing"]] = relationship(
-        "CustomerPricing",
-        back_populates="customer",
     )
     notifications: Mapped[list["Notifications"]] = relationship(
         "Notifications",

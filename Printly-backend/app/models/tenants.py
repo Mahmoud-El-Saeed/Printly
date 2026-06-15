@@ -72,16 +72,6 @@ class Tenants(Base, TimestampMixin):
         back_populates="tenant",
         cascade="all, delete-orphan",
     )
-    pricing_rules: Mapped[list["PricingRules"]] = relationship(
-        "PricingRules",
-        back_populates="tenant",
-        cascade="all, delete-orphan",
-    )
-    customer_pricings: Mapped[list["CustomerPricing"]] = relationship(
-        "CustomerPricing",
-        back_populates="tenant",
-        cascade="all, delete-orphan",
-    )
     expenses: Mapped[list["Expenses"]] = relationship(
         "Expenses",
         back_populates="tenant",

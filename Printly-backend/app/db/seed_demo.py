@@ -20,13 +20,10 @@ from app.enums import (
     NotificationType,
     OrderStatus,
     PaymentMethod,
-    PricingComponentType,
-    PricingUnitType,
     UserRole,
 )
 from app.models import (
     Books,
-    CustomerPricing,
     CustomerTenantLinks,
     Expenses,
     MaterialTransactions,
@@ -35,7 +32,6 @@ from app.models import (
     OrderItems,
     Orders,
     Payments,
-    PricingRules,
     TenantMembers,
     Tenants,
     Users,
@@ -108,14 +104,10 @@ async def seed_demo_data(db: AsyncSession) -> None:
         Payments,
         OrderItems,
         Orders,
-        CustomerPricing,
-        CustomerTenantLinks,
-        TenantMembers,
         WalkInCustomers,
         Books,
         MaterialTransactions,
         Materials,
-        PricingRules,
         Users,
         Tenants,
     ]:
@@ -266,38 +258,7 @@ async def seed_demo_data(db: AsyncSession) -> None:
     await db.flush()
     print(f"📚 Books: {len(books)}")
 
-    # ── 9. Pricing Rules ──────────────────────────────────────────
-    pricing_rules_data = [
-        ("A4 B&W Print", PricingComponentType.PAGE_PRINT, Decimal("0.25"), PricingUnitType.PER_PAGE, "Standard A4 black and white"),
-        ("A4 Color Print", PricingComponentType.PAGE_PRINT, Decimal("1.50"), PricingUnitType.PER_PAGE, "Standard A4 full color"),
-        ("A3 B&W Print", PricingComponentType.PAGE_PRINT, Decimal("0.50"), PricingUnitType.PER_PAGE, "A3 black and white"),
-        ("A3 Color Print", PricingComponentType.PAGE_PRINT, Decimal("2.50"), PricingUnitType.PER_PAGE, "A3 full color"),
-        ("Soft Cover", PricingComponentType.COVER, Decimal("15.00"), PricingUnitType.PER_UNIT, "Cardstock soft cover"),
-        ("Hard Cover", PricingComponentType.COVER, Decimal("35.00"), PricingUnitType.PER_UNIT, "Hardcover binding"),
-        ("Staple Binding", PricingComponentType.BINDING, Decimal("5.00"), PricingUnitType.PER_UNIT, "Standard staple binding"),
-        ("Plastic Binding", PricingComponentType.BINDING, Decimal("12.00"), PricingUnitType.PER_UNIT, "Plastic comb binding"),
-        ("Metal Binding", PricingComponentType.BINDING, Decimal("18.00"), PricingUnitType.PER_UNIT, "Metal wire binding"),
-        ("Lamination Glossy", PricingComponentType.LAMINATION, Decimal("8.00"), PricingUnitType.PER_UNIT, "Glossy lamination"),
-        ("Lamination Matte", PricingComponentType.LAMINATION, Decimal("10.00"), PricingUnitType.PER_UNIT, "Matte lamination"),
-        ("Paper Cut", PricingComponentType.EXTRA_SERVICE, Decimal("2.00"), PricingUnitType.PER_UNIT, "Precision paper cutting"),
-    ]
-    pricings: list[PricingRules] = []
-    for name, comp_type, price, unit, desc in pricing_rules_data:
-        pr = PricingRules(
-            tenant_id=tenant.id,
-            component_type=comp_type,
-            component_name=name,
-            price=price,
-            unit_type=unit,
-            description=desc,
-            is_active=True,
-        )
-        db.add(pr)
-        pricings.append(pr)
-    await db.flush()
-    print(f"💰 Pricing rules: {len(pricings)}")
-
-    # ── 10. Orders + Order Items ──────────────────────────────────
+    # ── 9. Orders + Order Items ──────────────────────────────────
     statuses = list(OrderStatus)
     statuses_weighted = [
         OrderStatus.NEW, OrderStatus.NEW, OrderStatus.PRINTING,
@@ -306,7 +267,6 @@ async def seed_demo_data(db: AsyncSession) -> None:
         OrderStatus.DELIVERED, OrderStatus.CANCELLED,
     ]
 
-    cover_types = ["none", "soft", "hard", "plastic"]
     binding_types = ["none", "staple", "plastic", "metal"]
     all_customers = customers + walkins  # type: ignore
 
@@ -344,37 +304,14 @@ async def seed_demo_data(db: AsyncSession) -> None:
             pages = book.total_pages
             sides = random.choice([1, 2])
 
-            # Pick pricing
             is_color = random.random() < 0.3
-            if is_color:
-                page_price = Decimal("1.50") if pages <= 200 else Decimal("2.50")
-            else:
-                page_price = Decimal("0.25") if pages <= 200 else Decimal("0.50")
-
-            printing_cost = Decimal(str(pages)) * page_price * Decimal(str(sides)) * Decimal(str(copies))
-
-            cover_type = random.choice(cover_types)
-            cover_price = Decimal("0")
-            if cover_type == "soft":
-                cover_price = Decimal("15.00") * Decimal(str(copies))
-            elif cover_type == "hard":
-                cover_price = Decimal("35.00") * Decimal(str(copies))
-            elif cover_type == "plastic":
-                cover_price = Decimal("8.00") * Decimal(str(copies))
+            color_mode = "color" if is_color else "bw"
 
             binding_type = random.choice(binding_types)
-            binding_price = Decimal("0")
-            if binding_type == "staple":
-                binding_price = Decimal("5.00") * Decimal(str(copies))
-            elif binding_type == "plastic":
-                binding_price = Decimal("12.00") * Decimal(str(copies))
-            elif binding_type == "metal":
-                binding_price = Decimal("18.00") * Decimal(str(copies))
-
             has_lam = random.random() < 0.2
-            lam_price = Decimal("8.00") * Decimal(str(copies)) if has_lam else Decimal("0")
 
-            subtotal = printing_cost + cover_price + binding_price + lam_price
+            unit_price = Decimal(str(round(random.uniform(0.5, 5.0), 2)))
+            subtotal = unit_price * Decimal(str(copies))
             order_total += subtotal
 
             item = OrderItems(
@@ -382,16 +319,13 @@ async def seed_demo_data(db: AsyncSession) -> None:
                 book_id=book.id,
                 book_title=book.title,
                 copies=copies,
-                pages_per_copy=pages,
-                printing_price=page_price,
+                unit_price=unit_price,
+                total_pages=pages,
+                color_mode=color_mode,
                 sides_per_page=sides,
-                cover_type=cover_type,
-                cover_price=cover_price / Decimal(str(max(copies, 1))),
-                binding_type=binding_type,
-                binding_price=binding_price / Decimal(str(max(copies, 1))),
+                binding_type=binding_type if binding_type != "none" else None,
                 has_lamination=has_lam,
-                lamination_price=lam_price / Decimal(str(max(copies, 1))),
-                extra_services=[],
+                materials_snapshot=[],
                 subtotal=subtotal,
             )
             db.add(item)
@@ -479,27 +413,7 @@ async def seed_demo_data(db: AsyncSession) -> None:
     await db.flush()
     print(f"📦 Materials: {len(materials_list)} + {NUM_TRANSACTIONS} transactions")
 
-    # ── 13. Customer Pricing Overrides ─────────────────────────────
-    used_pairs: set[tuple] = set()
-    for _ in range(5):
-        while True:
-            customer = random.choice(customers[:4])
-            rule = random.choice(pricings[:6])
-            pair = (str(customer.id), str(rule.id))
-            if pair not in used_pairs:
-                used_pairs.add(pair)
-                break
-        cp = CustomerPricing(
-            tenant_id=tenant.id,
-            customer_id=customer.id,
-            pricing_rule_id=rule.id,
-            custom_price=rule.price * Decimal(str(round(random.uniform(0.7, 0.95), 2))),
-            is_active=True,
-        )
-        db.add(cp)
-    await db.flush()
-
-    # ── 14. Expenses ──────────────────────────────────────────────
+    # ── 13. Expenses ──────────────────────────────────────────────
     expense_data = [
         (ExpenseCategory.RENT, "إيجار المحل - يناير", rand_money(3000, 5000)),
         (ExpenseCategory.SALARIES, "مرتب موظف 1", rand_money(3000, 5000)),
