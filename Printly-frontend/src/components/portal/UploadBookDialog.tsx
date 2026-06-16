@@ -11,6 +11,15 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { portalApi } from "@/lib/api/portal";
 
@@ -31,6 +40,12 @@ export function UploadBookDialog({
 	const [title, setTitle] = useState("");
 	const [subject, setSubject] = useState("");
 	const [totalPages, setTotalPages] = useState("");
+	const [colorMode, setColorMode] = useState("bw");
+	const [sidesPerPage, setSidesPerPage] = useState("1");
+	const [copies, setCopies] = useState("1");
+	const [bindingType, setBindingType] = useState("");
+	const [hasLamination, setHasLamination] = useState(false);
+	const [notes, setNotes] = useState("");
 	const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
 	const mutation = useMutation({
@@ -39,6 +54,12 @@ export function UploadBookDialog({
 			formData.append("title", title);
 			if (subject) formData.append("subject", subject);
 			formData.append("total_pages", totalPages);
+			formData.append("color_mode", colorMode);
+			formData.append("sides_per_page", String(sidesPerPage));
+			formData.append("copies", String(copies));
+			if (bindingType) formData.append("binding_type", bindingType);
+			formData.append("has_lamination", String(hasLamination));
+			if (notes) formData.append("notes", notes);
 			if (selectedFile) formData.append("file", selectedFile);
 			return portalApi.createBook(tenantId, formData);
 		},
@@ -55,6 +76,12 @@ export function UploadBookDialog({
 		setTitle("");
 		setSubject("");
 		setTotalPages("");
+		setColorMode("bw");
+		setSidesPerPage("1");
+		setCopies("1");
+		setBindingType("");
+		setHasLamination(false);
+		setNotes("");
 		setSelectedFile(null);
 	};
 
@@ -69,7 +96,7 @@ export function UploadBookDialog({
 
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
-			<DialogContent>
+			<DialogContent className="max-h-[90vh] overflow-y-auto">
 				<DialogHeader>
 					<DialogTitle>{t("portal.upload_book")}</DialogTitle>
 				</DialogHeader>
@@ -90,13 +117,100 @@ export function UploadBookDialog({
 							placeholder={t("portal.subject_field")}
 						/>
 					</div>
+					<div className="grid grid-cols-2 gap-4">
+						<div className="space-y-2">
+							<Label>{t("portal.pages_field")}</Label>
+							<Input
+								type="number"
+								value={totalPages}
+								onChange={(e) => setTotalPages(e.target.value)}
+								min={1}
+							/>
+						</div>
+						<div className="space-y-2">
+							<Label>{t("portal.book_color_mode")}</Label>
+							<Select value={colorMode} onValueChange={setColorMode}>
+								<SelectTrigger>
+									<SelectValue />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectItem value="bw">
+										{t("portal.book_color_bw")}
+									</SelectItem>
+									<SelectItem value="color">
+										{t("portal.book_color_color")}
+									</SelectItem>
+								</SelectContent>
+							</Select>
+						</div>
+					</div>
+					<div className="grid grid-cols-2 gap-4">
+						<div className="space-y-2">
+							<Label>{t("portal.book_sides")}</Label>
+							<Select value={sidesPerPage} onValueChange={setSidesPerPage}>
+								<SelectTrigger>
+									<SelectValue />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectItem value="1">{t("orders.single_side")}</SelectItem>
+									<SelectItem value="2">{t("orders.double_side")}</SelectItem>
+								</SelectContent>
+							</Select>
+						</div>
+						<div className="space-y-2">
+							<Label>{t("portal.book_copies")}</Label>
+							<Input
+								type="number"
+								value={copies}
+								onChange={(e) => setCopies(e.target.value)}
+								min={1}
+							/>
+						</div>
+					</div>
+					<div className="grid grid-cols-2 gap-4">
+						<div className="space-y-2">
+							<Label>{t("portal.book_binding")}</Label>
+							<Select value={bindingType} onValueChange={setBindingType}>
+								<SelectTrigger>
+									<SelectValue placeholder={t("orders.none")} />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectItem value="none">{t("orders.none")}</SelectItem>
+									<SelectItem value="spiral">
+										{t("books.binding_spiral")}
+									</SelectItem>
+									<SelectItem value="glue">
+										{t("books.binding_glue")}
+									</SelectItem>
+									<SelectItem value="staple">
+										{t("books.binding_staple")}
+									</SelectItem>
+									<SelectItem value="hardcover">
+										{t("books.binding_hardcover")}
+									</SelectItem>
+								</SelectContent>
+							</Select>
+						</div>
+						<div className="space-y-2">
+							<Label>{t("portal.book_lamination")}</Label>
+							<div className="flex items-center gap-2 h-10">
+								<Switch
+									checked={hasLamination}
+									onCheckedChange={setHasLamination}
+								/>
+								<span className="text-sm text-muted-foreground">
+									{hasLamination ? t("orders.glossy") : t("orders.none")}
+								</span>
+							</div>
+						</div>
+					</div>
 					<div className="space-y-2">
-						<Label>{t("portal.pages_field")}</Label>
-						<Input
-							type="number"
-							value={totalPages}
-							onChange={(e) => setTotalPages(e.target.value)}
-							min={1}
+						<Label>{t("portal.book_notes")}</Label>
+						<Textarea
+							value={notes}
+							onChange={(e) => setNotes(e.target.value)}
+							placeholder={t("orders.notes_placeholder")}
+							rows={2}
 						/>
 					</div>
 					<div className="space-y-2">

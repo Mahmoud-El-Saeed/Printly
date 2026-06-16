@@ -26,6 +26,11 @@ export function PortalBooksTab({
 		enabled: !!tenantId,
 	});
 
+	const renderBindingLabel = (binding: string | null): string => {
+		if (!binding || binding === "none") return "—";
+		return t(`books.binding_${binding}`);
+	};
+
 	return (
 		<div className="space-y-4">
 			<div
@@ -78,15 +83,48 @@ export function PortalBooksTab({
 									</span>
 								)}
 							</div>
-							<div className="space-y-1">
+							<div className="space-y-1.5">
 								{book.subject && (
 									<p className="text-xs text-muted-foreground">
 										{t("books.subject")}: {book.subject}
 									</p>
 								)}
-								<p className="text-xs text-muted-foreground">
-									{t("portal.pages")}: {book.total_pages}
-								</p>
+								<div className="flex flex-wrap gap-x-4 gap-y-1">
+									<p className="text-xs text-muted-foreground">
+										{t("portal.pages")}: {book.total_pages}
+									</p>
+									<p className="text-xs text-muted-foreground">
+										{t("portal.book_sides")}: {book.sides_per_page}
+									</p>
+									{book.copies > 0 && (
+										<p className="text-xs text-muted-foreground">
+											{t("portal.book_copies")}: {book.copies}
+										</p>
+									)}
+								</div>
+								<div className="flex flex-wrap gap-2">
+									<span
+										className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+											book.color_mode === "color"
+												? "bg-primary/10 text-primary"
+												: "bg-gray-100 text-gray-600"
+										}`}
+									>
+										{book.color_mode === "color"
+											? t("portal.book_color_color")
+											: t("portal.book_color_bw")}
+									</span>
+									{book.binding_type && book.binding_type !== "none" && (
+										<span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600">
+											{renderBindingLabel(book.binding_type)}
+										</span>
+									)}
+									{book.has_lamination && (
+										<span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-primary/10 text-primary">
+											{t("portal.book_lamination")}
+										</span>
+									)}
+								</div>
 								<p className="text-xs text-muted-foreground">
 									{formatDate(book.created_at, language)}
 								</p>

@@ -2,6 +2,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
 	ArrowLeft,
 	CheckCircle,
+	ChevronDown,
+	ChevronRight,
 	Clock,
 	Loader2,
 	Package,
@@ -39,12 +41,20 @@ export default function PortalOrderDetailPage() {
 	const oid = orderId ?? "";
 	const queryClient = useQueryClient();
 	const [paymentOpen, setPaymentOpen] = useState(false);
+	const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
 
 	const { data: order, isLoading } = useQuery({
 		queryKey: ["portal-order", tid, oid],
 		queryFn: () => portalApi.getOrder(tid, oid),
 		enabled: !!tid && !!oid,
 	});
+
+	const toggleExpand = (itemId: string) => {
+		const next = new Set(expandedItems);
+		if (next.has(itemId)) next.delete(itemId);
+		else next.add(itemId);
+		setExpandedItems(next);
+	};
 
 	if (isLoading) {
 		return (
@@ -282,20 +292,22 @@ export default function PortalOrderDetailPage() {
 										{t("portal.copies")}
 									</th>
 									<th className="px-4 py-3 font-medium text-xs border-b border-border">
-										{t("portal.pages")}
+										{t("portal.order_total_pages")}
 									</th>
 									<th className="px-4 py-3 font-medium text-xs border-b border-border">
-										{t("orders.sides")}
+										{t("portal.order_color")}
 									</th>
 									<th className="px-4 py-3 font-medium text-xs border-b border-border">
-										{t("orders.cover")}
-									</th>
-									<th className="px-4 py-3 font-medium text-xs border-b border-border">
-										{t("orders.binding")}
+										{t("portal.order_unit_price")}
 									</th>
 									<th className="px-4 py-3 font-medium text-xs border-b border-border">
 										{t("portal.subtotal")}
 									</th>
+									{order.items.some(
+										(item) => item.materials_snapshot?.length > 0,
+									) && (
+										<th className="px-4 py-3 font-medium text-xs border-b border-border" />
+									)}
 								</tr>
 							</thead>
 							<tbody className="divide-y divide-border">
@@ -308,27 +320,97 @@ export default function PortalOrderDetailPage() {
 											{item.copies}
 										</td>
 										<td className="px-4 py-3 text-sm tabular-nums">
-											{item.pages_per_copy}
+											{item.total_pages}
 										</td>
 										<td className="px-4 py-3 text-sm">
-											{item.sides_per_page === 2
-												? t("orders.double_side")
-												: t("orders.single_side")}
+											<span
+												className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+													item.color_mode === "color"
+														? "bg-primary/10 text-primary"
+														: "bg-gray-100 text-gray-600"
+												}`}
+											>
+												{item.color_mode === "color"
+													? t("portal.book_color_color")
+													: t("portal.book_color_bw")}
+											</span>
 										</td>
-										<td className="px-4 py-3 text-sm">
-											{item.cover_type || "—"}
-										</td>
-										<td className="px-4 py-3 text-sm">
-											{item.binding_type || "—"}
+										<td className="px-4 py-3 text-sm tabular-nums">
+											{formatCurrency(item.unit_price, language)}
 										</td>
 										<td className="px-4 py-3 text-sm font-semibold tabular-nums">
 											{formatCurrency(item.subtotal, language)}
 										</td>
+										{item.materials_snapshot?.length > 0 && (
+											<td className="px-4 py-3 text-sm">
+												<button
+													type="button"
+													className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+													onClick={() => toggleExpand(item.id)}
+												>
+													{expandedItems.has(item.id) ? (
+														<ChevronDown className="h-3.5 w-3.5" />
+													) : (
+														<ChevronRight className="h-3.5 w-3.5" />
+													)}
+													{t("portal.order_materials")}
+												</button>
+											</td>
+										)}
 									</tr>
 								))}
 							</tbody>
 						</table>
 					</div>
+					{order.items.map((item) =>
+						expandedItems.has(item.id) &&
+						item.materials_snapshot?.length > 0 ? (
+							<div
+								key={`materials-${item.id}`}
+								className="border-t border-border bg-muted/20 px-4 py-3"
+							>
+								<table className="w-full text-xs">
+									<thead>
+										<tr className="text-muted-foreground">
+											<th className="text-left py-1.5 font-medium">
+												{t("portal.order_material_name")}
+											</th>
+											<th className="text-right py-1.5 font-medium">
+												{t("portal.order_qty_per_copy")}
+											</th>
+											<th className="text-right py-1.5 font-medium">
+												{t("portal.order_material_price")}
+											</th>
+											<th className="text-right py-1.5 font-medium">
+												{t("portal.order_line_total")}
+											</th>
+										</tr>
+									</thead>
+									<tbody>
+										{item.materials_snapshot.map((m) => (
+											<tr key={m.material_id}>
+												<td className="py-1 text-foreground">
+													{m.material_name}
+												</td>
+												<td className="py-1 text-right tabular-nums text-foreground">
+													{m.quantity_per_copy}
+												</td>
+												<td className="py-1 text-right tabular-nums text-foreground">
+													{formatCurrency(m.price_per_unit, language)}
+												</td>
+												<td className="py-1 text-right tabular-nums font-semibold text-foreground">
+													{formatCurrency(
+														m.quantity_per_copy * m.price_per_unit,
+														language,
+													)}
+												</td>
+											</tr>
+										))}
+									</tbody>
+								</table>
+							</div>
+						) : null,
+					)}
 				</div>
 			)}
 
