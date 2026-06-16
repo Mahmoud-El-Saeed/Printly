@@ -29,7 +29,9 @@ export default function PortalNewOrderPage() {
 	const queryClient = useQueryClient();
 	const tid = tenantId ?? "";
 
-	const [items, setItems] = useState<OrderItem[]>([{ bookId: "", tempId: crypto.randomUUID() }]);
+	const [items, setItems] = useState<OrderItem[]>([
+		{ bookId: "", tempId: crypto.randomUUID() },
+	]);
 	const [notes, setNotes] = useState("");
 
 	const { data: booksData } = useQuery({
