@@ -87,6 +87,39 @@ export default function BooksListPage() {
 			),
 		},
 		{
+			key: "color_mode",
+			header: t("books.color_mode"),
+			render: (row: BookResponse) => (
+				<span
+					className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+						row.color_mode === "color"
+							? "bg-primary/10 text-primary"
+							: "bg-gray-100 text-gray-600"
+					}`}
+				>
+					{row.color_mode === "color"
+						? t("books.color_color")
+						: t("books.color_bw")}
+				</span>
+			),
+		},
+		{
+			key: "copies",
+			header: t("books.copies"),
+			render: (row: BookResponse) => (
+				<span className="tabular-nums">{row.copies}</span>
+			),
+		},
+		{
+			key: "binding_type",
+			header: t("books.binding_type"),
+			render: (row: BookResponse) => (
+				<span className="text-on-surface-variant">
+					{row.binding_type ?? "—"}
+				</span>
+			),
+		},
+		{
 			key: "file_size",
 			header: t("books.size"),
 			render: (row: BookResponse) => (
