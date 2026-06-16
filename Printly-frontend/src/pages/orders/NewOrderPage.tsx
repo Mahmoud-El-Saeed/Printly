@@ -246,7 +246,7 @@ export default function NewOrderPage() {
 														</SelectTrigger>
 														<SelectContent>
 															{books.length === 0 && (
-																<SelectItem value="" disabled>
+																<SelectItem value="__none__" disabled>
 																	{t("orders.no_books_available")}
 																</SelectItem>
 															)}
@@ -317,9 +317,9 @@ export default function NewOrderPage() {
 															: t("books.color_bw")}
 													</span>
 													<span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600">
-														{book.sides_per_page === 2
-															? t("orders.double_side")
-															: t("orders.single_side")}
+														{book.sides_per_page === 1
+															? t("orders.single_side")
+															: `${book.sides_per_page}`}
 													</span>
 													{book.binding_type && (
 														<span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600">

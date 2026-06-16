@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Plus, Trash2, Upload } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Upload } from "lucide-react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -19,7 +19,6 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { booksApi } from "@/lib/api/books";
-import { materialsApi } from "@/lib/api/materials";
 import { formatCurrency } from "@/lib/utils/formatCurrency";
 import type { BookUpdate } from "@/types/book";
 
@@ -33,18 +32,6 @@ interface BookFormValues {
 	binding_type: string;
 	has_lamination: boolean;
 	notes: string;
-}
-
-interface MaterialRow {
-	material_id: string;
-	quantity_per_copy: number;
-	tempId: string;
-}
-
-interface MaterialOption {
-	id: string;
-	name: string;
-	price_per_unit: number;
 }
 
 const ACCEPTED_TYPES = [
@@ -61,7 +48,6 @@ export default function EditBookPage() {
 	const navigate = useNavigate();
 	const { id } = useParams<{ id: string }>();
 	const [file, setFile] = useState<File | null>(null);
-	const [materialRows, setMaterialRows] = useState<MaterialRow[]>([]);
 
 	const { data: book, isLoading } = useQuery({
 		queryKey: ["book", id],
@@ -69,39 +55,10 @@ export default function EditBookPage() {
 		enabled: !!id,
 	});
 
-	const { data: materialsData } = useQuery({
-		queryKey: ["materials", "active"],
-		queryFn: () => materialsApi.list({ is_active: true, limit: 200 }),
-	});
-
-	const materials: MaterialOption[] = (materialsData?.items ?? []).map((m) => ({
-		id: m.id,
-		name: m.name,
-		price_per_unit: m.price_per_unit,
-	}));
-
-	const getMaterialPrice = (materialId: string): number => {
-		const mat = materials.find((m) => m.id === materialId);
-		return mat?.price_per_unit ?? 0;
-	};
-
-	const unitPrice = materialRows.reduce((sum, row) => {
-		return (
-			sum + (row.quantity_per_copy || 0) * getMaterialPrice(row.material_id)
-		);
-	}, 0);
-
-	useEffect(() => {
-		if (book?.book_materials) {
-			setMaterialRows(
-				book.book_materials.map((m) => ({
-					material_id: m.material_id,
-					quantity_per_copy: m.quantity_per_copy,
-					tempId: crypto.randomUUID(),
-				})),
-			);
-		}
-	}, [book]);
+	const unitPrice = (book?.book_materials ?? []).reduce(
+		(sum, m) => sum + m.quantity_per_copy * m.price_per_unit,
+		0,
+	);
 
 	const {
 		register,
@@ -127,27 +84,6 @@ export default function EditBookPage() {
 
 	const maxChars = (max: number) =>
 		t("validation.max_chars").replace("{max}", String(max));
-
-	const addMaterialRow = () => {
-		setMaterialRows([
-			...materialRows,
-			{ material_id: "", quantity_per_copy: 1, tempId: crypto.randomUUID() },
-		]);
-	};
-
-	const removeMaterialRow = (index: number) => {
-		setMaterialRows(materialRows.filter((_, i) => i !== index));
-	};
-
-	const updateMaterialRow = (
-		index: number,
-		field: keyof MaterialRow,
-		value: string | number,
-	) => {
-		const updated = [...materialRows];
-		updated[index] = { ...updated[index], [field]: value };
-		setMaterialRows(updated);
-	};
 
 	const updateMutation = useMutation({
 		mutationFn: async (data: BookFormValues) => {
@@ -290,7 +226,6 @@ export default function EditBookPage() {
 									<SelectValue placeholder={t("books.binding_none")} />
 								</SelectTrigger>
 								<SelectContent>
-									<SelectItem value="">{t("books.binding_none")}</SelectItem>
 									<SelectItem value="spiral">
 										{t("books.binding_spiral")}
 									</SelectItem>
@@ -344,127 +279,72 @@ export default function EditBookPage() {
 					</div>
 				</div>
 
-				<div className="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden">
-					<div className="bg-surface-container px-6 py-3 border-b border-outline-variant flex items-center justify-between">
-						<h3 className="font-bold text-sm text-on-surface">
-							{t("books.book_materials")}
-						</h3>
-						<button
-							type="button"
-							className="text-primary font-medium text-sm flex items-center gap-1 hover:underline"
-							onClick={addMaterialRow}
-						>
-							<Plus className="h-4 w-4" />
-							{t("books.add_material")}
-						</button>
-					</div>
-					<div className="p-6 space-y-4">
-						{materialRows.length === 0 && (
-							<p className="text-sm text-on-surface-variant">
-								{t("books.no_materials")}
-							</p>
-						)}
-						{materialRows.map((row, index) => (
-							<div
-								key={row.tempId}
-								className="flex items-end gap-4 pb-4 border-b border-outline-variant last:border-b-0"
-							>
-								<div className="flex-1 flex flex-col gap-1.5">
-									<label
-										htmlFor={`material-${row.tempId}-name`}
-										className="text-xs font-medium text-on-surface-variant"
-									>
-										{t("books.material_name")}
-									</label>
-									<Select
-										value={row.material_id}
-										onValueChange={(v) =>
-											updateMaterialRow(index, "material_id", v)
-										}
-									>
-										<SelectTrigger
-											id={`material-${row.tempId}-name`}
-											className="h-10"
+				{book?.book_materials && book.book_materials.length > 0 && (
+					<div className="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden">
+						<div className="bg-surface-container px-6 py-3 border-b border-outline-variant">
+							<h3 className="font-bold text-sm text-on-surface">
+								{t("books.book_materials")}
+							</h3>
+						</div>
+						<div className="p-6">
+							<table className="w-full text-sm">
+								<thead>
+									<tr className="border-b border-outline-variant">
+										<th className="text-left py-2 px-2 text-xs font-medium text-on-surface-variant">
+											{t("books.material_name")}
+										</th>
+										<th className="text-right py-2 px-2 text-xs font-medium text-on-surface-variant">
+											{t("books.quantity_per_copy")}
+										</th>
+										<th className="text-right py-2 px-2 text-xs font-medium text-on-surface-variant">
+											{t("books.price_per_unit")}
+										</th>
+										<th className="text-right py-2 px-2 text-xs font-medium text-on-surface-variant">
+											{t("books.material_cost")}
+										</th>
+									</tr>
+								</thead>
+								<tbody>
+									{book.book_materials.map((m) => (
+										<tr
+											key={m.material_id}
+											className="border-b border-outline-variant last:border-b-0"
 										>
-											<SelectValue placeholder={t("books.select_material")} />
-										</SelectTrigger>
-										<SelectContent>
-											{materials.map((mat) => (
-												<SelectItem key={mat.id} value={mat.id}>
-													{mat.name}
-												</SelectItem>
-											))}
-										</SelectContent>
-									</Select>
-								</div>
-								<div className="w-28 flex flex-col gap-1.5">
-									<label
-										htmlFor={`material-${row.tempId}-qty`}
-										className="text-xs font-medium text-on-surface-variant"
-									>
-										{t("books.quantity_per_copy")}
-									</label>
-									<Input
-										id={`material-${row.tempId}-qty`}
-										type="number"
-										min={0.01}
-										step={0.01}
-										value={row.quantity_per_copy}
-										onChange={(e) =>
-											updateMaterialRow(
-												index,
-												"quantity_per_copy",
-												parseFloat(e.target.value) || 0,
-											)
-										}
-										className="h-10 tabular-nums"
-									/>
-								</div>
-								<div className="w-28 flex flex-col gap-1.5">
-									<span className="text-xs font-medium text-on-surface-variant">
-										{t("books.price_per_unit")}
-									</span>
-									<span className="h-10 flex items-center text-sm text-on-surface tabular-nums">
-										{formatCurrency(
-											getMaterialPrice(row.material_id),
-											language,
-										)}
-									</span>
-								</div>
-								<div className="w-28 flex flex-col gap-1.5">
-									<span className="text-xs font-medium text-on-surface-variant">
-										{t("books.material_cost")}
-									</span>
-									<span className="h-10 flex items-center text-sm font-semibold text-on-surface tabular-nums">
-										{formatCurrency(
-											(row.quantity_per_copy || 0) *
-												getMaterialPrice(row.material_id),
-											language,
-										)}
-									</span>
-								</div>
-								<button
-									type="button"
-									className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-error/10 text-on-surface-variant hover:text-error transition-colors mb-0"
-									onClick={() => removeMaterialRow(index)}
-								>
-									<Trash2 className="h-4 w-4" />
-								</button>
-							</div>
-						))}
-
-						{materialRows.length > 0 && (
-							<div className="flex justify-end items-center gap-2 pt-2 border-t border-outline-variant">
-								<span className="text-sm font-medium text-on-surface-variant">
-									{t("books.unit_price")}:
-								</span>
-								<span className="text-lg font-bold text-primary tabular-nums">
-									{formatCurrency(unitPrice, language)}
-								</span>
-							</div>
-						)}
+											<td className="py-2 px-2 text-on-surface">
+												{m.material_name}
+											</td>
+											<td className="py-2 px-2 text-right tabular-nums text-on-surface">
+												{m.quantity_per_copy}
+											</td>
+											<td className="py-2 px-2 text-right tabular-nums text-on-surface">
+												{formatCurrency(m.price_per_unit, language)}
+											</td>
+											<td className="py-2 px-2 text-right tabular-nums font-semibold text-on-surface">
+												{formatCurrency(
+													m.quantity_per_copy * m.price_per_unit,
+													language,
+												)}
+											</td>
+										</tr>
+									))}
+								</tbody>
+								<tfoot>
+									<tr>
+										<td
+											colSpan={3}
+											className="py-3 px-2 text-right text-sm font-medium text-on-surface-variant"
+										>
+											{t("books.unit_price")}:
+										</td>
+										<td className="py-3 px-2 text-right tabular-nums text-lg font-bold text-primary">
+											{formatCurrency(unitPrice, language)}
+										</td>
+									</tr>
+								</tfoot>
+							</table>
+						</div>
 					</div>
-				</div>
+				)}
 
 				<div className="flex justify-end gap-3">
 					<Button variant="outline" onClick={() => navigate(`/books/${id}`)}>

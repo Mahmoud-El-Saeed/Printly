@@ -276,7 +276,6 @@ export default function CreateBookPage() {
 									<SelectValue placeholder={t("books.binding_none")} />
 								</SelectTrigger>
 								<SelectContent>
-									<SelectItem value="">{t("books.binding_none")}</SelectItem>
 									<SelectItem value="spiral">
 										{t("books.binding_spiral")}
 									</SelectItem>
