@@ -162,9 +162,9 @@ export default function BookDetailPage() {
 							{t("books.sides_per_page")}
 						</span>
 						<span className="text-sm text-on-surface tabular-nums">
-							{book.sides_per_page === 2
-								? t("books.sides_2")
-								: t("books.sides_1")}
+							{book.sides_per_page === 1
+								? t("books.sides_1")
+								: `${book.sides_per_page}`}
 						</span>
 					</div>
 					<div className="flex flex-col gap-1">
@@ -219,12 +219,12 @@ export default function BookDetailPage() {
 						<span className="text-xs font-medium text-on-surface-variant">
 							{t("books.status")}
 						</span>
-						{book.local_file_path ? (
+						{book.file_url ? (
 							<span className="flex items-center gap-1.5 text-sm text-primary">
 								<CheckCircle className="h-4 w-4" />
 								{t("books.view_file")}
 								<a
-									href={`/uploads/${book.local_file_path}`}
+									href={`/uploads/${book.file_url}`}
 									target="_blank"
 									rel="noopener noreferrer"
 									className="inline-flex items-center gap-1 hover:underline"

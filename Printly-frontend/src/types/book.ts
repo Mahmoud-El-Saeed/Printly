@@ -24,7 +24,7 @@ export interface BookResponse {
 	has_lamination: boolean;
 	notes: string | null;
 	file_size: number | null;
-	local_file_path: string | null;
+	file_url: string | null;
 	created_at: string;
 	updated_at: string;
 	book_materials: BookMaterialResponse[];

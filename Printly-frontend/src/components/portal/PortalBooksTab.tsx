@@ -73,7 +73,7 @@ export function PortalBooksTab({
 								className={`flex items-start justify-between mb-2 ${isRTL ? "flex-row-reverse" : ""}`}
 							>
 								<h3 className="font-bold text-sm">{book.title}</h3>
-								{book.local_file_path ? (
+								{book.file_url ? (
 									<span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-green-100 text-green-800">
 										{t("books.has_file")}
 									</span>

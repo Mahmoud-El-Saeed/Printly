@@ -130,7 +130,7 @@ export default function BooksListPage() {
 			key: "status",
 			header: t("books.status"),
 			render: (row: BookResponse) =>
-				row.local_file_path ? (
+				row.file_url ? (
 					<CheckCircle className="h-4 w-4 text-primary" />
 				) : (
 					<XCircle className="h-4 w-4 text-error" />
