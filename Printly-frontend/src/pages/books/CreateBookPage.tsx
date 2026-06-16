@@ -38,6 +38,7 @@ interface BookFormValues {
 interface MaterialRow {
 	material_id: string;
 	quantity_per_copy: number;
+	tempId: string;
 }
 
 interface MaterialOption {
@@ -109,7 +110,7 @@ export default function CreateBookPage() {
 	const addMaterialRow = () => {
 		setMaterialRows([
 			...materialRows,
-			{ material_id: "", quantity_per_copy: 1 },
+			{ material_id: "", quantity_per_copy: 1, tempId: crypto.randomUUID() },
 		]);
 	};
 
@@ -351,11 +352,14 @@ export default function CreateBookPage() {
 						)}
 						{materialRows.map((row, index) => (
 							<div
-								key={index}
+								key={row.tempId}
 								className="flex items-end gap-4 pb-4 border-b border-outline-variant last:border-b-0"
 							>
 								<div className="flex-1 flex flex-col gap-1.5">
-									<label className="text-xs font-medium text-on-surface-variant">
+									<label
+										htmlFor={`material-${row.tempId}-name`}
+										className="text-xs font-medium text-on-surface-variant"
+									>
 										{t("books.material_name")}
 									</label>
 									<Select
@@ -364,7 +368,10 @@ export default function CreateBookPage() {
 											updateMaterialRow(index, "material_id", v)
 										}
 									>
-										<SelectTrigger className="h-10">
+										<SelectTrigger
+											id={`material-${row.tempId}-name`}
+											className="h-10"
+										>
 											<SelectValue placeholder={t("books.select_material")} />
 										</SelectTrigger>
 										<SelectContent>
@@ -377,10 +384,14 @@ export default function CreateBookPage() {
 									</Select>
 								</div>
 								<div className="w-28 flex flex-col gap-1.5">
-									<label className="text-xs font-medium text-on-surface-variant">
+									<label
+										htmlFor={`material-${row.tempId}-qty`}
+										className="text-xs font-medium text-on-surface-variant"
+									>
 										{t("books.quantity_per_copy")}
 									</label>
 									<Input
+										id={`material-${row.tempId}-qty`}
 										type="number"
 										min={0.01}
 										step={0.01}
@@ -396,9 +407,9 @@ export default function CreateBookPage() {
 									/>
 								</div>
 								<div className="w-28 flex flex-col gap-1.5">
-									<label className="text-xs font-medium text-on-surface-variant">
+									<span className="text-xs font-medium text-on-surface-variant">
 										{t("books.price_per_unit")}
-									</label>
+									</span>
 									<span className="h-10 flex items-center text-sm text-on-surface tabular-nums">
 										{formatCurrency(
 											getMaterialPrice(row.material_id),
@@ -407,9 +418,9 @@ export default function CreateBookPage() {
 									</span>
 								</div>
 								<div className="w-28 flex flex-col gap-1.5">
-									<label className="text-xs font-medium text-on-surface-variant">
+									<span className="text-xs font-medium text-on-surface-variant">
 										{t("books.material_cost")}
-									</label>
+									</span>
 									<span className="h-10 flex items-center text-sm font-semibold text-on-surface tabular-nums">
 										{formatCurrency(
 											(row.quantity_per_copy || 0) *
