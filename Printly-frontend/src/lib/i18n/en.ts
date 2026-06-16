@@ -32,11 +32,6 @@ const en = {
 				description:
 					"Revenue, expenses, profits, and debts — all in one place.",
 			},
-			pricing: {
-				title: "Pricing Rules",
-				description:
-					"Flexible component-based pricing for every print service.",
-			},
 			portal: {
 				title: "Customer Portal",
 				description:
@@ -163,7 +158,6 @@ const en = {
 		expenses: "Expenses",
 		notifications: "Notifications",
 		settings: "Settings",
-		pricing: "Pricing",
 	},
 	dashboard: {
 		title: "Dashboard",

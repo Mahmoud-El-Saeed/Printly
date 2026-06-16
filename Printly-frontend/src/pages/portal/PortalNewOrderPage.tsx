@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
 	Select,
@@ -20,6 +21,7 @@ import { formatCurrency } from "@/lib/utils/formatCurrency";
 interface OrderItem {
 	bookId: string;
 	tempId: string;
+	copies: number;
 }
 
 export default function PortalNewOrderPage() {
@@ -30,7 +32,7 @@ export default function PortalNewOrderPage() {
 	const tid = tenantId ?? "";
 
 	const [items, setItems] = useState<OrderItem[]>([
-		{ bookId: "", tempId: crypto.randomUUID() },
+		{ bookId: "", tempId: crypto.randomUUID(), copies: 1 },
 	]);
 	const [notes, setNotes] = useState("");
 
@@ -50,9 +52,10 @@ export default function PortalNewOrderPage() {
 			0,
 		) ?? 0;
 
-	const totalAmount = selectedBooks.reduce((sum, book) => {
+	const totalAmount = items.reduce((sum, item, idx) => {
+		const book = selectedBooks[idx];
 		if (!book) return sum;
-		return sum + calcUnitPrice(book);
+		return sum + calcUnitPrice(book) * item.copies;
 	}, 0);
 
 	const mutation = useMutation({
@@ -61,7 +64,7 @@ export default function PortalNewOrderPage() {
 				.filter((item) => item.bookId)
 				.map((item) => ({
 					book_id: item.bookId,
-					copies: 1,
+					copies: item.copies,
 				}));
 			return portalApi.createOrder(tid, {
 				customer_id: undefined,
@@ -78,7 +81,10 @@ export default function PortalNewOrderPage() {
 	});
 
 	const addItem = () => {
-		setItems([...items, { bookId: "", tempId: crypto.randomUUID() }]);
+		setItems([
+			...items,
+			{ bookId: "", tempId: crypto.randomUUID(), copies: 1 },
+		]);
 	};
 
 	const removeItem = (idx: number) => {
@@ -87,7 +93,13 @@ export default function PortalNewOrderPage() {
 
 	const updateItem = (idx: number, bookId: string) => {
 		const next = [...items];
-		next[idx] = { ...next[idx], bookId };
+		next[idx] = { ...next[idx], bookId, copies: next[idx].copies };
+		setItems(next);
+	};
+
+	const updateCopies = (idx: number, copies: number) => {
+		const next = [...items];
+		next[idx] = { ...next[idx], copies };
 		setItems(next);
 	};
 
@@ -156,6 +168,23 @@ export default function PortalNewOrderPage() {
 
 							{book && (
 								<div className="space-y-3 bg-muted/30 rounded-lg p-4">
+									<div className="flex items-center gap-4">
+										<div className="flex-1">
+											<Label>{t("portal.order_copies")}</Label>
+											<Input
+												type="number"
+												min={1}
+												value={item.copies}
+												onChange={(e) =>
+													updateCopies(
+														idx,
+														Math.max(1, parseInt(e.target.value, 10) || 1),
+													)
+												}
+												className="h-10 tabular-nums mt-1"
+											/>
+										</div>
+									</div>
 									<div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
 										<span className="text-muted-foreground">
 											{t("portal.pages")}:{" "}
@@ -216,7 +245,10 @@ export default function PortalNewOrderPage() {
 											{t("portal.book_unit_price")}
 										</span>
 										<span className="text-lg font-bold tabular-nums text-primary">
-											{formatCurrency(calcUnitPrice(book), language)}
+											{formatCurrency(
+												calcUnitPrice(book) * item.copies,
+												language,
+											)}
 										</span>
 									</div>
 									<p className="text-xs text-muted-foreground italic">

@@ -170,9 +170,9 @@ export default function OrderDetailPage() {
 													: t("books.color_bw")}
 											</span>
 											<span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600">
-												{item.sides_per_page === 2
-													? t("orders.double_side")
-													: t("orders.single_side")}
+												{item.sides_per_page === 1
+													? t("orders.single_side")
+													: `${item.sides_per_page}`}
 											</span>
 											{item.binding_type && (
 												<span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600">
