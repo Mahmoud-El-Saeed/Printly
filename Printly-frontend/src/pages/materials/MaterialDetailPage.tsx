@@ -215,6 +215,14 @@ export default function MaterialDetailPage() {
 					</div>
 					<div className="flex flex-col gap-1">
 						<span className="text-xs font-medium text-on-surface-variant">
+							{t("materials.price_per_unit")}
+						</span>
+						<span className="text-sm tabular-nums text-primary font-semibold">
+							{formatCurrency(material.price_per_unit, language)}
+						</span>
+					</div>
+					<div className="flex flex-col gap-1">
+						<span className="text-xs font-medium text-on-surface-variant">
 							{t("materials.status")}
 						</span>
 						<span

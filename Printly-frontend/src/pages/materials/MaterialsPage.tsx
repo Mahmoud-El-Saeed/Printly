@@ -90,6 +90,15 @@ export default function MaterialsPage() {
 			),
 		},
 		{
+			key: "price_per_unit",
+			header: t("materials.price_per_unit"),
+			render: (row: MaterialResponse) => (
+				<span className="tabular-nums text-primary font-semibold">
+					{formatCurrency(row.price_per_unit, language)}
+				</span>
+			),
+		},
+		{
 			key: "min_stock_alert",
 			header: t("materials.min_alert"),
 			render: (row: MaterialResponse) => (

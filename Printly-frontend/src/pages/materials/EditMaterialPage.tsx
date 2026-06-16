@@ -16,6 +16,7 @@ type FormValues = {
 	unit: string;
 	min_stock_alert: number;
 	cost_per_unit: number;
+	price_per_unit: number;
 	is_active: boolean;
 };
 
@@ -44,6 +45,7 @@ export default function EditMaterialPage() {
 					unit: material.unit,
 					min_stock_alert: material.min_stock_alert,
 					cost_per_unit: material.cost_per_unit,
+					price_per_unit: material.price_per_unit,
 					is_active: material.is_active,
 				}
 			: undefined,
@@ -66,6 +68,7 @@ export default function EditMaterialPage() {
 			unit: data.unit,
 			min_stock_alert: data.min_stock_alert,
 			cost_per_unit: data.cost_per_unit,
+			price_per_unit: data.price_per_unit,
 			is_active: data.is_active,
 		});
 	};
@@ -141,6 +144,23 @@ export default function EditMaterialPage() {
 								min={0}
 								step="0.01"
 								{...register("cost_per_unit", {
+									valueAsNumber: true,
+									min: {
+										value: 0,
+										message: t("validation.min_value").replace("{min}", "0"),
+									},
+								})}
+							/>
+						</FormField>
+						<FormField
+							label={t("materials.price_per_unit")}
+							error={errors.price_per_unit?.message}
+						>
+							<Input
+								type="number"
+								min={0}
+								step="0.01"
+								{...register("price_per_unit", {
 									valueAsNumber: true,
 									min: {
 										value: 0,
