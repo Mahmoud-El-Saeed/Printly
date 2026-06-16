@@ -7,40 +7,33 @@ export type OrderStatus =
 	| "delivered"
 	| "cancelled";
 
+export interface MaterialSnapshotItem {
+	material_id: string;
+	material_name: string;
+	quantity_per_copy: number;
+	price_per_unit: number;
+}
+
 export interface OrderItemResponse {
 	id: string;
 	book_id: string | null;
 	book_title: string;
 	copies: number;
-	pages_per_copy: number;
+	unit_price: number;
+	total_pages: number;
+	color_mode: string;
 	sides_per_page: number;
-	printing_price: number;
-	cover_type: string | null;
-	cover_price: number;
 	binding_type: string | null;
-	binding_price: number;
 	has_lamination: boolean;
-	lamination_price: number;
-	extra_services: Record<string, number>;
+	materials_snapshot: MaterialSnapshotItem[];
 	subtotal: number;
 	created_at: string;
 	updated_at: string;
 }
 
 export interface OrderItemCreate {
-	book_id?: string;
-	book_title: string;
+	book_id: string;
 	copies: number;
-	pages_per_copy: number;
-	sides_per_page?: number;
-	printing_price: number;
-	cover_type?: string;
-	cover_price?: number;
-	binding_type?: string;
-	binding_price?: number;
-	has_lamination?: boolean;
-	lamination_price?: number;
-	extra_services?: Record<string, number>;
 }
 
 export interface OrderResponse {
@@ -54,7 +47,6 @@ export interface OrderResponse {
 	paid_amount: number;
 	notes: string | null;
 	due_date: string | null;
-	completed_at: string | null;
 	items: OrderItemResponse[];
 	created_at: string;
 	updated_at: string;

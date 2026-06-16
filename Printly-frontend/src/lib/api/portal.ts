@@ -8,7 +8,7 @@ import type {
 } from "@/types";
 import type { OrderCreate } from "@/types/order";
 import type { PaymentResponse } from "@/types/payment";
-import type { PortalPaymentCreate, PortalPricingItem } from "@/types/portal";
+import type { PortalPaymentCreate } from "@/types/portal";
 import apiClient from "./client";
 
 export const portalApi = {
@@ -86,10 +86,6 @@ export const portalApi = {
 			data,
 		);
 		return response.data as PaymentResponse;
-	},
-	getPricing: async (tenantId: string) => {
-		const response = await apiClient.get(`/portal/tenants/${tenantId}/pricing`);
-		return response.data as { rules: PortalPricingItem[] };
 	},
 	getNotifications: async (
 		tenantId: string,

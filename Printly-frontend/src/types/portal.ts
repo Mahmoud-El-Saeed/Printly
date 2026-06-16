@@ -30,17 +30,6 @@ export interface PortalPaymentCreate {
 	notes?: string;
 }
 
-export interface PortalPricingItem {
-	component_name: string;
-	component_type: string;
-	price: number;
-	unit_type: string;
-}
-
-export interface PortalPricingResponse {
-	rules: PortalPricingItem[];
-}
-
 export interface PortalProfileUpdateRequest {
 	full_name?: string;
 	phone?: string;

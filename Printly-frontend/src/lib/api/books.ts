@@ -21,7 +21,8 @@ export const booksApi = {
 	},
 
 	create: async (data: BookCreate): Promise<BookResponse> => {
-		const response = await apiClient.post<BookResponse>("/books/", data);
+		const { file, ...bookData } = data;
+		const response = await apiClient.post<BookResponse>("/books/", bookData);
 		return response.data;
 	},
 

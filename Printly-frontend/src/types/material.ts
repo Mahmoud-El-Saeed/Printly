@@ -7,6 +7,7 @@ export interface MaterialResponse {
 	current_stock: number;
 	min_stock_alert: number;
 	cost_per_unit: number;
+	price_per_unit: number;
 	is_active: boolean;
 	created_at: string;
 	updated_at: string;
@@ -18,6 +19,7 @@ export interface MaterialCreate {
 	current_stock?: number;
 	min_stock_alert?: number;
 	cost_per_unit?: number;
+	price_per_unit?: number;
 }
 
 export interface MaterialUpdate {
@@ -25,6 +27,7 @@ export interface MaterialUpdate {
 	unit?: string;
 	min_stock_alert?: number;
 	cost_per_unit?: number;
+	price_per_unit?: number;
 	is_active?: boolean;
 }
 
