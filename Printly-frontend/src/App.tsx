@@ -90,15 +90,11 @@ const CreatePaymentPage = lazy(
 );
 const EditPaymentPage = lazy(() => import("@/pages/payments/EditPaymentPage"));
 
-const PricingPage = lazy(() => import("@/pages/pricing/PricingPage"));
-const PricingRuleDetailPage = lazy(
-	() => import("@/pages/pricing/PricingRuleDetailPage"),
+const InvoicesListPage = lazy(
+	() => import("@/pages/invoices/InvoicesListPage"),
 );
-const CreatePricingRulePage = lazy(
-	() => import("@/pages/pricing/CreatePricingRulePage"),
-);
-const EditPricingRulePage = lazy(
-	() => import("@/pages/pricing/EditPricingRulePage"),
+const InvoiceDetailPage = lazy(
+	() => import("@/pages/invoices/InvoiceDetailPage"),
 );
 
 const NotificationsPage = lazy(
@@ -335,34 +331,18 @@ function App() {
 										}
 									/>
 									<Route
-										path="pricing"
+										path="invoices"
 										element={
 											<Suspense fallback={<PageLoader />}>
-												<PricingPage />
+												<InvoicesListPage />
 											</Suspense>
 										}
 									/>
 									<Route
-										path="pricing/new"
+										path="invoices/:id"
 										element={
 											<Suspense fallback={<PageLoader />}>
-												<CreatePricingRulePage />
-											</Suspense>
-										}
-									/>
-									<Route
-										path="pricing/:id"
-										element={
-											<Suspense fallback={<PageLoader />}>
-												<PricingRuleDetailPage />
-											</Suspense>
-										}
-									/>
-									<Route
-										path="pricing/:id/edit"
-										element={
-											<Suspense fallback={<PageLoader />}>
-												<EditPricingRulePage />
+												<InvoiceDetailPage />
 											</Suspense>
 										}
 									/>

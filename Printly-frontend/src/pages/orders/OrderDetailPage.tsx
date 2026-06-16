@@ -1,9 +1,21 @@
-import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, CheckCircle, Clock, Printer, XCircle } from "lucide-react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import {
+	ArrowLeft,
+	CheckCircle,
+	ChevronDown,
+	ChevronRight,
+	Clock,
+	FileText,
+	Printer,
+	XCircle,
+} from "lucide-react";
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "sonner";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { invoicesApi } from "@/lib/api/invoices";
 import { ordersApi } from "@/lib/api/orders";
 import { formatCurrency } from "@/lib/utils/formatCurrency";
 import { formatDate } from "@/lib/utils/formatDate";
@@ -12,6 +24,7 @@ export default function OrderDetailPage() {
 	const { t, language } = useLanguage();
 	const navigate = useNavigate();
 	const { id } = useParams<{ id: string }>();
+	const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
 
 	const {
 		data: order,
@@ -21,6 +34,24 @@ export default function OrderDetailPage() {
 		queryKey: ["order", id],
 		queryFn: () => ordersApi.get(id ?? ""),
 		enabled: !!id,
+	});
+
+	const toggleExpand = (itemId: string) => {
+		const next = new Set(expandedItems);
+		if (next.has(itemId)) next.delete(itemId);
+		else next.add(itemId);
+		setExpandedItems(next);
+	};
+
+	const generateInvoiceMutation = useMutation({
+		mutationFn: () => invoicesApi.generate(id ?? ""),
+		onSuccess: (data) => {
+			toast.success(t("invoices.generate_success"));
+			navigate(`/invoices/${data.id}`);
+		},
+		onError: () => {
+			toast.error(t("invoices.generate_failed"));
+		},
 	});
 
 	if (isError) {
@@ -123,45 +154,48 @@ export default function OrderDetailPage() {
 										<span className="font-semibold text-sm text-on-surface">
 											{item.book_title}
 										</span>
-										<div className="text-xs text-on-surface-variant mt-1">
-											{item.copies} {t("orders.copies")} · {item.pages_per_copy}{" "}
-											{t("orders.pages_per_copy")}
+										<div className="flex flex-wrap gap-2 mt-2">
+											<span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600">
+												{item.total_pages} {t("books.pages")}
+											</span>
+											<span
+												className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+													item.color_mode === "color"
+														? "bg-primary/10 text-primary"
+														: "bg-gray-100 text-gray-600"
+												}`}
+											>
+												{item.color_mode === "color"
+													? t("books.color_color")
+													: t("books.color_bw")}
+											</span>
+											<span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600">
+												{item.sides_per_page === 2
+													? t("orders.double_side")
+													: t("orders.single_side")}
+											</span>
+											{item.binding_type && (
+												<span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600">
+													{t(`books.binding_${item.binding_type}`)}
+												</span>
+											)}
+											{item.has_lamination && (
+												<span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-primary/10 text-primary">
+													{t("orders.lamination")}
+												</span>
+											)}
 										</div>
 									</div>
 								</div>
-								<div className="flex flex-wrap items-center justify-between gap-4">
+
+								<div className="flex items-center justify-between border-t border-outline-variant pt-3">
 									<div className="flex items-center gap-4 text-xs text-on-surface-variant">
 										<span>
-											{t("orders.print")}:
+											{item.copies} ×{" "}
 											<span className="tabular-nums font-bold text-on-surface">
-												{formatCurrency(item.printing_price, language)}
+												{formatCurrency(item.unit_price, language)}
 											</span>
 										</span>
-										<span className="text-outline-variant">|</span>
-										<span>
-											{t("orders.cover")}:
-											<span className="tabular-nums font-bold text-on-surface">
-												{formatCurrency(item.cover_price, language)}
-											</span>
-										</span>
-										<span className="text-outline-variant">|</span>
-										<span>
-											{t("orders.binding")}:
-											<span className="tabular-nums font-bold text-on-surface">
-												{formatCurrency(item.binding_price, language)}
-											</span>
-										</span>
-										{item.has_lamination && (
-											<>
-												<span className="text-outline-variant">|</span>
-												<span>
-													{t("orders.lamination")}:
-													<span className="tabular-nums font-bold text-on-surface">
-														{formatCurrency(item.lamination_price, language)}
-													</span>
-												</span>
-											</>
-										)}
 									</div>
 									<div className="flex items-center gap-2">
 										<span className="text-sm text-on-surface-variant font-medium">
@@ -172,6 +206,68 @@ export default function OrderDetailPage() {
 										</span>
 									</div>
 								</div>
+
+								{item.materials_snapshot.length > 0 && (
+									<div className="border-t border-outline-variant pt-2">
+										<button
+											type="button"
+											className="flex items-center gap-2 text-xs text-on-surface-variant hover:text-on-surface transition-colors"
+											onClick={() => toggleExpand(item.id)}
+										>
+											{expandedItems.has(item.id) ? (
+												<ChevronDown className="h-3.5 w-3.5" />
+											) : (
+												<ChevronRight className="h-3.5 w-3.5" />
+											)}
+											{t("orders.materials_used")} (
+											{item.materials_snapshot.length})
+										</button>
+										{expandedItems.has(item.id) && (
+											<table className="w-full text-xs mt-2">
+												<thead>
+													<tr className="border-b border-outline-variant">
+														<th className="text-left py-1.5 font-medium text-on-surface-variant">
+															{t("orders.material_name")}
+														</th>
+														<th className="text-right py-1.5 font-medium text-on-surface-variant">
+															{t("orders.qty_per_copy")}
+														</th>
+														<th className="text-right py-1.5 font-medium text-on-surface-variant">
+															{t("orders.material_price")}
+														</th>
+														<th className="text-right py-1.5 font-medium text-on-surface-variant">
+															{t("orders.material_line_total")}
+														</th>
+													</tr>
+												</thead>
+												<tbody>
+													{item.materials_snapshot.map((m) => (
+														<tr
+															key={m.material_id}
+															className="border-b border-outline-variant last:border-b-0"
+														>
+															<td className="py-1.5 text-on-surface">
+																{m.material_name}
+															</td>
+															<td className="py-1.5 text-right tabular-nums text-on-surface">
+																{m.quantity_per_copy}
+															</td>
+															<td className="py-1.5 text-right tabular-nums text-on-surface">
+																{formatCurrency(m.price_per_unit, language)}
+															</td>
+															<td className="py-1.5 text-right tabular-nums font-semibold text-on-surface">
+																{formatCurrency(
+																	m.quantity_per_copy * m.price_per_unit,
+																	language,
+																)}
+															</td>
+														</tr>
+													))}
+												</tbody>
+											</table>
+										)}
+									</div>
+								)}
 							</div>
 						</div>
 					))}
@@ -217,13 +313,23 @@ export default function OrderDetailPage() {
 								</div>
 							</div>
 							<div className="flex flex-col gap-3 pt-2">
-								{/* TODO: implement */}
 								<Button
 									className="w-full h-12 bg-on-primary text-primary font-bold hover:bg-surface-bright shadow-md active:scale-[0.98] gap-2"
 									disabled
 								>
 									{t("orders.settle_payments")}
 								</Button>
+								{order.status === "delivered" && (
+									<Button
+										variant="outline"
+										className="w-full h-10 border-on-primary/30 text-on-primary hover:bg-white/10 gap-2"
+										onClick={() => generateInvoiceMutation.mutate()}
+										disabled={generateInvoiceMutation.isPending}
+									>
+										<FileText className="h-4 w-4" />
+										{t("invoices.generate")}
+									</Button>
+								)}
 								<Button
 									variant="outline"
 									className="w-full h-10 border-on-primary/30 text-on-primary hover:bg-white/10"
@@ -236,7 +342,6 @@ export default function OrderDetailPage() {
 					</div>
 
 					<div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex flex-col gap-3">
-						{/* TODO: implement */}
 						<button
 							type="button"
 							className="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container transition-colors rounded-lg font-medium text-sm opacity-50"
@@ -245,7 +350,6 @@ export default function OrderDetailPage() {
 							<Printer className="h-4 w-4" />
 							{t("orders.print_receipt")}
 						</button>
-						{/* TODO: implement */}
 						<button
 							type="button"
 							className="flex items-center gap-3 px-3 py-2 text-error hover:bg-error-container/20 transition-colors rounded-lg font-medium text-sm opacity-50"

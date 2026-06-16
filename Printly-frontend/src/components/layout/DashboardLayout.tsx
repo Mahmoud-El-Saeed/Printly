@@ -20,7 +20,7 @@ export default function DashboardLayout() {
 			"/customers/walk-in": t("customers.walk_in"),
 			"/customers/members": t("customers.members"),
 			"/materials": t("materials.title"),
-			"/pricing": t("pricing.title"),
+			"/invoices": t("invoices.title"),
 			"/payments": t("payments.title"),
 			"/expenses": t("expenses.title"),
 			"/settings": t("settings.title"),

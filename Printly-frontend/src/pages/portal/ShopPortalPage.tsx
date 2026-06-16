@@ -3,7 +3,6 @@ import {
 	ArrowLeft,
 	CheckCircle,
 	Clock,
-	DollarSign,
 	Package,
 	Plus,
 	Sun,
@@ -16,7 +15,6 @@ import { PortalBooksTab } from "@/components/portal/PortalBooksTab";
 import { PortalNotificationsTab } from "@/components/portal/PortalNotificationsTab";
 import { PortalOrdersTab } from "@/components/portal/PortalOrdersTab";
 import { PortalPaymentDialog } from "@/components/portal/PortalPaymentDialog";
-import { PortalPricingDialog } from "@/components/portal/PortalPricingDialog";
 import { UploadBookDialog } from "@/components/portal/UploadBookDialog";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -30,7 +28,6 @@ export default function ShopPortalPage() {
 	const navigate = useNavigate();
 	const tid = tenantId ?? "";
 	const [uploadBookOpen, setUploadBookOpen] = useState(false);
-	const [pricingOpen, setPricingOpen] = useState(false);
 	const [paymentOpen, setPaymentOpen] = useState(false);
 	const [paymentOrder, setPaymentOrder] = useState<{
 		id: string;
@@ -118,15 +115,6 @@ export default function ShopPortalPage() {
 					className={`flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}
 				>
 					<Button
-						variant="outline"
-						size="sm"
-						onClick={() => setPricingOpen(true)}
-						className="gap-2"
-					>
-						<DollarSign className="h-4 w-4" />
-						{t("portal.view_pricing")}
-					</Button>
-					<Button
 						size="sm"
 						onClick={() => navigate(`/portal/${tid}/orders/new`)}
 						className="gap-2"
@@ -209,11 +197,6 @@ export default function ShopPortalPage() {
 				tenantId={tid}
 				open={uploadBookOpen}
 				onOpenChange={setUploadBookOpen}
-			/>
-			<PortalPricingDialog
-				tenantId={tid}
-				open={pricingOpen}
-				onOpenChange={setPricingOpen}
 			/>
 			{paymentOrder && (
 				<PortalPaymentDialog
