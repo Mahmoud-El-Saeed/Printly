@@ -152,8 +152,8 @@ export default function InvoiceDetailPage() {
 								</tr>
 							</thead>
 							<tbody className="divide-y divide-outline-variant">
-								{invoice.items.map((item, idx) => (
-									<tr key={`${item.book_title}-${idx}`}>
+								{invoice.items.map((item, _idx) => (
+									<tr key={item.id}>
 										<td className="px-5 py-3 text-on-surface font-medium">
 											{item.book_title}
 										</td>

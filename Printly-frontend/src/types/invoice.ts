@@ -19,6 +19,7 @@ export interface InvoiceDetailResponse extends InvoiceResponse {
 }
 
 export interface InvoiceItem {
+	id: string;
 	book_title: string;
 	copies: number;
 	unit_price: number;

@@ -19,6 +19,7 @@ import { formatCurrency } from "@/lib/utils/formatCurrency";
 
 interface OrderItem {
 	bookId: string;
+	tempId: string;
 }
 
 export default function PortalNewOrderPage() {
@@ -28,7 +29,7 @@ export default function PortalNewOrderPage() {
 	const queryClient = useQueryClient();
 	const tid = tenantId ?? "";
 
-	const [items, setItems] = useState<OrderItem[]>([{ bookId: "" }]);
+	const [items, setItems] = useState<OrderItem[]>([{ bookId: "", tempId: crypto.randomUUID() }]);
 	const [notes, setNotes] = useState("");
 
 	const { data: booksData } = useQuery({
@@ -75,7 +76,7 @@ export default function PortalNewOrderPage() {
 	});
 
 	const addItem = () => {
-		setItems([...items, { bookId: "" }]);
+		setItems([...items, { bookId: "", tempId: crypto.randomUUID() }]);
 	};
 
 	const removeItem = (idx: number) => {
@@ -84,7 +85,7 @@ export default function PortalNewOrderPage() {
 
 	const updateItem = (idx: number, bookId: string) => {
 		const next = [...items];
-		next[idx] = { bookId };
+		next[idx] = { ...next[idx], bookId };
 		setItems(next);
 	};
 
@@ -113,7 +114,7 @@ export default function PortalNewOrderPage() {
 					const book = selectedBooks[idx];
 					return (
 						<div
-							key={idx}
+							key={item.tempId}
 							className="bg-card border border-border rounded-xl p-5 space-y-4"
 						>
 							<div className="flex items-center justify-between">
