@@ -42,31 +42,6 @@ async def create_book(
 ) -> BookResponse:
     """Create a new book for the given tenant."""
 
-    file_controller = FileController()
-    file_path = None
-    file_size = None
-
-    if book_data.file:
-        active_sub = await SubscriptionCRUD.get_active_by_tenant_id(db, tenant_id)
-        if not active_sub:
-            raise ValueError("No active subscription found")
-        plan = await PlanCRUD.get_by_id(db, active_sub.plan_id)
-        if not plan:
-            raise ValueError("Subscription plan not found")
-        max_books = plan.features.get("max_books", 20)
-        current_book_count = await BookCRUD.count_stored_books(db, tenant_id=tenant_id)
-        if current_book_count >= max_books:
-            raise ValueError("Maximum number of books reached for the current plan remove some books or upgrade your plan to add more")
-        if not file_controller.verify_file_type(book_data.file.filename, book_data.file.content_type):
-            raise ValueError("Unsupported file type")
-        if not file_controller.verify_file_size(book_data.file.size):
-            raise ValueError("File size exceeds the limit")
-        try:
-            file_extension = file_controller.get_file_extension(book_data.file.filename)
-            file_path = file_controller.return_file_path(str(tenant_id),  str(uuid4()) + file_extension)
-            file_size = await file_controller.save_file(file_path, book_data.file)
-        except Exception as e:
-            raise ValueError("Failed to save file") from e
     try:
         create_kwargs = dict(
             tenant_id=tenant_id,
@@ -80,8 +55,6 @@ async def create_book(
             binding_type=book_data.binding_type,
             has_lamination=book_data.has_lamination,
             notes=book_data.notes,
-            file_url=file_path,
-            file_size=book_data.file.size if book_data.file and book_data.file.size not in [None,-1] else (file_size if book_data.file else None),
         )
 
         new_book = await BookCRUD.create(db=db, **create_kwargs)
@@ -117,8 +90,6 @@ async def create_book(
 
     except Exception as e:
         await db.rollback()
-        if file_path and os.path.exists(file_path):
-            file_controller.delete_file(file_path)
         if isinstance(e, ValueError):
             raise
         raise ValueError("Failed to create book") from e

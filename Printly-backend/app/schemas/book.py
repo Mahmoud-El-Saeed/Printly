@@ -1,5 +1,4 @@
 from pydantic import BaseModel, Field, ConfigDict
-from fastapi import UploadFile
 from uuid import UUID
 from datetime import datetime
 from decimal import Decimal
@@ -21,7 +20,6 @@ class BookCreate(BaseModel):
     has_lamination: bool = False
     notes: str | None = None
     materials: list[BookMaterialItem] = Field(default_factory=list)
-    file: UploadFile | None = None
 
 
 class BookUpdate(BaseModel):
@@ -57,7 +55,7 @@ class BookResponse(BaseModel):
     has_lamination: bool
     notes: str | None
     file_size: int | None
-    local_file_path: str | None
+    file_url: str | None
     created_at: datetime
     updated_at: datetime
     book_materials: list[BookMaterialResponse] = []

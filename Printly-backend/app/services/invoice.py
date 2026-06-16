@@ -143,6 +143,7 @@ async def _build_detail_response(invoice: Invoices, order: Orders) -> InvoiceDet
             "id": str(p.id),
             "amount": float(p.amount),
             "payment_method": p.payment_method.value if hasattr(p.payment_method, "value") else str(p.payment_method),
+            "reference": p.reference,
             "created_at": p.created_at.isoformat() if p.created_at else None,
         })
 
